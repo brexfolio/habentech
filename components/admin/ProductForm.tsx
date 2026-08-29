@@ -1,0 +1,334 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { Plus, Trash2, ImagePlus, ArrowUp, ArrowDown, Star } from "lucide-react";
+import {
+  PRODUCT_CATEGORIES,
+  PRODUCT_CONDITIONS,
+  PRODUCT_AVAILABILITIES,
+  type Product,
+  type ProductCategory,
+  type ProductCondition,
+  type ProductAvailability,
+} from "@/types/product";
+import { Input, Textarea } from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Button from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
+import { apiPost, apiPatch, apiUpload, ApiError } from "@/lib/apiClient";
+
+interface ImageDraft {
+  telegram_file_id: string | null;
+  image_url: string;
+}
+
+interface SpecDraft {
+  label: string;
+  value: string;
+}
+
+interface ProductFormProps {
+  product?: Product;
+  onSaved: (product: Product, channelWarning: string | null) => void;
+  onCancel: () => void;
+}
+
+export default function ProductForm({ product, onSaved, onCancel }: ProductFormProps) {
+  const isEditing = Boolean(product);
+  const { showToast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [name, setName] = useState(product?.name ?? "");
+  const [category, setCategory] = useState<ProductCategory>(product?.category ?? "Smartphones");
+  const [price, setPrice] = useState(product ? String(product.price) : "");
+  const [condition, setCondition] = useState<ProductCondition>(product?.condition ?? "Brand New");
+  const [description, setDescription] = useState(product?.description ?? "");
+  const [availability, setAvailability] = useState<ProductAvailability>(
+    product?.availability ?? "Available"
+  );
+  const [featured, setFeatured] = useState(product?.featured ?? false);
+  const [images, setImages] = useState<ImageDraft[]>(
+    (product?.images ?? [])
+      .slice()
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((img) => ({ telegram_file_id: img.telegram_file_id, image_url: img.image_url }))
+  );
+  const [specs, setSpecs] = useState<SpecDraft[]>(
+    (product?.specifications ?? [])
+      .slice()
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((s) => ({ label: s.label, value: s.value }))
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleFilesSelected(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
+          "/api/telegram/image",
+          formData
+        );
+        setImages((prev) => [...prev, { telegram_file_id: result.telegram_file_id, image_url: result.image_url }]);
+      }
+    } catch (uploadError) {
+      showToast("error", uploadError instanceof ApiError ? uploadError.message : "Image upload failed.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  function moveImage(index: number, direction: -1 | 1) {
+    setImages((prev) => {
+      const next = [...prev];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= next.length) return prev;
+      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+      return next;
+    });
+  }
+
+  function removeImage(index: number) {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addSpec() {
+    setSpecs((prev) => [...prev, { label: "", value: "" }]);
+  }
+
+  function updateSpec(index: number, field: "label" | "value", value: string) {
+    setSpecs((prev) => prev.map((spec, i) => (i === index ? { ...spec, [field]: value } : spec)));
+  }
+
+  function removeSpec(index: number) {
+    setSpecs((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+
+    if (!name.trim()) return setError("Product name is required.");
+    const priceNumber = Number(price);
+    if (!priceNumber || priceNumber <= 0) return setError("Price must be greater than zero.");
+
+    const cleanedSpecs = specs.filter((s) => s.label.trim() && s.value.trim());
+
+    const payload = {
+      name: name.trim(),
+      category,
+      price: priceNumber,
+      currency: "ETB",
+      condition,
+      description: description.trim(),
+      availability,
+      featured,
+      images,
+      specifications: cleanedSpecs,
+    };
+
+    setIsSaving(true);
+    try {
+      const result = isEditing
+        ? await apiPatch<{ product: Product; channelWarning: string | null }>(
+            `/api/products/${product!.id}`,
+            payload
+          )
+        : await apiPost<{ product: Product; channelWarning: string | null }>("/api/products", payload);
+
+      onSaved(result.product, result.channelWarning);
+    } catch (submitError) {
+      setError(submitError instanceof ApiError ? submitError.message : "Unable to save product.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <form className="admin-form" onSubmit={handleSubmit}>
+      <Input
+        surface="admin"
+        label="Product Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="e.g. Samsung Galaxy S25 Ultra"
+        required
+      />
+
+      <div className="admin-form__row">
+        <Select
+          surface="admin"
+          label="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value as ProductCategory)}
+          options={PRODUCT_CATEGORIES.map((c) => ({ value: c, label: c }))}
+        />
+        <Select
+          surface="admin"
+          label="Condition"
+          value={condition}
+          onChange={(e) => setCondition(e.target.value as ProductCondition)}
+          options={PRODUCT_CONDITIONS.map((c) => ({ value: c, label: c }))}
+        />
+      </div>
+
+      <div className="admin-form__row">
+        <Input
+          surface="admin"
+          label="Price (ETB)"
+          type="number"
+          min="0"
+          step="0.01"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="e.g. 125000"
+          required
+        />
+        <Select
+          surface="admin"
+          label="Availability"
+          value={availability}
+          onChange={(e) => setAvailability(e.target.value as ProductAvailability)}
+          options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: a }))}
+        />
+      </div>
+
+      <Textarea
+        surface="admin"
+        label="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Tell customers more about this product..."
+        rows={4}
+      />
+
+      <div className="admin-toggle-row">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Star size={16} color="var(--admin-accent)" />
+          <span className="admin-toggle-row__label">Featured Product</span>
+        </div>
+        <label className="admin-switch">
+          <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
+          <span className="admin-switch__track" />
+        </label>
+      </div>
+
+      <div className="admin-form__field">
+        <span className="admin-form__label">Product Images</span>
+        <div className="admin-image-grid">
+          {images.map((image, index) => (
+            <div className="admin-image-thumb" key={`${image.image_url}-${index}`}>
+              <img src={image.image_url} alt={`Product ${index + 1}`} />
+              <span className="admin-image-thumb__order">{index + 1}</span>
+              <button
+                type="button"
+                className="admin-image-thumb__remove"
+                onClick={() => removeImage(index)}
+                aria-label="Remove image"
+              >
+                <Trash2 size={12} />
+              </button>
+              <div style={{ position: "absolute", bottom: 4, right: 4, display: "flex", gap: 4 }}>
+                {index > 0 && (
+                  <button
+                    type="button"
+                    className="admin-image-thumb__remove"
+                    onClick={() => moveImage(index, -1)}
+                    aria-label="Move image earlier"
+                  >
+                    <ArrowUp size={12} />
+                  </button>
+                )}
+                {index < images.length - 1 && (
+                  <button
+                    type="button"
+                    className="admin-image-thumb__remove"
+                    onClick={() => moveImage(index, 1)}
+                    aria-label="Move image later"
+                  >
+                    <ArrowDown size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="admin-image-upload"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+          >
+            <ImagePlus size={20} />
+            {isUploading ? "Uploading..." : "Add Image"}
+          </button>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          onChange={(e) => handleFilesSelected(e.target.files)}
+        />
+        <span className="admin-form__hint">Images are stored securely via Telegram — no external storage needed.</span>
+      </div>
+
+      <div className="admin-form__field">
+        <span className="admin-form__label">Specifications</span>
+        {specs.map((spec, index) => (
+          <div className="admin-spec-row" key={index}>
+            <Input
+              surface="admin"
+              placeholder="Specification Name"
+              value={spec.label}
+              onChange={(e) => updateSpec(index, "label", e.target.value)}
+              aria-label="Specification name"
+            />
+            <Input
+              surface="admin"
+              placeholder="Specification Value"
+              value={spec.value}
+              onChange={(e) => updateSpec(index, "value", e.target.value)}
+              aria-label="Specification value"
+            />
+            <button
+              type="button"
+              className="admin-spec-remove"
+              onClick={() => removeSpec(index)}
+              aria-label="Remove specification"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ))}
+        <button type="button" className="admin-add-row-btn" onClick={addSpec}>
+          <Plus size={16} />
+          Add Specification
+        </button>
+      </div>
+
+      {error && <p className="admin-form__error">{error}</p>}
+
+      {isEditing && product?.channel_published && (
+        <p className="admin-form__hint">
+          This product is live on the Telegram channel — saving will also update that post.
+        </p>
+      )}
+
+      <div className="admin-bottom-bar">
+        <Button surface="admin" variant="secondary" block type="button" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button surface="admin" variant="primary" block type="submit" loading={isSaving}>
+          {isEditing ? "Save Changes" : "Publish Product"}
+        </Button>
+      </div>
+    </form>
+  );
+}

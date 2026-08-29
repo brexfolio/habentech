@@ -1,0 +1,79 @@
+/* ==========================================================
+   RESPONSIVE ADJUSTMENTS
+   Both experiences are mobile-first; these rules widen things
+   gracefully on tablet/desktop viewports without breaking the
+   card layouts.
+   ========================================================== */
+
+@media (min-width: 480px) {
+  .product-grid {
+    gap: 14px;
+  }
+}
+
+@media (min-width: 640px) {
+  .store-container,
+  .store-header,
+  .store-hero,
+  .search-bar,
+  .category-filter,
+  .product-grid,
+  .page-header,
+  .order-card,
+  .request-card {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .bottom-nav {
+    max-width: 640px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .product-detail__actions {
+    max-width: 640px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .admin-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .admin-stat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .admin-container {
+    max-width: 860px;
+  }
+
+  .admin-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .admin-stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-grid,
+  .product-grid {
+    gap: 10px;
+  }
+
+  .admin-action-card {
+    padding: 16px 14px;
+  }
+}
