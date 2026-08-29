@@ -180,6 +180,10 @@ export default function SellDevicePage() {
       setReviewing(false);
       return;
     }
+    if (step === 1) {
+      router.push("/");
+      return;
+    }
     setError(null);
     setStep((s) => Math.max(1, s - 1));
   }
@@ -557,12 +561,10 @@ export default function SellDevicePage() {
       </div>
 
       <div className="form-footer-bar">
-        {(step > 1 || reviewing) && (
-          <Button variant="secondary" block onClick={goBack} disabled={isSubmitting}>
-            <ArrowLeft size={16} />
-            Back
-          </Button>
-        )}
+        <Button variant="secondary" block onClick={goBack} disabled={isSubmitting}>
+          <ArrowLeft size={16} />
+          Back
+        </Button>
         {reviewing ? (
           <Button variant="primary" block loading={isSubmitting} onClick={handleSubmit}>
             Submit Device for Review

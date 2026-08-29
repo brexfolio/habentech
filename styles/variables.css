@@ -25,16 +25,21 @@
 
   /* Admin — fixed dark-navy futuristic theme (not affected by Telegram theme) */
   --admin-bg: #0a0e1a;
-  --admin-bg-gradient: radial-gradient(circle at 20% -10%, #16224a 0%, #0a0e1a 55%);
+  --admin-bg-gradient: radial-gradient(circle at 18% -10%, #1b2b5c 0%, rgba(27, 43, 92, 0) 45%),
+    radial-gradient(circle at 100% 15%, rgba(124, 92, 255, 0.16) 0%, rgba(124, 92, 255, 0) 40%),
+    radial-gradient(circle at 0% 100%, rgba(41, 209, 145, 0.07) 0%, rgba(41, 209, 145, 0) 35%),
+    #0a0e1a;
   --admin-surface: #121a30;
   --admin-surface-alt: #16203c;
   --admin-border: #232d4d;
   --admin-border-soft: rgba(255, 255, 255, 0.06);
+  --admin-highlight: rgba(255, 255, 255, 0.05);
   --admin-text: #eef1fb;
   --admin-text-muted: #8b93b8;
   --admin-primary: #4f7dff;
   --admin-primary-soft: rgba(79, 125, 255, 0.15);
   --admin-accent: #7c5cff;
+  --admin-brand-gradient: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%);
   --admin-success: #29d191;
   --admin-success-bg: rgba(41, 209, 145, 0.12);
   --admin-warning: #ffb545;
@@ -44,7 +49,9 @@
   --admin-radius-lg: 28px;
   --admin-radius-md: 20px;
   --admin-radius-sm: 14px;
-  --admin-shadow-card: 0 20px 45px rgba(3, 6, 20, 0.45);
+  --admin-shadow-card: 0 20px 45px rgba(3, 6, 20, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --admin-shadow-card-hover: 0 24px 55px rgba(3, 6, 20, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --admin-shadow-raised: 0 8px 24px rgba(3, 6, 20, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;

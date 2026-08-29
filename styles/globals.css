@@ -124,14 +124,23 @@ select {
 }
 
 .btn--admin.btn--primary {
-  background: var(--admin-primary);
+  background: var(--admin-brand-gradient);
   color: #fff;
+  box-shadow: 0 8px 20px rgba(79, 125, 255, 0.28);
+}
+
+.btn--admin.btn--primary:hover:not(:disabled) {
+  filter: brightness(1.08);
 }
 
 .btn--admin.btn--secondary {
   background: var(--admin-surface-alt);
   color: var(--admin-text);
   border-color: var(--admin-border);
+}
+
+.btn--admin.btn--secondary:hover:not(:disabled) {
+  border-color: rgba(79, 125, 255, 0.4);
 }
 
 .btn--admin.btn--danger {
