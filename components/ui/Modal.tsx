@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/scrollLock";
 
@@ -36,7 +37,7 @@ export default function Modal({
 
   if (!isOpen) return null;
 
-  return (
+  const modal = (
     <div
       className="modal-overlay"
       role="presentation"
@@ -67,4 +68,7 @@ export default function Modal({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 }

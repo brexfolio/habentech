@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useLanguage, type Language } from "@/lib/i18n";
 import Modal from "@/components/ui/Modal";
 import { hapticImpact } from "@/lib/telegram";
@@ -14,6 +14,7 @@ const OPTIONS: { value: Language; label: string; code: string }[] = [
 export default function LanguageSwitcher() {
   const { lang, setLang, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const activeCode = OPTIONS.find((option) => option.value === lang)?.code;
 
   return (
     <>
@@ -28,7 +29,8 @@ export default function LanguageSwitcher() {
         aria-haspopup="dialog"
         aria-expanded={isOpen}
       >
-        {OPTIONS.find((option) => option.value === lang)?.code}
+        <span className="store-header__lang-code">{activeCode}</span>
+        <ChevronDown size={14} className="store-header__lang-chevron" />
       </button>
 
       <Modal
