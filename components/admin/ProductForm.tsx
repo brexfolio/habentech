@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Trash2, ImagePlus, ArrowUp, ArrowDown, Star, X } from "lucide-react";
 import {
   PRODUCT_CATEGORIES,
@@ -15,12 +15,12 @@ import { getSuggestedSpecFields } from "@/lib/productSpecs";
 import { Input, Textarea } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
-import { useToast } from "@/components/ui/Toast";
 import { apiPost, apiPatch, apiUpload, ApiError } from "@/lib/apiClient";
 
 interface ImageDraft {
   telegram_file_id: string | null;
   image_url: string;
+  file?: File;
 }
 
 interface SpecDraft {
@@ -36,7 +36,6 @@ interface ProductFormProps {
 
 export default function ProductForm({ product, onSaved, onCancel }: ProductFormProps) {
   const isEditing = Boolean(product);
-  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
@@ -63,26 +62,26 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const imagesRef = useRef(images);
+  imagesRef.current = images;
 
-  async function handleFilesSelected(files: FileList | null) {
+  useEffect(() => {
+    return () => {
+      imagesRef.current.forEach((image) => {
+        if (image.file) URL.revokeObjectURL(image.image_url);
+      });
+    };
+  }, []);
+
+  function handleFilesSelected(files: FileList | null) {
     if (!files || files.length === 0) return;
-    setIsUploading(true);
-    try {
-      for (const file of Array.from(files)) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
-          "/api/telegram/image",
-          formData
-        );
-        setImages((prev) => [...prev, { telegram_file_id: result.telegram_file_id, image_url: result.image_url }]);
-      }
-    } catch (uploadError) {
-      showToast("error", uploadError instanceof ApiError ? uploadError.message : "Image upload failed.");
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
+    const drafts = Array.from(files).map((file) => ({
+      telegram_file_id: null,
+      image_url: URL.createObjectURL(file),
+      file,
+    }));
+    setImages((prev) => [...prev, ...drafts]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function moveImage(index: number, direction: -1 | 1) {
@@ -96,7 +95,30 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
   }
 
   function removeImage(index: number) {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => {
+      const target = prev[index];
+      if (target.file) URL.revokeObjectURL(target.image_url);
+      return prev.filter((_, i) => i !== index);
+    });
+  }
+
+  async function uploadPendingImages(): Promise<ImageDraft[]> {
+    const resolved: ImageDraft[] = [];
+    for (const image of images) {
+      if (!image.file) {
+        resolved.push({ telegram_file_id: image.telegram_file_id, image_url: image.image_url });
+        continue;
+      }
+      const formData = new FormData();
+      formData.append("file", image.file);
+      const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
+        "/api/telegram/image",
+        formData
+      );
+      URL.revokeObjectURL(image.image_url);
+      resolved.push({ telegram_file_id: result.telegram_file_id, image_url: result.image_url });
+    }
+    return resolved;
   }
 
   function addCustomSpec() {
@@ -130,21 +152,25 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
 
     const cleanedSpecs = specs.filter((s) => s.label.trim() && s.value.trim());
 
-    const payload = {
-      name: name.trim(),
-      category,
-      price: priceNumber,
-      currency: "ETB",
-      condition,
-      description: description.trim(),
-      availability,
-      featured,
-      images,
-      specifications: cleanedSpecs,
-    };
-
     setIsSaving(true);
     try {
+      setIsUploading(true);
+      const uploadedImages = await uploadPendingImages();
+      setIsUploading(false);
+
+      const payload = {
+        name: name.trim(),
+        category,
+        price: priceNumber,
+        currency: "ETB",
+        condition,
+        description: description.trim(),
+        availability,
+        featured,
+        images: uploadedImages,
+        specifications: cleanedSpecs,
+      };
+
       const result = isEditing
         ? await apiPatch<{ product: Product; channelWarning: string | null }>(
             `/api/products/${product!.id}`,
@@ -156,6 +182,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
     } catch (submitError) {
       setError(submitError instanceof ApiError ? submitError.message : "Unable to save product.");
     } finally {
+      setIsUploading(false);
       setIsSaving(false);
     }
   }
@@ -272,10 +299,10 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
             type="button"
             className="admin-image-upload"
             onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
+            disabled={isSaving}
           >
             <ImagePlus size={20} />
-            {isUploading ? "Uploading..." : "Add Image"}
+            Add Image
           </button>
         </div>
         <input
@@ -286,7 +313,9 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           hidden
           onChange={(e) => handleFilesSelected(e.target.files)}
         />
-        <span className="admin-form__hint">Images are stored securely via Telegram — no external storage needed.</span>
+        <span className="admin-form__hint">
+          Images are uploaded and posted to Telegram only when you {isEditing ? "save" : "publish"} — not before.
+        </span>
       </div>
 
       <div className="admin-form__field">
@@ -363,7 +392,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           Cancel
         </Button>
         <Button surface="admin" variant="primary" block type="submit" loading={isSaving}>
-          {isEditing ? "Save Changes" : "Publish Product"}
+          {isUploading ? "Uploading Images..." : isEditing ? "Save Changes" : "Publish Product"}
         </Button>
       </div>
     </form>
