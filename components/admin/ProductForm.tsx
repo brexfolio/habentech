@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Plus, Trash2, ImagePlus, ArrowUp, ArrowDown, Star } from "lucide-react";
+import { Plus, Trash2, ImagePlus, ArrowUp, ArrowDown, Star, X } from "lucide-react";
 import {
   PRODUCT_CATEGORIES,
   PRODUCT_CONDITIONS,
@@ -11,6 +11,7 @@ import {
   type ProductCondition,
   type ProductAvailability,
 } from "@/types/product";
+import { getSuggestedSpecFields } from "@/lib/productSpecs";
 import { Input, Textarea } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
@@ -98,8 +99,12 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
     setImages((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function addSpec() {
+  function addCustomSpec() {
     setSpecs((prev) => [...prev, { label: "", value: "" }]);
+  }
+
+  function addPredefinedSpec(label: string) {
+    setSpecs((prev) => (prev.some((s) => s.label === label) ? prev : [...prev, { label, value: "" }]));
   }
 
   function updateSpec(index: number, field: "label" | "value", value: string) {
@@ -109,6 +114,11 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
   function removeSpec(index: number) {
     setSpecs((prev) => prev.filter((_, i) => i !== index));
   }
+
+  const suggestedSpecFields = getSuggestedSpecFields(category);
+  const suggestedSpecPills = suggestedSpecFields.filter(
+    (label) => !specs.some((s) => s.label === label)
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -281,35 +291,62 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
 
       <div className="admin-form__field">
         <span className="admin-form__label">Specifications</span>
-        {specs.map((spec, index) => (
-          <div className="admin-spec-row" key={index}>
-            <Input
-              surface="admin"
-              placeholder="Specification Name"
-              value={spec.label}
-              onChange={(e) => updateSpec(index, "label", e.target.value)}
-              aria-label="Specification name"
-            />
-            <Input
-              surface="admin"
-              placeholder="Specification Value"
-              value={spec.value}
-              onChange={(e) => updateSpec(index, "value", e.target.value)}
-              aria-label="Specification value"
-            />
-            <button
-              type="button"
-              className="admin-spec-remove"
-              onClick={() => removeSpec(index)}
-              aria-label="Remove specification"
-            >
-              <Trash2 size={15} />
-            </button>
+
+        {suggestedSpecPills.length > 0 && (
+          <div className="admin-spec-pills">
+            {suggestedSpecPills.map((label) => (
+              <button
+                key={label}
+                type="button"
+                className="admin-spec-pill"
+                onClick={() => addPredefinedSpec(label)}
+              >
+                <Plus size={14} />
+                {label}
+              </button>
+            ))}
           </div>
-        ))}
-        <button type="button" className="admin-add-row-btn" onClick={addSpec}>
+        )}
+
+        {specs.map((spec, index) => {
+          const isPredefined = suggestedSpecFields.includes(spec.label);
+          return (
+            <div className="admin-spec-entry" key={index}>
+              {isPredefined ? (
+                <span className="admin-spec-entry__label">{spec.label}</span>
+              ) : (
+                <Input
+                  surface="admin"
+                  className="admin-spec-entry__label-input"
+                  placeholder="Label"
+                  value={spec.label}
+                  onChange={(e) => updateSpec(index, "label", e.target.value)}
+                  aria-label="Specification name"
+                />
+              )}
+              <Input
+                surface="admin"
+                className="admin-spec-entry__value-input"
+                placeholder="Value"
+                value={spec.value}
+                onChange={(e) => updateSpec(index, "value", e.target.value)}
+                aria-label="Specification value"
+              />
+              <button
+                type="button"
+                className="admin-spec-entry__remove"
+                onClick={() => removeSpec(index)}
+                aria-label="Remove specification"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          );
+        })}
+
+        <button type="button" className="admin-add-row-btn" onClick={addCustomSpec}>
           <Plus size={16} />
-          Add Specification
+          Add Custom Specification
         </button>
       </div>
 

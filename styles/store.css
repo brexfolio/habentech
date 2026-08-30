@@ -117,6 +117,12 @@
   padding: 0 14px;
   height: 46px;
   box-shadow: var(--store-shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-bar:focus-within {
+  border-color: var(--store-primary);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.15);
 }
 
 .search-bar__icon {
@@ -135,8 +141,12 @@
   min-width: 0;
 }
 
+.search-bar__input:focus-visible {
+  outline: none;
+}
+
 .search-bar__input::placeholder {
-  color: var(--store-text-muted);
+  color: color-mix(in srgb, var(--store-text) 55%, var(--store-text-muted));
 }
 
 .search-bar__clear {

@@ -156,11 +156,49 @@ async function notifyLowStock(productName: string, quantity: number, minimumStoc
 }
 
 /**
+ * Marks a product "Sold" when it has no inventory record — e.g. a
+ * one-off used item that was never set up in Inventory. Respects the
+ * same manual-override rule as `syncProductAvailability`: a product
+ * the admin explicitly set to "Unavailable" is left alone.
+ */
+async function markUntrackedProductSold(productId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: product } = await supabase
+    .from("products")
+    .select("id, availability")
+    .eq("id", productId)
+    .single();
+
+  if (!product || product.availability === "Unavailable" || product.availability === "Sold") return;
+
+  await supabase.from("products").update({ availability: "Sold" }).eq("id", productId);
+}
+
+/**
+ * Reverses `markUntrackedProductSold` when a completed order is
+ * reversed — only reverts if the product is still "Sold" (an admin
+ * may have since changed it to something else deliberately).
+ */
+async function revertUntrackedProductSold(productId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: product } = await supabase
+    .from("products")
+    .select("id, availability")
+    .eq("id", productId)
+    .single();
+
+  if (!product || product.availability !== "Sold") return;
+
+  await supabase.from("products").update({ availability: "Available" }).eq("id", productId);
+}
+
+/**
  * Reduces stock for a completed order — idempotent: if a "Sale"
  * transaction already exists for this order (e.g. the admin PATCHes
  * the same order to "Completed" twice), it does nothing the second
- * time. Silently no-ops if the product has no inventory record,
- * since inventory tracking is opt-in per product.
+ * time. If the product has no inventory record (inventory tracking
+ * is opt-in per product), it's marked "Sold" directly instead of
+ * silently leaving it "Available" forever.
  */
 export async function reduceInventoryForCompletedOrder(
   orderId: string,
@@ -171,7 +209,10 @@ export async function reduceInventoryForCompletedOrder(
   const supabase = getSupabaseAdmin();
 
   const inventory = await getInventoryByProduct(productId);
-  if (!inventory) return;
+  if (!inventory) {
+    await markUntrackedProductSold(productId);
+    return;
+  }
 
   const { data: existing } = await supabase
     .from("inventory_transactions")
@@ -211,7 +252,10 @@ export async function restoreInventoryForReversedOrder(
   const supabase = getSupabaseAdmin();
 
   const inventory = await getInventoryByProduct(productId);
-  if (!inventory) return;
+  if (!inventory) {
+    await revertUntrackedProductSold(productId);
+    return;
+  }
 
   const { data: saleTransaction } = await supabase
     .from("inventory_transactions")
