@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Heart, ClipboardList } from "lucide-react";
-import HandshakeIcon from "./icons/HandshakeIcon";
+import HomeIcon from "./icons/HomeIcon";
+import SellIcon from "./icons/SellIcon";
+import FavoritesIcon from "./icons/FavoritesIcon";
+import OrdersIcon from "./icons/OrdersIcon";
 
 const ITEMS = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/sell-device", label: "Sell", icon: HandshakeIcon },
-  { href: "/favorites", label: "Favorites", icon: Heart },
-  { href: "/orders", label: "Orders", icon: ClipboardList },
+  { href: "/", label: "Home", icon: HomeIcon },
+  { href: "/sell-device", label: "Sell", icon: SellIcon },
+  { href: "/favorites", label: "Favorites", icon: FavoritesIcon },
+  { href: "/orders", label: "Orders", icon: OrdersIcon },
 ];
 
 export default function BottomNavigation() {
