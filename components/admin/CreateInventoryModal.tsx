@@ -95,7 +95,7 @@ export default function CreateInventoryModal({
             surface="admin"
             label="Product"
             value={productId}
-            onChange={(e) => setProductId(e.target.value)}
+            onChange={(value) => setProductId(value)}
             options={products.map((p) => ({ value: p.id, label: p.name }))}
           />
           <div className="admin-form__row">

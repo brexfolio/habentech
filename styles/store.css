@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   background: var(--store-bg);
-  padding-bottom: 84px;
+  padding-bottom: 100px;
 }
 
 .store-container {
@@ -111,16 +111,16 @@
   display: flex;
   align-items: center;
   margin: 0 16px 14px;
-  background: var(--store-surface);
-  border: 1px solid var(--store-border);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: var(--store-radius-md);
   padding: 0 14px;
   height: 46px;
-  box-shadow: var(--store-shadow-sm);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .search-bar:focus-within {
+  background: var(--store-surface);
   border-color: var(--store-primary);
   box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.15);
 }
@@ -321,36 +321,47 @@
 /* ---------- Bottom navigation ---------- */
 .bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  left: 16px;
+  right: 16px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
   z-index: 30;
   display: flex;
-  justify-content: space-around;
-  background: var(--store-surface);
-  border-top: 1px solid var(--store-border);
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: #17181c;
+  border-radius: 999px;
+  padding: 6px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
 }
 
 .bottom-nav__item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 4px 14px;
-  color: var(--store-text-muted);
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.62);
   background: none;
-  border: none;
-  min-width: 56px;
+  transition: background 0.15s ease, color 0.15s ease, width 0.2s ease, padding 0.2s ease;
 }
 
 .bottom-nav__item--active {
-  color: var(--store-primary);
+  width: auto;
+  padding: 0 18px 0 14px;
+  background: #ffffff;
+  color: #17181c;
 }
 
 .bottom-nav__label {
-  font-size: 10.5px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .bottom-nav__badge {
@@ -705,10 +716,16 @@
 
 /* ---------- Sell Device multi-step form ---------- */
 .sell-form {
-  padding: 0 16px 100px;
+  padding: 0 16px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.form-inline-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .step-header {

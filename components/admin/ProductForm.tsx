@@ -176,14 +176,14 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           surface="admin"
           label="Category"
           value={category}
-          onChange={(e) => setCategory(e.target.value as ProductCategory)}
+          onChange={(value) => setCategory(value as ProductCategory)}
           options={PRODUCT_CATEGORIES.map((c) => ({ value: c, label: c }))}
         />
         <Select
           surface="admin"
           label="Condition"
           value={condition}
-          onChange={(e) => setCondition(e.target.value as ProductCondition)}
+          onChange={(value) => setCondition(value as ProductCondition)}
           options={PRODUCT_CONDITIONS.map((c) => ({ value: c, label: c }))}
         />
       </div>
@@ -204,7 +204,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           surface="admin"
           label="Availability"
           value={availability}
-          onChange={(e) => setAvailability(e.target.value as ProductAvailability)}
+          onChange={(value) => setAvailability(value as ProductAvailability)}
           options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: a }))}
         />
       </div>

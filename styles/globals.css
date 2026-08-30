@@ -28,6 +28,7 @@ a {
 
 button {
   font-family: inherit;
+  color: inherit;
 }
 
 input,
@@ -338,6 +339,101 @@ select {
 .select--admin:focus,
 .textarea--admin:focus {
   border-color: var(--admin-primary);
+}
+
+/* ---------- Select (bottom-sheet dropdown) ---------- */
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14.5px;
+  font-family: inherit;
+}
+
+.select-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.select-trigger__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-trigger__placeholder {
+  color: var(--store-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-trigger--admin .select-trigger__placeholder {
+  color: var(--admin-text-muted);
+}
+
+.select-trigger__chevron {
+  flex-shrink: 0;
+  color: var(--store-text-muted);
+  transition: transform 0.15s ease;
+}
+
+.select-trigger--admin .select-trigger__chevron {
+  color: var(--admin-text-muted);
+}
+
+.select-trigger[aria-expanded="true"] .select-trigger__chevron {
+  transform: rotate(180deg);
+}
+
+.select-sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.select-sheet-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--store-radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--store-text);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: left;
+}
+
+.select-sheet-option:active {
+  background: var(--store-surface-alt);
+}
+
+.select-sheet-option--active {
+  color: var(--store-primary);
+  background: rgba(47, 107, 255, 0.08);
+}
+
+.select-sheet-option--admin {
+  color: var(--admin-text);
+}
+
+.select-sheet-option--admin:active {
+  background: var(--admin-surface-alt);
+}
+
+.select-sheet-option--admin.select-sheet-option--active {
+  color: var(--admin-primary);
+  background: var(--admin-primary-soft);
 }
 
 .quantity-stepper {

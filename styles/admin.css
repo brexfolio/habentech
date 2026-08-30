@@ -241,6 +241,11 @@
 }
 
 .admin-list-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  color: var(--admin-text);
+  font-family: inherit;
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-md);
@@ -265,6 +270,7 @@
 .admin-list-item__title {
   font-size: 14.5px;
   font-weight: 700;
+  color: var(--admin-text);
   margin: 0;
 }
 

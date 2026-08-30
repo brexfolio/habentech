@@ -154,7 +154,7 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
             surface="admin"
             label="Reason"
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(value) => setReason(value)}
             options={REMOVE_STOCK_REASONS.map((r) => ({ value: r, label: r }))}
           />
         </>

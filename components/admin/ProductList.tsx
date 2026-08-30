@@ -166,7 +166,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                 surface="admin"
                 aria-label="Update availability"
                 value={product.availability}
-                onChange={(e) => handleAvailabilityChange(product, e.target.value as ProductAvailability)}
+                onChange={(value) => handleAvailabilityChange(product, value as ProductAvailability)}
                 options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: a }))}
               />
             ) : mode === "featured" ? (

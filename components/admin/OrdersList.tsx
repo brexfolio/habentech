@@ -87,7 +87,7 @@ export default function OrdersList() {
             surface="admin"
             aria-label="Update order status"
             value={order.status}
-            onChange={(e) => updateStatus(order.id, e.target.value as OrderStatus)}
+            onChange={(value) => updateStatus(order.id, value as OrderStatus)}
             options={ORDER_STATUSES.map((status) => ({ value: status, label: status }))}
           />
         </div>

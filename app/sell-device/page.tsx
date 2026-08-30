@@ -558,24 +558,26 @@ export default function SellDevicePage() {
             </div>
           </>
         )}
+
+        <div className="form-inline-actions">
+          <Button variant="secondary" block onClick={goBack} disabled={isSubmitting}>
+            <ArrowLeft size={16} />
+            Back
+          </Button>
+          {reviewing ? (
+            <Button variant="primary" block loading={isSubmitting} onClick={handleSubmit}>
+              Submit Device for Review
+            </Button>
+          ) : (
+            <Button variant="primary" block onClick={goNext}>
+              Next
+              <ArrowRight size={16} />
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="form-footer-bar">
-        <Button variant="secondary" block onClick={goBack} disabled={isSubmitting}>
-          <ArrowLeft size={16} />
-          Back
-        </Button>
-        {reviewing ? (
-          <Button variant="primary" block loading={isSubmitting} onClick={handleSubmit}>
-            Submit Device for Review
-          </Button>
-        ) : (
-          <Button variant="primary" block onClick={goNext}>
-            Next
-            <ArrowRight size={16} />
-          </Button>
-        )}
-      </div>
+      <BottomNavigation />
     </div>
   );
 }

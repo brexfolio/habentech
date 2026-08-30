@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/scrollLock";
 
 interface ModalProps {
   isOpen: boolean;
@@ -26,10 +27,10 @@ export default function Modal({
       if (event.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      unlockBodyScroll();
     };
   }, [isOpen, onClose]);
 
