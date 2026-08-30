@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { editTelegramMessageText, answerCallbackQuery } from "@/lib/telegramBot";
+import { editTelegramMessageText, answerCallbackQuery, setTelegramChatMenuButton } from "@/lib/telegramBot";
 import { reduceInventoryForCompletedOrder, restoreInventoryForReversedOrder } from "@/lib/inventoryService";
 
 interface TelegramUpdate {
@@ -90,6 +90,17 @@ async function handleMessage(message: NonNullable<TelegramUpdate["message"]>) {
     if (isAdmin) {
       row.push({ text: "🏬 My Store", web_app: { url: `${appUrl}/admin` } });
     }
+
+    // Customers get a persistent "Shop Now" button; the admin keeps the
+    // ☰ commands menu (Open Store / My Store). A web_app menu button can
+    // only be pinned per-chat via the Bot API — it isn't honored as the
+    // global default — so this self-heals it on every /start.
+    await setTelegramChatMenuButton(
+      isAdmin
+        ? { type: "commands" }
+        : { type: "web_app", text: "Shop Now", web_app: { url: appUrl } },
+      message.chat.id
+    ).catch(() => {});
 
     await sendTelegramMessageWithWebApp(
       message.chat.id,

@@ -180,6 +180,16 @@ export async function setTelegramMyCommands(
   await callTelegramApi("setMyCommands", { commands, scope });
 }
 
-export async function setTelegramChatMenuButtonToCommands(): Promise<void> {
-  await callTelegramApi("setChatMenuButton", { menu_button: { type: "commands" } });
+export type ChatMenuButton =
+  | { type: "commands" }
+  | { type: "web_app"; text: string; web_app: { url: string } };
+
+export async function setTelegramChatMenuButton(
+  menuButton: ChatMenuButton,
+  chatId?: string | number
+): Promise<void> {
+  await callTelegramApi("setChatMenuButton", {
+    menu_button: menuButton,
+    ...(chatId !== undefined ? { chat_id: chatId } : {}),
+  });
 }
