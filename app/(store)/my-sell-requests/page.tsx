@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Smartphone, ArrowLeft } from "lucide-react";
 import Header from "@/components/store/Header";
-import BottomNavigation from "@/components/store/BottomNavigation";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import { LoadingPage } from "@/components/ui/Loading";
@@ -125,8 +124,6 @@ export default function MySellRequestsPage() {
           );
         })
       )}
-
-      <BottomNavigation />
     </div>
   );
 }

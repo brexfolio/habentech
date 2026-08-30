@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { PackageX } from "lucide-react";
 import Header from "@/components/store/Header";
-import BottomNavigation from "@/components/store/BottomNavigation";
 import EmptyState from "@/components/ui/EmptyState";
 import { LoadingPage } from "@/components/ui/Loading";
 import { apiGet } from "@/lib/apiClient";
@@ -53,8 +52,6 @@ export default function OrdersPage() {
           </div>
         ))
       )}
-
-      <BottomNavigation />
     </div>
   );
 }

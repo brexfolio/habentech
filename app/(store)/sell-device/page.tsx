@@ -24,7 +24,6 @@ import {
 } from "@/types/sellRequest";
 import { CATEGORY_SPEC_FIELDS, hasPredefinedSpecs } from "@/lib/sellDeviceSpecs";
 import Header from "@/components/store/Header";
-import BottomNavigation from "@/components/store/BottomNavigation";
 import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
@@ -240,7 +239,6 @@ export default function SellDevicePage() {
             </Button>
           </div>
         </div>
-        <BottomNavigation />
       </div>
     );
   }
@@ -576,8 +574,6 @@ export default function SellDevicePage() {
           )}
         </div>
       </div>
-
-      <BottomNavigation />
     </div>
   );
 }

@@ -5,7 +5,6 @@ import Header from "@/components/store/Header";
 import SearchBar from "@/components/store/SearchBar";
 import CategoryFilter from "@/components/store/CategoryFilter";
 import ProductGrid from "@/components/store/ProductGrid";
-import BottomNavigation from "@/components/store/BottomNavigation";
 import { ProductGridSkeleton } from "@/components/ui/Loading";
 import { apiGet } from "@/lib/apiClient";
 import type { Product } from "@/types/product";
@@ -50,8 +49,6 @@ export default function HomePage() {
       <CategoryFilter selected={category} onSelect={setCategory} />
 
       {isLoading ? <ProductGridSkeleton /> : <ProductGrid products={products} />}
-
-      <BottomNavigation />
     </div>
   );
 }

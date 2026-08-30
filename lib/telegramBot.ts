@@ -162,3 +162,24 @@ export async function setTelegramWebhook(url: string, secretToken: string): Prom
     allowed_updates: ["message", "callback_query"],
   });
 }
+
+export interface BotCommand {
+  command: string;
+  description: string;
+}
+
+export type BotCommandScope =
+  | { type: "default" }
+  | { type: "all_private_chats" }
+  | { type: "chat"; chat_id: string | number };
+
+export async function setTelegramMyCommands(
+  commands: BotCommand[],
+  scope: BotCommandScope
+): Promise<void> {
+  await callTelegramApi("setMyCommands", { commands, scope });
+}
+
+export async function setTelegramChatMenuButtonToCommands(): Promise<void> {
+  await callTelegramApi("setChatMenuButton", { menu_button: { type: "commands" } });
+}

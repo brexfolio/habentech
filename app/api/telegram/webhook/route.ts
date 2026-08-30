@@ -74,29 +74,45 @@ export async function POST(request: Request) {
 
 async function handleMessage(message: NonNullable<TelegramUpdate["message"]>) {
   const text = message.text?.trim() ?? "";
-  if (!text.startsWith("/start")) return;
-
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const isAdmin = String(message.from.id) === process.env.ADMIN_TELEGRAM_ID;
-  const payload = text.slice("/start".length).trim();
-
-  let storeUrl = appUrl;
-  if (payload.startsWith("product_")) {
-    const productId = payload.replace("product_", "");
-    storeUrl = `${appUrl}/products/${productId}`;
-  }
-
-  const buttons = [[{ text: "🛍 Open Store", web_app: { url: storeUrl } }]];
-  if (isAdmin) {
-    buttons.push([{ text: "⚙️ Open Admin Dashboard", web_app: { url: `${appUrl}/admin` } }]);
-  }
-
   const name = message.from.first_name ? `, ${message.from.first_name}` : "";
-  await sendTelegramMessageWithWebApp(
-    message.chat.id,
-    `👋 Welcome${name}! Browse the latest electronics or manage your store below.`,
-    buttons
-  );
+
+  if (text.startsWith("/start")) {
+    const payload = text.slice("/start".length).trim();
+    let storeUrl = appUrl;
+    if (payload.startsWith("product_")) {
+      const productId = payload.replace("product_", "");
+      storeUrl = `${appUrl}/products/${productId}`;
+    }
+
+    const row = [{ text: "🛒 Open Store", web_app: { url: storeUrl } }];
+    if (isAdmin) {
+      row.push({ text: "🏬 My Store", web_app: { url: `${appUrl}/admin` } });
+    }
+
+    await sendTelegramMessageWithWebApp(
+      message.chat.id,
+      `👋 Welcome${name}! Browse the latest electronics or manage your store below.`,
+      [row]
+    );
+    return;
+  }
+
+  if (text.startsWith("/store")) {
+    await sendTelegramMessageWithWebApp(message.chat.id, "🛒 Tap below to browse the store.", [
+      [{ text: "🛒 Open Store", web_app: { url: appUrl } }],
+    ]);
+    return;
+  }
+
+  if (text.startsWith("/mystore")) {
+    if (!isAdmin) return;
+    await sendTelegramMessageWithWebApp(message.chat.id, "🏬 Tap below to manage your store.", [
+      [{ text: "🏬 My Store", web_app: { url: `${appUrl}/admin` } }],
+    ]);
+    return;
+  }
 }
 
 async function sendTelegramMessageWithWebApp(

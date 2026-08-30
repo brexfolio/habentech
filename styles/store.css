@@ -337,7 +337,22 @@
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
 }
 
+.bottom-nav__indicator {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  height: 46px;
+  width: 46px;
+  border-radius: 999px;
+  background: #ffffff;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform, width;
+}
+
 .bottom-nav__item {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -348,37 +363,30 @@
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.62);
   background: none;
-  transition: background 0.15s ease, color 0.15s ease, width 0.2s ease, padding 0.2s ease;
 }
 
 .bottom-nav__item--active {
   width: auto;
   padding: 0 18px 0 14px;
-  background: #ffffff;
   color: #17181c;
-  transform-origin: center;
-  animation: bottomNavPop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes bottomNavPop {
-  0% {
-    transform: scale(0.82);
-  }
-  55% {
-    transform: scale(1.12);
-  }
-  80% {
-    transform: scale(0.96);
-  }
-  100% {
-    transform: scale(1);
-  }
+  transition: color 0.15s ease 0.32s;
 }
 
 .bottom-nav__label {
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
+  opacity: 0;
+  animation: bottomNavLabelIn 0.15s ease 0.32s forwards;
+}
+
+@keyframes bottomNavLabelIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .bottom-nav__badge {

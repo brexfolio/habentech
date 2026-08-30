@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { HeartOff } from "lucide-react";
 import Header from "@/components/store/Header";
 import ProductGrid from "@/components/store/ProductGrid";
-import BottomNavigation from "@/components/store/BottomNavigation";
 import { ProductGridSkeleton } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import { apiGet } from "@/lib/apiClient";
@@ -42,8 +41,6 @@ export default function FavoritesPage() {
       ) : (
         <ProductGrid products={products} />
       )}
-
-      <BottomNavigation />
     </div>
   );
 }
