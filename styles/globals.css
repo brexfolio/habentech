@@ -423,6 +423,17 @@ select {
   background: rgba(47, 107, 255, 0.08);
 }
 
+.select-sheet-option__code {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--store-text-muted);
+}
+
+.select-sheet-option--active .select-sheet-option__code {
+  color: var(--store-primary);
+}
+
 .select-sheet-option--admin {
   color: var(--admin-text);
 }

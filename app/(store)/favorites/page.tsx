@@ -8,9 +8,11 @@ import { ProductGridSkeleton } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import { apiGet } from "@/lib/apiClient";
 import { useFavorites } from "@/lib/useFavorites";
+import { useLanguage } from "@/lib/i18n";
 import type { Product } from "@/types/product";
 
 export default function FavoritesPage() {
+  const { t } = useLanguage();
   const { favorites, isLoaded } = useFavorites();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function FavoritesPage() {
     <div className="store-shell">
       <Header />
       <div className="page-header">
-        <h1 className="page-header__title">Favorites</h1>
+        <h1 className="page-header__title">{t("favorites.title")}</h1>
       </div>
 
       {isLoading ? (
@@ -35,8 +37,8 @@ export default function FavoritesPage() {
       ) : products.length === 0 ? (
         <EmptyState
           icon={<HeartOff size={26} />}
-          title="No favorites yet."
-          description="Tap the heart icon on any product to save it here."
+          title={t("favorites.emptyTitle")}
+          description={t("favorites.emptyDescription")}
         />
       ) : (
         <ProductGrid products={products} />

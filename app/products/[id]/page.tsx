@@ -18,9 +18,9 @@ import { formatPrice } from "@/lib/utils";
 import { apiGet, apiPost, ApiError } from "@/lib/apiClient";
 import { useFavorites } from "@/lib/useFavorites";
 import { useTelegramUser } from "@/lib/useTelegramUser";
-import { getCustomerDisplayName } from "@/lib/utils";
 import { hapticNotification } from "@/lib/telegram";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { LoadingPage } from "@/components/ui/Loading";
@@ -40,6 +40,7 @@ export default function ProductDetailPage() {
   const { showToast } = useToast();
   const { user } = useTelegramUser();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { t, tv } = useLanguage();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,11 +66,11 @@ export default function ProductDetailPage() {
       <div className="store-shell">
         <EmptyState
           icon={<ImageOff size={26} />}
-          title="Product not found."
-          description="This product may have been removed or is no longer available."
+          title={t("product.notFoundTitle")}
+          description={t("product.notFoundDescription")}
           action={
             <Button onClick={() => router.push("/")} style={{ marginTop: 12 }}>
-              Back to store
+              {t("product.backToStore")}
             </Button>
           }
         />
@@ -95,11 +96,11 @@ export default function ProductDetailPage() {
     try {
       await apiPost(`/api/requests`, { product_id: product!.id });
       hapticNotification("success");
-      showToast("success", "Request sent successfully!");
+      showToast("success", t("product.requestSent"));
       setShowRequestModal(false);
     } catch (error) {
       hapticNotification("error");
-      showToast("error", error instanceof ApiError ? error.message : "Unable to send request.");
+      showToast("error", error instanceof ApiError ? error.message : t("product.unableToSendRequest"));
     } finally {
       setIsSubmitting(false);
     }
@@ -110,12 +111,12 @@ export default function ProductDetailPage() {
     try {
       await apiPost(`/api/orders`, { product_id: product!.id, quantity });
       hapticNotification("success");
-      showToast("success", "Order placed successfully!");
+      showToast("success", t("product.orderPlaced"));
       setShowOrderModal(false);
       setQuantity(1);
     } catch (error) {
       hapticNotification("error");
-      showToast("error", error instanceof ApiError ? error.message : "Unable to place order.");
+      showToast("error", error instanceof ApiError ? error.message : t("product.unableToPlaceOrder"));
     } finally {
       setIsSubmitting(false);
     }
@@ -125,14 +126,14 @@ export default function ProductDetailPage() {
     <div className="product-detail">
       <div className="product-gallery">
         <div className="product-detail__topbar">
-          <button type="button" className="product-detail__icon-btn" onClick={() => router.back()} aria-label="Go back">
+          <button type="button" className="product-detail__icon-btn" onClick={() => router.back()} aria-label={t("product.goBack")}>
             <ArrowLeft size={18} />
           </button>
           <button
             type="button"
             className="product-detail__icon-btn"
             onClick={() => toggleFavorite(product.id)}
-            aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={favorite ? t("favorites.remove") : t("favorites.add")}
             aria-pressed={favorite}
             style={favorite ? { color: "#ff5470" } : undefined}
           >
@@ -163,7 +164,7 @@ export default function ProductDetailPage() {
                   type="button"
                   className="product-gallery__nav-btn product-gallery__nav-btn--prev"
                   onClick={() => scrollToImage(activeImage - 1)}
-                  aria-label="Previous image"
+                  aria-label={t("product.previousImage")}
                   disabled={activeImage === 0}
                 >
                   <ChevronLeft size={18} />
@@ -172,7 +173,7 @@ export default function ProductDetailPage() {
                   type="button"
                   className="product-gallery__nav-btn product-gallery__nav-btn--next"
                   onClick={() => scrollToImage(activeImage + 1)}
-                  aria-label="Next image"
+                  aria-label={t("product.nextImage")}
                   disabled={activeImage === images.length - 1}
                 >
                   <ChevronRight size={18} />
@@ -186,7 +187,7 @@ export default function ProductDetailPage() {
                         index === activeImage ? "product-gallery__dot--active" : ""
                       }`}
                       onClick={() => scrollToImage(index)}
-                      aria-label={`Go to image ${index + 1}`}
+                      aria-label={t("product.goToImage", { index: index + 1 })}
                     />
                   ))}
                 </div>
@@ -210,29 +211,29 @@ export default function ProductDetailPage() {
       </div>
 
       <div className="product-detail__info">
-        <p className="product-detail__category">{product.category}</p>
+        <p className="product-detail__category">{tv("productCategory", product.category)}</p>
         <h1 className="product-detail__title">{product.name}</h1>
         <div className="product-detail__price-row">
           <span className="product-detail__price">{formatPrice(product.price, product.currency)}</span>
           <span className={`status-pill ${BADGE_CLASS[product.availability] ?? ""}`}>
-            {product.availability}
+            {tv("availability", product.availability)}
           </span>
         </div>
 
         <div className="product-detail__meta-grid">
           <div className="product-detail__meta-item">
-            <p className="product-detail__meta-label">Condition</p>
-            <p className="product-detail__meta-value">{product.condition}</p>
+            <p className="product-detail__meta-label">{t("product.condition")}</p>
+            <p className="product-detail__meta-value">{tv("condition", product.condition)}</p>
           </div>
           <div className="product-detail__meta-item">
-            <p className="product-detail__meta-label">Category</p>
-            <p className="product-detail__meta-value">{product.category}</p>
+            <p className="product-detail__meta-label">{t("product.category")}</p>
+            <p className="product-detail__meta-value">{tv("productCategory", product.category)}</p>
           </div>
         </div>
 
         {specs.length > 0 && (
           <>
-            <h2 className="product-detail__section-title">Specifications</h2>
+            <h2 className="product-detail__section-title">{t("product.specifications")}</h2>
             <div className="spec-table">
               {specs.map((spec) => (
                 <div key={spec.id} className="spec-table__row">
@@ -246,7 +247,7 @@ export default function ProductDetailPage() {
 
         {product.description && (
           <>
-            <h2 className="product-detail__section-title">Description</h2>
+            <h2 className="product-detail__section-title">{t("product.description")}</h2>
             <p className="product-detail__description">{product.description}</p>
           </>
         )}
@@ -260,68 +261,72 @@ export default function ProductDetailPage() {
           onClick={() => setShowRequestModal(true)}
         >
           <MessageSquareText size={17} />
-          Request Product
+          {t("product.requestProduct")}
         </Button>
         <Button variant="primary" block disabled={!isOrderable} onClick={() => setShowOrderModal(true)}>
           <ShoppingCart size={17} />
-          Order Now
+          {t("product.orderNow")}
         </Button>
       </div>
 
       <Modal
         isOpen={showRequestModal}
         onClose={() => setShowRequestModal(false)}
-        title="Confirm Request"
+        title={t("product.confirmRequest")}
         footer={
           <>
             <Button variant="secondary" block onClick={() => setShowRequestModal(false)}>
-              Cancel
+              {t("product.cancel")}
             </Button>
             <Button variant="primary" block loading={isSubmitting} onClick={submitRequest}>
-              Send Request
+              {t("product.sendRequest")}
             </Button>
           </>
         }
       >
         <div className="modal__summary-row">
-          <span>Product</span>
+          <span>{t("product.product")}</span>
           <strong>{product.name}</strong>
         </div>
         <div className="modal__summary-row">
-          <span>Price</span>
+          <span>{t("product.price")}</span>
           <strong>{formatPrice(product.price, product.currency)}</strong>
         </div>
         <div className="modal__summary-row">
-          <span>Your name</span>
-          <strong>{user ? getCustomerDisplayName(user) : "Telegram User"}</strong>
+          <span>{t("product.yourName")}</span>
+          <strong>
+            {user
+              ? [user.first_name, user.last_name].filter(Boolean).join(" ") || t("home.telegramUser")
+              : t("home.telegramUser")}
+          </strong>
         </div>
       </Modal>
 
       <Modal
         isOpen={showOrderModal}
         onClose={() => setShowOrderModal(false)}
-        title="Confirm Order"
+        title={t("product.confirmOrder")}
         footer={
           <>
             <Button variant="secondary" block onClick={() => setShowOrderModal(false)}>
-              Cancel
+              {t("product.cancel")}
             </Button>
             <Button variant="primary" block loading={isSubmitting} onClick={submitOrder}>
-              Confirm Order
+              {t("product.confirmOrderButton")}
             </Button>
           </>
         }
       >
         <div className="modal__summary-row">
-          <span>Product</span>
+          <span>{t("product.product")}</span>
           <strong>{product.name}</strong>
         </div>
         <div className="modal__summary-row">
-          <span>Price</span>
+          <span>{t("product.price")}</span>
           <strong>{formatPrice(product.price, product.currency)}</strong>
         </div>
         <div className="modal__summary-row">
-          <span>Quantity</span>
+          <span>{t("product.quantity")}</span>
           <div className="quantity-stepper">
             <button
               type="button"
@@ -343,7 +348,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
         <div className="modal__summary-row modal__summary-row--total">
-          <span>Total</span>
+          <span>{t("product.total")}</span>
           <strong>{formatPrice(product.price * quantity, product.currency)}</strong>
         </div>
       </Modal>

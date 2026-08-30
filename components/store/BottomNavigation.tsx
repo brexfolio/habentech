@@ -7,12 +7,13 @@ import HomeIcon from "./icons/HomeIcon";
 import SellIcon from "./icons/SellIcon";
 import FavoritesIcon from "./icons/FavoritesIcon";
 import OrdersIcon from "./icons/OrdersIcon";
+import { useLanguage } from "@/lib/i18n";
 
 const ITEMS = [
-  { href: "/", label: "Home", icon: HomeIcon },
-  { href: "/sell-device", label: "Sell", icon: SellIcon },
-  { href: "/favorites", label: "Favorites", icon: FavoritesIcon },
-  { href: "/orders", label: "Orders", icon: OrdersIcon },
+  { href: "/", key: "home", icon: HomeIcon },
+  { href: "/sell-device", key: "sell", icon: SellIcon },
+  { href: "/favorites", key: "favorites", icon: FavoritesIcon },
+  { href: "/orders", key: "orders", icon: OrdersIcon },
 ];
 
 const STRETCH_MS = 160;
@@ -23,6 +24,7 @@ const CONTRACT_TRANSITION =
 
 export default function BottomNavigation() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const activeIndex = ITEMS.findIndex((item) => item.href === pathname);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
@@ -83,7 +85,8 @@ export default function BottomNavigation() {
   return (
     <nav className="bottom-nav" aria-label="Primary">
       <div ref={indicatorRef} className="bottom-nav__indicator" aria-hidden="true" />
-      {ITEMS.map(({ href, label, icon: Icon }, index) => {
+      {ITEMS.map(({ href, key, icon: Icon }, index) => {
+        const label = t(`nav.${key}`);
         const active = index === activeIndex;
         return (
           <Link

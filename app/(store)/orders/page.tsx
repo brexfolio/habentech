@@ -7,9 +7,11 @@ import EmptyState from "@/components/ui/EmptyState";
 import { LoadingPage } from "@/components/ui/Loading";
 import { apiGet } from "@/lib/apiClient";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import type { Order } from "@/types/order";
 
 export default function OrdersPage() {
+  const { t, tv } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,7 +26,7 @@ export default function OrdersPage() {
     <div className="store-shell">
       <Header />
       <div className="page-header">
-        <h1 className="page-header__title">My Orders</h1>
+        <h1 className="page-header__title">{t("orders.title")}</h1>
       </div>
 
       {isLoading ? (
@@ -32,21 +34,21 @@ export default function OrdersPage() {
       ) : orders.length === 0 ? (
         <EmptyState
           icon={<PackageX size={26} />}
-          title="No orders yet."
-          description="Orders you place will show up here so you can track their status."
+          title={t("orders.emptyTitle")}
+          description={t("orders.emptyDescription")}
         />
       ) : (
         orders.map((order) => (
           <div key={order.id} className="order-card">
             <div className="order-card__top">
-              <p className="order-card__name">{order.product?.name ?? "Product"}</p>
+              <p className="order-card__name">{order.product?.name ?? t("product.emptyName")}</p>
               <span className={`status-pill status-pill--${order.status.toLowerCase()}`}>
-                {order.status}
+                {tv("orderStatus", order.status)}
               </span>
             </div>
-            <p className="order-card__meta">Quantity: {order.quantity}</p>
+            <p className="order-card__meta">{t("orders.quantityPrefix")} {order.quantity}</p>
             <p className="order-card__meta">
-              Total: {formatPrice(order.total_price, order.product?.currency ?? "ETB")}
+              {t("orders.totalPrefix")} {formatPrice(order.total_price, order.product?.currency ?? "ETB")}
             </p>
             <p className="order-card__meta">{formatDate(order.created_at)}</p>
           </div>

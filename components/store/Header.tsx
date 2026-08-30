@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { Zap, Heart } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useTelegramUser } from "@/lib/useTelegramUser";
+import { useLanguage } from "@/lib/i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Header({ storeName = "Habentech Electronics" }: { storeName?: string }) {
   const { user } = useTelegramUser();
+  const { t } = useLanguage();
 
   return (
     <header className="store-header">
@@ -16,13 +18,11 @@ export default function Header({ storeName = "Habentech Electronics" }: { storeN
         <div className="store-header__text">
           <p className="store-header__name">{storeName}</p>
           {user?.first_name && (
-            <p className="store-header__greeting">Hey, {user.first_name} 👋</p>
+            <p className="store-header__greeting">{t("header.greeting", { name: user.first_name })}</p>
           )}
         </div>
       </div>
-      <Link href="/favorites" className="store-header__favorite-btn" aria-label="View favorites">
-        <Heart size={19} />
-      </Link>
+      <LanguageSwitcher />
     </header>
   );
 }

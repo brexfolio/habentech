@@ -6,10 +6,11 @@ import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/utils";
 import { useFavorites } from "@/lib/useFavorites";
 import { hapticImpact } from "@/lib/telegram";
+import { useLanguage } from "@/lib/i18n";
 
-function buildSpecLine(product: Product): string {
+function buildSpecLine(product: Product, tv: (prefix: string, value: string) => string): string {
   const specs = product.specifications ?? [];
-  if (specs.length === 0) return product.category;
+  if (specs.length === 0) return tv("productCategory", product.category);
   return specs
     .slice(0, 2)
     .map((spec) => spec.value)
@@ -26,6 +27,7 @@ const BADGE_CLASS: Record<string, string> = {
 
 export default function ProductCard({ product }: { product: Product }) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { t, tv } = useLanguage();
   const image = product.images?.[0];
   const favorite = isFavorite(product.id);
 
@@ -40,7 +42,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         <span className={`product-card__badge ${BADGE_CLASS[product.availability] ?? ""}`}>
-          {product.availability}
+          {tv("availability", product.availability)}
         </span>
         <button
           type="button"
@@ -51,7 +53,7 @@ export default function ProductCard({ product }: { product: Product }) {
             hapticImpact("light");
             toggleFavorite(product.id);
           }}
-          aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+          aria-label={favorite ? t("favorites.remove") : t("favorites.add")}
           aria-pressed={favorite}
         >
           <Heart size={15} fill={favorite ? "currentColor" : "none"} />
@@ -59,7 +61,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="product-card__body">
         <p className="product-card__name">{product.name}</p>
-        <p className="product-card__spec">{buildSpecLine(product)}</p>
+        <p className="product-card__spec">{buildSpecLine(product, tv)}</p>
         <div className="product-card__footer">
           <span className="product-card__price">{formatPrice(product.price, product.currency)}</span>
         </div>

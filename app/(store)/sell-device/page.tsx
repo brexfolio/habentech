@@ -28,7 +28,8 @@ import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
 import { useTelegramUser } from "@/lib/useTelegramUser";
-import { getCustomerDisplayName, formatPrice } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import { apiPost, apiUpload, ApiError } from "@/lib/apiClient";
 
 interface ImageDraft {
@@ -43,19 +44,11 @@ interface SpecDraft {
 
 const TOTAL_STEPS = 6;
 
-const STEP_TITLES = [
-  "Device Information",
-  "Device Condition",
-  "Specifications",
-  "Expected Price",
-  "Device Photos",
-  "Your Information",
-];
-
 export default function SellDevicePage() {
   const router = useRouter();
   const { user } = useTelegramUser();
   const { showToast } = useToast();
+  const { t, tv } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(1);
@@ -123,7 +116,7 @@ export default function SellDevicePage() {
         setImages((prev) => [...prev, { telegram_file_id: result.telegram_file_id, image_url: result.image_url }]);
       }
     } catch (uploadError) {
-      showToast("error", uploadError instanceof ApiError ? uploadError.message : "Image upload failed.");
+      showToast("error", uploadError instanceof ApiError ? uploadError.message : t("sell.uploadFailed"));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -146,15 +139,15 @@ export default function SellDevicePage() {
 
   function validateStep(current: number): string | null {
     if (current === 1) {
-      if (!effectiveBrand) return "Brand is required.";
-      if (!model.trim()) return "Model name is required.";
+      if (!effectiveBrand) return t("sell.brandRequired");
+      if (!model.trim()) return t("sell.modelRequired");
     }
     if (current === 4) {
       const price = Number(expectedPrice);
-      if (!price || price <= 0) return "Expected price must be greater than zero.";
+      if (!price || price <= 0) return t("sell.priceRequired");
     }
     if (current === 5) {
-      if (images.length === 0) return "At least one device photo is required.";
+      if (images.length === 0) return t("sell.photoRequired");
     }
     return null;
   }
@@ -212,7 +205,7 @@ export default function SellDevicePage() {
       });
       setSubmitted(true);
     } catch (submitError) {
-      showToast("error", submitError instanceof ApiError ? submitError.message : "Unable to submit your device.");
+      showToast("error", submitError instanceof ApiError ? submitError.message : t("sell.submitFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -226,16 +219,16 @@ export default function SellDevicePage() {
           <div className="empty-state__icon" style={{ background: "var(--store-success-bg)", color: "var(--store-success)", width: 64, height: 64 }}>
             <CheckCircle2 size={30} />
           </div>
-          <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Device submitted!</h1>
+          <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>{t("sell.submittedTitle")}</h1>
           <p style={{ fontSize: 14, color: "var(--store-text-muted)", maxWidth: 300, lineHeight: 1.5 }}>
-            Your device has been submitted successfully. The store will review it and contact you soon.
+            {t("sell.submittedDescription")}
           </p>
           <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
             <Link href="/my-sell-requests">
-              <Button variant="secondary">My Submissions</Button>
+              <Button variant="secondary">{t("sell.mySubmissions")}</Button>
             </Link>
             <Button variant="primary" onClick={() => router.push("/")}>
-              Back to Store
+              {t("sell.backToStore")}
             </Button>
           </div>
         </div>
@@ -248,18 +241,22 @@ export default function SellDevicePage() {
       <Header />
 
       <div className="page-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h1 className="page-header__title">Sell Your Device</h1>
+        <h1 className="page-header__title">{t("sell.title")}</h1>
         <Link href="/my-sell-requests" style={{ fontSize: 12.5, fontWeight: 700, color: "var(--store-primary)", display: "flex", alignItems: "center", gap: 4 }}>
           <ClipboardList size={14} />
-          My Submissions
+          {t("sell.mySubmissions")}
         </Link>
       </div>
 
       <div className="step-header">
         <p className="step-header__eyebrow">
-          {reviewing ? "Review" : `Step ${step} of ${TOTAL_STEPS}`}
+          {reviewing
+            ? t("sell.review")
+            : t("sell.step", { step, total: TOTAL_STEPS })}
         </p>
-        <p className="step-header__title">{reviewing ? "Review & Submit" : STEP_TITLES[step - 1]}</p>
+        <p className="step-header__title">
+          {reviewing ? t("sell.reviewAndSubmit") : t(`sell.step${step}`)}
+        </p>
         <div className="step-progress">
           {Array.from({ length: TOTAL_STEPS }).map((_, index) => (
             <div className="step-progress__bar" key={index}>
@@ -278,7 +275,7 @@ export default function SellDevicePage() {
         {!reviewing && step === 1 && (
           <>
             <div className="field">
-              <span className="field__label">Device Category</span>
+              <span className="field__label">{t("sell.deviceCategory")}</span>
               <div className="option-grid">
                 {SELL_DEVICE_CATEGORIES.map((cat) => (
                   <button
@@ -287,14 +284,14 @@ export default function SellDevicePage() {
                     className={`option-card ${category === cat ? "option-card--active" : ""}`}
                     onClick={() => setCategory(cat)}
                   >
-                    {cat}
+                    {tv("sellCategory", cat)}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="field">
-              <span className="field__label">Brand</span>
+              <span className="field__label">{t("sell.brand")}</span>
               <div className="option-grid">
                 {DEVICE_BRANDS.map((b) => (
                   <button
@@ -303,13 +300,13 @@ export default function SellDevicePage() {
                     className={`option-card ${brand === b ? "option-card--active" : ""}`}
                     onClick={() => setBrand(b)}
                   >
-                    {b}
+                    {tv("brand", b)}
                   </button>
                 ))}
               </div>
               {brand === "Other" && (
                 <Input
-                  placeholder="Enter brand name"
+                  placeholder={t("sell.brandPlaceholder")}
                   value={customBrand}
                   onChange={(e) => setCustomBrand(e.target.value)}
                 />
@@ -317,15 +314,15 @@ export default function SellDevicePage() {
             </div>
 
             <Input
-              label="Model Name"
-              placeholder="e.g. iPhone 14 Pro"
+              label={t("sell.modelName")}
+              placeholder={t("sell.modelPlaceholder")}
               value={model}
               onChange={(e) => setModel(e.target.value)}
             />
 
             <Input
-              label="Product Name (optional)"
-              placeholder="Leave blank if the model name is clear enough"
+              label={t("sell.productName")}
+              placeholder={t("sell.productNamePlaceholder")}
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
             />
@@ -335,7 +332,7 @@ export default function SellDevicePage() {
         {!reviewing && step === 2 && (
           <>
             <div className="field">
-              <span className="field__label">Overall Condition</span>
+              <span className="field__label">{t("sell.overallCondition")}</span>
               <div className="option-grid">
                 {SELL_DEVICE_CONDITIONS.map((c) => (
                   <button
@@ -344,14 +341,14 @@ export default function SellDevicePage() {
                     className={`option-card ${condition === c ? "option-card--active" : ""}`}
                     onClick={() => setCondition(c)}
                   >
-                    {c}
+                    {tv("sellCondition", c)}
                   </button>
                 ))}
               </div>
             </div>
             <Textarea
-              label="Tell us about the condition of your device"
-              placeholder="Scratches, cracks, repairs, missing parts, physical damage, other issues..."
+              label={t("sell.conditionDescriptionLabel")}
+              placeholder={t("sell.conditionDescriptionPlaceholder")}
               value={conditionDescription}
               onChange={(e) => setConditionDescription(e.target.value)}
               rows={5}
@@ -365,33 +362,33 @@ export default function SellDevicePage() {
               CATEGORY_SPEC_FIELDS[category]!.map((label) => (
                 <Input
                   key={label}
-                  label={label}
+                  label={tv("specLabel", label)}
                   value={getPredefinedValue(label)}
                   onChange={(e) => updatePredefinedSpec(label, e.target.value)}
                 />
               ))
             ) : (
               <div className="field">
-                <span className="field__label">Specifications</span>
+                <span className="field__label">{t("sell.specifications")}</span>
                 {customSpecs.map((spec, index) => (
                   <div className="store-spec-row" key={index} style={{ marginBottom: 8 }}>
                     <Input
-                      placeholder="Specification Name"
+                      placeholder={t("sell.specNamePlaceholder")}
                       value={spec.label}
                       onChange={(e) => updateCustomSpec(index, "label", e.target.value)}
-                      aria-label="Specification name"
+                      aria-label={t("sell.specNamePlaceholder")}
                     />
                     <Input
-                      placeholder="Specification Value"
+                      placeholder={t("sell.specValuePlaceholder")}
                       value={spec.value}
                       onChange={(e) => updateCustomSpec(index, "value", e.target.value)}
-                      aria-label="Specification value"
+                      aria-label={t("sell.specValuePlaceholder")}
                     />
                     <button
                       type="button"
                       className="store-spec-remove"
                       onClick={() => removeCustomSpec(index)}
-                      aria-label="Remove specification"
+                      aria-label={t("sell.removeSpecification")}
                     >
                       <Trash2 size={15} />
                     </button>
@@ -399,7 +396,7 @@ export default function SellDevicePage() {
                 ))}
                 <button type="button" className="store-add-row-btn" onClick={addCustomSpec}>
                   <Plus size={16} />
-                  Add Specification
+                  {t("sell.addSpecification")}
                 </button>
               </div>
             )}
@@ -409,16 +406,16 @@ export default function SellDevicePage() {
         {!reviewing && step === 4 && (
           <>
             <Input
-              label="Expected Selling Price (ETB)"
+              label={t("sell.expectedPriceLabel")}
               type="number"
               min="0"
               step="0.01"
               value={expectedPrice}
               onChange={(e) => setExpectedPrice(e.target.value)}
-              placeholder="e.g. 45000"
+              placeholder={t("sell.pricePlaceholder")}
             />
             <div className="store-toggle-row">
-              <span className="store-toggle-row__label">Price Negotiable</span>
+              <span className="store-toggle-row__label">{t("sell.priceNegotiable")}</span>
               <label className="store-switch">
                 <input type="checkbox" checked={priceNegotiable} onChange={(e) => setPriceNegotiable(e.target.checked)} />
                 <span className="store-switch__track" />
@@ -429,25 +426,25 @@ export default function SellDevicePage() {
 
         {!reviewing && step === 5 && (
           <div className="field">
-            <span className="field__label">Device Photos</span>
+            <span className="field__label">{t("sell.devicePhotos")}</span>
             <span className="form-hint" style={{ display: "block", marginBottom: 8 }}>
-              Recommended: front, back, sides, screen, accessories, and any damaged areas.
+              {t("sell.photosHint")}
             </span>
             <div className="photo-grid">
               {images.map((image, index) => (
                 <div className="photo-thumb" key={`${image.image_url}-${index}`}>
                   <img src={image.image_url} alt={`Device photo ${index + 1}`} />
-                  <button type="button" className="photo-thumb__remove" onClick={() => removeImage(index)} aria-label="Remove photo">
+                  <button type="button" className="photo-thumb__remove" onClick={() => removeImage(index)} aria-label={t("sell.removePhoto")}>
                     <Trash2 size={12} />
                   </button>
                   <div style={{ position: "absolute", bottom: 4, right: 4, display: "flex", gap: 4 }}>
                     {index > 0 && (
-                      <button type="button" className="photo-thumb__remove" onClick={() => moveImage(index, -1)} aria-label="Move earlier">
+                      <button type="button" className="photo-thumb__remove" onClick={() => moveImage(index, -1)} aria-label={t("sell.moveEarlier")}>
                         <ArrowUp size={12} />
                       </button>
                     )}
                     {index < images.length - 1 && (
-                      <button type="button" className="photo-thumb__remove" onClick={() => moveImage(index, 1)} aria-label="Move later">
+                      <button type="button" className="photo-thumb__remove" onClick={() => moveImage(index, 1)} aria-label={t("sell.moveLater")}>
                         <ArrowDown size={12} />
                       </button>
                     )}
@@ -456,7 +453,7 @@ export default function SellDevicePage() {
               ))}
               <button type="button" className="photo-upload-tile" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
                 <Camera size={20} />
-                {isUploading ? "Uploading..." : "Add Photo"}
+                {isUploading ? t("sell.uploading") : t("sell.addPhoto")}
               </button>
             </div>
             <input
@@ -473,14 +470,16 @@ export default function SellDevicePage() {
 
         {!reviewing && step === 6 && (
           <div className="review-card">
-            <p className="review-card__title">TELEGRAM IDENTITY</p>
+            <p className="review-card__title">{t("sell.telegramIdentity")}</p>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div className="empty-state__icon" style={{ width: 42, height: 42 }}>
                 <UserIcon size={18} />
               </div>
               <div>
                 <p style={{ margin: 0, fontWeight: 700, fontSize: 14 }}>
-                  {user ? getCustomerDisplayName(user) : "Telegram User"}
+                  {user
+                    ? [user.first_name, user.last_name].filter(Boolean).join(" ") || t("home.telegramUser")
+                    : t("home.telegramUser")}
                 </p>
                 {user?.username && (
                   <p style={{ margin: 0, fontSize: 12.5, color: "var(--store-text-muted)" }}>@{user.username}</p>
@@ -488,8 +487,7 @@ export default function SellDevicePage() {
               </div>
             </div>
             <p style={{ fontSize: 12.5, color: "var(--store-text-muted)", marginTop: 12, marginBottom: 0 }}>
-              We use your Telegram account to identify you — no need to type anything here. This is verified
-              securely by our server when you submit.
+              {t("sell.telegramIdentityHint")}
             </p>
           </div>
         )}
@@ -497,35 +495,35 @@ export default function SellDevicePage() {
         {reviewing && (
           <>
             <div className="review-card">
-              <p className="review-card__title">DEVICE</p>
+              <p className="review-card__title">{t("sell.device")}</p>
               <div className="review-row">
-                <span className="review-row__label">Product Name</span>
+                <span className="review-row__label">{t("sell.productNameLabel")}</span>
                 <span className="review-row__value">{productName || `${effectiveBrand} ${model}`}</span>
               </div>
               <div className="review-row">
-                <span className="review-row__label">Category</span>
-                <span className="review-row__value">{category}</span>
+                <span className="review-row__label">{t("sell.category")}</span>
+                <span className="review-row__value">{tv("sellCategory", category)}</span>
               </div>
               <div className="review-row">
-                <span className="review-row__label">Brand</span>
-                <span className="review-row__value">{effectiveBrand}</span>
+                <span className="review-row__label">{t("sell.brandLabel")}</span>
+                <span className="review-row__value">{tv("brand", effectiveBrand)}</span>
               </div>
               <div className="review-row">
-                <span className="review-row__label">Model</span>
+                <span className="review-row__label">{t("sell.model")}</span>
                 <span className="review-row__value">{model}</span>
               </div>
               <div className="review-row">
-                <span className="review-row__label">Condition</span>
-                <span className="review-row__value">{condition}</span>
+                <span className="review-row__label">{t("sell.condition")}</span>
+                <span className="review-row__value">{tv("sellCondition", condition)}</span>
               </div>
             </div>
 
             {buildFinalSpecs().length > 0 && (
               <div className="review-card">
-                <p className="review-card__title">SPECIFICATIONS</p>
+                <p className="review-card__title">{t("sell.specifications")}</p>
                 {buildFinalSpecs().map((spec) => (
                   <div className="review-row" key={spec.label}>
-                    <span className="review-row__label">{spec.label}</span>
+                    <span className="review-row__label">{tv("specLabel", spec.label)}</span>
                     <span className="review-row__value">{spec.value}</span>
                   </div>
                 ))}
@@ -533,19 +531,19 @@ export default function SellDevicePage() {
             )}
 
             <div className="review-card">
-              <p className="review-card__title">PRICE</p>
+              <p className="review-card__title">{t("sell.price")}</p>
               <div className="review-row">
-                <span className="review-row__label">Expected Price</span>
+                <span className="review-row__label">{t("sell.expectedPrice")}</span>
                 <span className="review-row__value">{formatPrice(Number(expectedPrice) || 0)}</span>
               </div>
               <div className="review-row">
-                <span className="review-row__label">Negotiable</span>
-                <span className="review-row__value">{priceNegotiable ? "Yes" : "No"}</span>
+                <span className="review-row__label">{t("sell.negotiable")}</span>
+                <span className="review-row__value">{priceNegotiable ? t("sell.yes") : t("sell.no")}</span>
               </div>
             </div>
 
             <div className="review-card">
-              <p className="review-card__title">PHOTOS ({images.length})</p>
+              <p className="review-card__title">{t("sell.photoCount", { count: images.length })}</p>
               <div className="photo-grid">
                 {images.map((image, index) => (
                   <div className="photo-thumb" key={index}>
@@ -560,15 +558,15 @@ export default function SellDevicePage() {
         <div className="form-inline-actions">
           <Button variant="secondary" block onClick={goBack} disabled={isSubmitting}>
             <ArrowLeft size={16} />
-            Back
+            {t("sell.back")}
           </Button>
           {reviewing ? (
             <Button variant="primary" block loading={isSubmitting} onClick={handleSubmit}>
-              Submit Device for Review
+              {t("sell.submitForReview")}
             </Button>
           ) : (
             <Button variant="primary" block onClick={goNext}>
-              Next
+              {t("sell.next")}
               <ArrowRight size={16} />
             </Button>
           )}

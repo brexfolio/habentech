@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/lib/i18n";
+
 const CATEGORIES = [
   "All",
   "Smartphones",
@@ -17,8 +19,10 @@ interface CategoryFilterProps {
 }
 
 export default function CategoryFilter({ selected, onSelect }: CategoryFilterProps) {
+  const { t, tv } = useLanguage();
+
   return (
-    <div className="category-filter" role="tablist" aria-label="Filter by category">
+    <div className="category-filter" role="tablist" aria-label={t("home.filterByCategory")}>
       {CATEGORIES.map((category) => (
         <button
           key={category}
@@ -30,7 +34,7 @@ export default function CategoryFilter({ selected, onSelect }: CategoryFilterPro
           }`}
           onClick={() => onSelect(category)}
         >
-          {category}
+          {tv("productCategory", category)}
         </button>
       ))}
     </div>
