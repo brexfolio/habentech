@@ -15,6 +15,7 @@ import { getSuggestedSpecFields } from "@/lib/productSpecs";
 import { Input, Textarea } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/lib/i18n";
 import { apiPost, apiPatch, apiUpload, ApiError } from "@/lib/apiClient";
 
 interface ImageDraft {
@@ -37,6 +38,7 @@ interface ProductFormProps {
 export default function ProductForm({ product, onSaved, onCancel }: ProductFormProps) {
   const isEditing = Boolean(product);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t, tv } = useLanguage();
 
   const [name, setName] = useState(product?.name ?? "");
   const [category, setCategory] = useState<ProductCategory>(product?.category ?? "Smartphones");
@@ -146,9 +148,9 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
     e.preventDefault();
     setError(null);
 
-    if (!name.trim()) return setError("Product name is required.");
+    if (!name.trim()) return setError(t("admin.form.nameRequired"));
     const priceNumber = Number(price);
-    if (!priceNumber || priceNumber <= 0) return setError("Price must be greater than zero.");
+    if (!priceNumber || priceNumber <= 0) return setError(t("admin.form.priceRequired"));
 
     const cleanedSpecs = specs.filter((s) => s.label.trim() && s.value.trim());
 
@@ -180,7 +182,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
 
       onSaved(result.product, result.channelWarning);
     } catch (submitError) {
-      setError(submitError instanceof ApiError ? submitError.message : "Unable to save product.");
+      setError(submitError instanceof ApiError ? submitError.message : t("admin.form.saveFailed"));
     } finally {
       setIsUploading(false);
       setIsSaving(false);
@@ -191,64 +193,64 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
     <form className="admin-form" onSubmit={handleSubmit}>
       <Input
         surface="admin"
-        label="Product Name"
+        label={t("admin.form.productName")}
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="e.g. Samsung Galaxy S25 Ultra"
+        placeholder={t("admin.form.productNamePlaceholder")}
         required
       />
 
       <div className="admin-form__row">
         <Select
           surface="admin"
-          label="Category"
+          label={t("admin.form.category")}
           value={category}
           onChange={(value) => setCategory(value as ProductCategory)}
-          options={PRODUCT_CATEGORIES.map((c) => ({ value: c, label: c }))}
+          options={PRODUCT_CATEGORIES.map((c) => ({ value: c, label: tv("productCategory", c) }))}
         />
         <Select
           surface="admin"
-          label="Condition"
+          label={t("admin.form.condition")}
           value={condition}
           onChange={(value) => setCondition(value as ProductCondition)}
-          options={PRODUCT_CONDITIONS.map((c) => ({ value: c, label: c }))}
+          options={PRODUCT_CONDITIONS.map((c) => ({ value: c, label: tv("condition", c) }))}
         />
       </div>
 
       <div className="admin-form__row">
         <Input
           surface="admin"
-          label="Price (ETB)"
+          label={t("admin.form.price")}
           type="number"
           min="0"
           step="0.01"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          placeholder="e.g. 125000"
+          placeholder={t("admin.form.pricePlaceholder")}
           required
         />
         <Select
           surface="admin"
-          label="Availability"
+          label={t("admin.form.availability")}
           value={availability}
           onChange={(value) => setAvailability(value as ProductAvailability)}
-          options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: a }))}
+          options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: tv("availability", a) }))}
         />
       </div>
 
       <Textarea
         surface="admin"
-        label="Description"
+        label={t("admin.form.description")}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Tell customers more about this product..."
+        placeholder={t("admin.form.descriptionPlaceholder")}
         rows={4}
       />
 
       <div className="admin-toggle-row">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Star size={16} color="var(--admin-accent)" />
-          <span className="admin-toggle-row__label">Featured Product</span>
+          <span className="admin-toggle-row__label">{t("admin.form.featured")}</span>
         </div>
         <label className="admin-switch">
           <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
@@ -257,17 +259,17 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
       </div>
 
       <div className="admin-form__field">
-        <span className="admin-form__label">Product Images</span>
+        <span className="admin-form__label">{t("admin.form.productImages")}</span>
         <div className="admin-image-grid">
           {images.map((image, index) => (
             <div className="admin-image-thumb" key={`${image.image_url}-${index}`}>
-              <img src={image.image_url} alt={`Product ${index + 1}`} />
+              <img src={image.image_url} alt={`${t("product.product")} ${index + 1}`} />
               <span className="admin-image-thumb__order">{index + 1}</span>
               <button
                 type="button"
                 className="admin-image-thumb__remove"
                 onClick={() => removeImage(index)}
-                aria-label="Remove image"
+                aria-label={t("admin.form.removeImage")}
               >
                 <Trash2 size={12} />
               </button>
@@ -277,7 +279,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
                     type="button"
                     className="admin-image-thumb__remove"
                     onClick={() => moveImage(index, -1)}
-                    aria-label="Move image earlier"
+                    aria-label={t("admin.form.moveEarlier")}
                   >
                     <ArrowUp size={12} />
                   </button>
@@ -287,7 +289,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
                     type="button"
                     className="admin-image-thumb__remove"
                     onClick={() => moveImage(index, 1)}
-                    aria-label="Move image later"
+                    aria-label={t("admin.form.moveLater")}
                   >
                     <ArrowDown size={12} />
                   </button>
@@ -302,7 +304,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
             disabled={isSaving}
           >
             <ImagePlus size={20} />
-            Add Image
+            {t("admin.form.addImage")}
           </button>
         </div>
         <input
@@ -314,12 +316,12 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           onChange={(e) => handleFilesSelected(e.target.files)}
         />
         <span className="admin-form__hint">
-          Images are uploaded and posted to Telegram only when you {isEditing ? "save" : "publish"} — not before.
+          {isEditing ? t("admin.form.imageHintSave") : t("admin.form.imageHintPublish")}
         </span>
       </div>
 
       <div className="admin-form__field">
-        <span className="admin-form__label">Specifications</span>
+        <span className="admin-form__label">{t("admin.form.specifications")}</span>
 
         {suggestedSpecPills.length > 0 && (
           <div className="admin-spec-pills">
@@ -347,25 +349,25 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
                 <Input
                   surface="admin"
                   className="admin-spec-entry__label-input"
-                  placeholder="Label"
+                  placeholder={t("admin.form.labelPlaceholder")}
                   value={spec.label}
                   onChange={(e) => updateSpec(index, "label", e.target.value)}
-                  aria-label="Specification name"
+                  aria-label={t("admin.form.specNameAria")}
                 />
               )}
               <Input
                 surface="admin"
                 className="admin-spec-entry__value-input"
-                placeholder="Value"
+                placeholder={t("admin.form.valuePlaceholder")}
                 value={spec.value}
                 onChange={(e) => updateSpec(index, "value", e.target.value)}
-                aria-label="Specification value"
+                aria-label={t("admin.form.specValueAria")}
               />
               <button
                 type="button"
                 className="admin-spec-entry__remove"
                 onClick={() => removeSpec(index)}
-                aria-label="Remove specification"
+                aria-label={t("admin.form.removeSpec")}
               >
                 <X size={16} />
               </button>
@@ -375,24 +377,22 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
 
         <button type="button" className="admin-add-row-btn" onClick={addCustomSpec}>
           <Plus size={16} />
-          Add Custom Specification
+          {t("admin.form.addCustomSpec")}
         </button>
       </div>
 
       {error && <p className="admin-form__error">{error}</p>}
 
       {isEditing && product?.channel_published && (
-        <p className="admin-form__hint">
-          This product is live on the Telegram channel — saving will also update that post.
-        </p>
+        <p className="admin-form__hint">{t("admin.form.channelLiveHint")}</p>
       )}
 
       <div className="admin-bottom-bar">
         <Button surface="admin" variant="secondary" block type="button" onClick={onCancel}>
-          Cancel
+          {t("admin.cancel")}
         </Button>
         <Button surface="admin" variant="primary" block type="submit" loading={isSaving}>
-          {isUploading ? "Uploading Images..." : isEditing ? "Save Changes" : "Publish Product"}
+          {isUploading ? t("admin.form.uploading") : isEditing ? t("admin.form.saveChanges") : t("admin.form.publishProduct")}
         </Button>
       </div>
     </form>

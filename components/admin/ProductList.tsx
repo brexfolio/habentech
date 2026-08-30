@@ -5,6 +5,7 @@ import { Package, Pencil, Trash2, Send, Star, ImageOff } from "lucide-react";
 import { apiGet, apiDelete, apiPatch, apiPost, ApiError } from "@/lib/apiClient";
 import { formatPrice } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import { Spinner } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
@@ -25,6 +26,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [publishingId, setPublishingId] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { t, tv } = useLanguage();
 
   const loadProducts = useCallback(() => {
     setIsLoading(true);
@@ -43,10 +45,10 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
     setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, availability } : p)));
     try {
       await apiPatch(`/api/products/${product.id}`, { availability });
-      showToast("success", `${product.name} marked as ${availability}.`);
+      showToast("success", t("admin.productList.markedAs", { name: product.name, availability: tv("availability", availability) }));
     } catch (error) {
       setProducts(previous);
-      showToast("error", error instanceof ApiError ? error.message : "Unable to update availability.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.productList.unavailableUpdate"));
     }
   }
 
@@ -56,10 +58,15 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
     setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, featured: nextFeatured } : p)));
     try {
       await apiPatch(`/api/products/${product.id}`, { featured: nextFeatured });
-      showToast("success", nextFeatured ? `${product.name} is now featured.` : `${product.name} removed from featured.`);
+      showToast(
+        "success",
+        nextFeatured
+          ? t("admin.productList.nowFeatured", { name: product.name })
+          : t("admin.productList.removedFeatured", { name: product.name })
+      );
     } catch (error) {
       setProducts(previous);
-      showToast("error", error instanceof ApiError ? error.message : "Unable to update product.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.productList.updateError"));
     }
   }
 
@@ -68,9 +75,9 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
     try {
       const result = await apiPost<{ product: Product }>(`/api/products/${product.id}/publish-channel`);
       setProducts((prev) => prev.map((p) => (p.id === product.id ? result.product : p)));
-      showToast("success", "Product published to the Telegram channel.");
+      showToast("success", t("admin.productList.published"));
     } catch (error) {
-      showToast("error", error instanceof ApiError ? error.message : "Unable to publish to the channel.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.productList.publishError"));
     } finally {
       setPublishingId(null);
     }
@@ -83,11 +90,11 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
       const query = removeChannelPost ? "?remove_channel_post=true" : "";
       await apiDelete(`/api/products/${pendingDelete.id}${query}`);
       setProducts((prev) => prev.filter((p) => p.id !== pendingDelete.id));
-      showToast("success", "Product deleted.");
+      showToast("success", t("admin.productList.deleted"));
       setPendingDelete(null);
       setRemoveChannelPost(false);
     } catch (error) {
-      showToast("error", error instanceof ApiError ? error.message : "Unable to delete product.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.productList.deleteError"));
     } finally {
       setIsDeleting(false);
     }
@@ -106,8 +113,8 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
       <EmptyState
         surface="admin"
         icon={<Package size={24} />}
-        title="No products yet."
-        description="Add your first product to get started."
+        title={t("admin.productList.emptyTitle")}
+        description={t("admin.productList.emptyDescription")}
       />
     );
   }
@@ -145,29 +152,29 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                 <div>
                   <p className="admin-list-item__title">{product.name}</p>
                   <p className="admin-list-item__subtitle">
-                    {product.category} · {formatPrice(product.price, product.currency)}
+                    {tv("productCategory", product.category)} · {formatPrice(product.price, product.currency)}
                   </p>
                 </div>
               </div>
               <span className={`admin-badge admin-badge--${product.availability.toLowerCase().replace(" ", "-")}`}>
-                {product.availability}
+                {tv("availability", product.availability)}
               </span>
             </div>
 
             <div className="admin-list-item__meta-row">
-              {product.featured && <span className="admin-badge admin-badge--featured">Featured</span>}
+              {product.featured && <span className="admin-badge admin-badge--featured">{t("admin.productList.featuredBadge")}</span>}
               <span className={`admin-badge ${product.channel_published ? "admin-badge--completed" : "admin-badge--muted"}`}>
-                {product.channel_published ? "Published to channel" : "Not published"}
+                {product.channel_published ? t("admin.productList.publishedBadge") : t("admin.productList.notPublishedBadge")}
               </span>
             </div>
 
             {mode === "stock" ? (
               <Select
                 surface="admin"
-                aria-label="Update availability"
+                aria-label={t("admin.productList.updateAvailabilityAria")}
                 value={product.availability}
                 onChange={(value) => handleAvailabilityChange(product, value as ProductAvailability)}
-                options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: a }))}
+                options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: tv("availability", a) }))}
               />
             ) : mode === "featured" ? (
               <Button
@@ -177,13 +184,13 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                 onClick={() => handleFeaturedToggle(product)}
               >
                 <Star size={14} fill={product.featured ? "currentColor" : "none"} />
-                {product.featured ? "Remove from Featured" : "Mark as Featured"}
+                {product.featured ? t("admin.productList.removeFromFeatured") : t("admin.productList.markAsFeatured")}
               </Button>
             ) : (
               <div className="admin-list-item__actions">
                 <Button surface="admin" variant="secondary" size="sm" onClick={() => onEdit?.(product)}>
                   <Pencil size={14} />
-                  Edit
+                  {t("admin.productList.edit")}
                 </Button>
                 {!product.channel_published && (
                   <Button
@@ -194,7 +201,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                     onClick={() => handlePublish(product)}
                   >
                     <Send size={14} />
-                    Publish to Channel
+                    {t("admin.productList.publish")}
                   </Button>
                 )}
                 <Button
@@ -207,7 +214,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                   }}
                 >
                   <Trash2 size={14} />
-                  Delete
+                  {t("admin.productList.delete")}
                 </Button>
               </div>
             )}
@@ -218,21 +225,21 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
       <Modal
         isOpen={Boolean(pendingDelete)}
         onClose={() => setPendingDelete(null)}
-        title="Delete Product"
+        title={t("admin.productList.deleteTitle")}
         surface="admin"
         footer={
           <>
             <Button surface="admin" variant="secondary" block onClick={() => setPendingDelete(null)}>
-              Cancel
+              {t("admin.cancel")}
             </Button>
             <Button surface="admin" variant="danger" block loading={isDeleting} onClick={confirmDelete}>
-              Delete Product
+              {t("admin.productList.deleteButton")}
             </Button>
           </>
         }
       >
         <p>
-          Are you sure you want to delete <strong>{pendingDelete?.name}</strong>? This cannot be undone.
+          {t("admin.productList.deleteConfirm", { name: pendingDelete?.name ?? "" })}
         </p>
         {pendingDelete?.channel_published && (
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13.5 }}>
@@ -241,7 +248,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
               checked={removeChannelPost}
               onChange={(e) => setRemoveChannelPost(e.target.checked)}
             />
-            Also remove the Telegram channel post
+            {t("admin.productList.removeChannelPost")}
           </label>
         )}
       </Modal>

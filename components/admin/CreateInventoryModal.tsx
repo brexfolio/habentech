@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import { apiGet, apiPost, ApiError } from "@/lib/apiClient";
 import type { Product } from "@/types/product";
 import type { InventoryRecord } from "@/types/inventory";
@@ -31,6 +32,7 @@ export default function CreateInventoryModal({
   const [sku, setSku] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const { showToast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -45,7 +47,7 @@ export default function CreateInventoryModal({
 
   async function handleCreate() {
     if (!productId) {
-      showToast("error", "Select a product first.");
+      showToast("error", t("admin.inventoryModal.selectFirst"));
       return;
     }
 
@@ -58,11 +60,11 @@ export default function CreateInventoryModal({
         minimum_stock_level: Number(minimumStockLevel) || 0,
         cost_price: costPrice ? Number(costPrice) : null,
       });
-      showToast("success", "Inventory tracking started for this product.");
+      showToast("success", t("admin.inventoryModal.success"));
       onCreated(result.inventory);
       onClose();
     } catch (error) {
-      showToast("error", error instanceof ApiError ? error.message : "Unable to create inventory record.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.inventoryModal.error"));
     } finally {
       setIsSaving(false);
     }
@@ -72,28 +74,28 @@ export default function CreateInventoryModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Track New Product"
+      title={t("admin.inventoryModal.title")}
       surface="admin"
       footer={
         <>
           <Button surface="admin" variant="secondary" block onClick={onClose}>
-            Cancel
+            {t("admin.cancel")}
           </Button>
           <Button surface="admin" variant="primary" block loading={isSaving} onClick={handleCreate}>
-            Start Tracking
+            {t("admin.inventoryModal.startTracking")}
           </Button>
         </>
       }
     >
       {products.length === 0 ? (
         <p style={{ fontSize: 13.5, color: "var(--admin-text-muted)" }}>
-          Every product already has an inventory record.
+          {t("admin.inventoryModal.allTracked")}
         </p>
       ) : (
         <>
           <Select
             surface="admin"
-            label="Product"
+            label={t("admin.inventoryModal.product")}
             value={productId}
             onChange={(value) => setProductId(value)}
             options={products.map((p) => ({ value: p.id, label: p.name }))}
@@ -101,7 +103,7 @@ export default function CreateInventoryModal({
           <div className="admin-form__row">
             <Input
               surface="admin"
-              label="Current Quantity"
+              label={t("admin.inventoryModal.currentQuantity")}
               type="number"
               min="0"
               value={quantity}
@@ -109,7 +111,7 @@ export default function CreateInventoryModal({
             />
             <Input
               surface="admin"
-              label="Minimum Stock Level"
+              label={t("admin.inventoryModal.minimumStock")}
               type="number"
               min="0"
               value={minimumStockLevel}
@@ -119,14 +121,14 @@ export default function CreateInventoryModal({
           <div className="admin-form__row">
             <Input
               surface="admin"
-              label="Cost Price"
+              label={t("admin.inventoryModal.costPrice")}
               type="number"
               min="0"
               step="0.01"
               value={costPrice}
               onChange={(e) => setCostPrice(e.target.value)}
             />
-            <Input surface="admin" label="SKU" value={sku} onChange={(e) => setSku(e.target.value)} />
+            <Input surface="admin" label={t("admin.inventoryModal.sku")} value={sku} onChange={(e) => setSku(e.target.value)} />
           </div>
         </>
       )}

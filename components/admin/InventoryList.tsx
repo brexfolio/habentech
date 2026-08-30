@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Warehouse, ImageOff, Plus } from "lucide-react";
 import { apiGet } from "@/lib/apiClient";
 import { formatPrice } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import { Spinner } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
@@ -24,6 +25,7 @@ export default function InventoryList({ onSelect }: InventoryListProps) {
   const [inventory, setInventory] = useState<InventoryRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const { t, tv } = useLanguage();
 
   const loadInventory = useCallback(() => {
     setIsLoading(true);
@@ -42,7 +44,7 @@ export default function InventoryList({ onSelect }: InventoryListProps) {
       <div style={{ padding: "0 18px 14px" }}>
         <Button surface="admin" variant="secondary" block onClick={() => setShowCreateModal(true)}>
           <Plus size={16} />
-          Track New Product
+          {t("admin.inventoryModal.title")}
         </Button>
       </div>
 
@@ -54,8 +56,8 @@ export default function InventoryList({ onSelect }: InventoryListProps) {
         <EmptyState
           surface="admin"
           icon={<Warehouse size={24} />}
-          title="No products tracked yet."
-          description="Start tracking a product to manage its stock quantity."
+          title={t("admin.inventoryList.emptyTitle")}
+          description={t("admin.inventoryList.emptyDescription")}
         />
       ) : (
         <div className="admin-list">
@@ -93,22 +95,22 @@ export default function InventoryList({ onSelect }: InventoryListProps) {
                       )}
                     </div>
                     <div>
-                      <p className="admin-list-item__title">{item.product?.name ?? "Unknown product"}</p>
-                      <p className="admin-list-item__subtitle">SKU: {item.sku || "—"}</p>
+                      <p className="admin-list-item__title">{item.product?.name ?? t("admin.unknownProduct")}</p>
+                      <p className="admin-list-item__subtitle">{t("admin.sku")} {item.sku || "—"}</p>
                     </div>
                   </div>
-                  <span className={`admin-badge ${STATUS_CLASS[status]}`}>{status}</span>
+                  <span className={`admin-badge ${STATUS_CLASS[status]}`}>{tv("availability", status)}</span>
                 </div>
                 <div className="admin-list-item__meta-row" style={{ marginBottom: 0 }}>
                   <span>
-                    Qty: <strong>{item.quantity}</strong>
+                    {t("admin.inventoryList.qty")} <strong>{item.quantity}</strong>
                   </span>
                   <span>
-                    Min: <strong>{item.minimum_stock_level}</strong>
+                    {t("admin.inventoryList.min")} <strong>{item.minimum_stock_level}</strong>
                   </span>
                   {item.product && (
                     <span>
-                      Price: <strong>{formatPrice(item.product.price, item.product.currency)}</strong>
+                      {t("admin.inventoryList.price")} <strong>{formatPrice(item.product.price, item.product.currency)}</strong>
                     </span>
                   )}
                 </div>

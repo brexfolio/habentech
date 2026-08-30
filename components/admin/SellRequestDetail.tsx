@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExternalLink, ImageOff } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import { apiPatch, ApiError } from "@/lib/apiClient";
 import { formatDate, formatPrice } from "@/lib/utils";
 import type { SellRequest, SellRequestStatus } from "@/types/sellRequest";
@@ -18,6 +19,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<SellRequestStatus | null>(null);
   const { showToast } = useToast();
+  const { t, tv } = useLanguage();
 
   const images = [...(sellRequest.images ?? [])].sort((a, b) => a.display_order - b.display_order);
   const specs = [...(sellRequest.specifications ?? [])].sort((a, b) => a.display_order - b.display_order);
@@ -32,10 +34,10 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
       const result = await apiPatch<{ sellRequest: SellRequest }>(`/api/sell-requests/${sellRequest.id}`, {
         status,
       });
-      showToast("success", `Marked as ${status}.`);
+      showToast("success", t("admin.sell.markedAs", { status: tv("sellRequestStatus", status) }));
       onUpdated(result.sellRequest);
     } catch (error) {
-      showToast("error", error instanceof ApiError ? error.message : "Unable to update this request.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.sell.updateError"));
     } finally {
       setUpdatingStatus(null);
     }
@@ -48,7 +50,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
           {deviceName}
         </p>
         <span className={`admin-badge admin-badge--${sellRequest.status.toLowerCase().replace(/\s+/g, "-")}`}>
-          {sellRequest.status}
+          {tv("sellRequestStatus", sellRequest.status)}
         </span>
       </div>
 
@@ -62,13 +64,13 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
         </div>
       ) : (
         <div className="admin-card" style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--admin-text-muted)" }}>
-          <ImageOff size={16} /> No photos submitted.
+          <ImageOff size={16} /> {t("admin.sell.noPhotos")}
         </div>
       )}
 
       <div className="admin-card">
         <p className="admin-form__label" style={{ marginBottom: 8 }}>
-          CUSTOMER INFORMATION
+          {t("admin.sell.customerInfo")}
         </p>
         <p style={{ margin: "0 0 4px" }}>{sellRequest.customer_name}</p>
         {sellRequest.telegram_username && (
@@ -85,7 +87,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
           >
             <Button surface="admin" variant="secondary" size="sm">
               <ExternalLink size={14} />
-              Contact Customer
+              {t("admin.contact")}
             </Button>
           </a>
         )}
@@ -93,20 +95,20 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
 
       <div className="admin-card">
         <p className="admin-form__label" style={{ marginBottom: 8 }}>
-          DEVICE INFORMATION
+          {t("admin.sell.deviceInfo")}
         </p>
         <div className="admin-list-item__meta-row" style={{ marginBottom: 8 }}>
           <span>
-            Category: <strong>{sellRequest.category}</strong>
+            {t("admin.sell.category")} <strong>{tv("sellCategory", sellRequest.category)}</strong>
           </span>
           <span>
-            Brand: <strong>{sellRequest.brand}</strong>
+            {t("admin.sell.brand")} <strong>{sellRequest.brand}</strong>
           </span>
           <span>
-            Model: <strong>{sellRequest.model}</strong>
+            {t("admin.sell.model")} <strong>{sellRequest.model}</strong>
           </span>
           <span>
-            Condition: <strong>{sellRequest.condition}</strong>
+            {t("admin.sell.condition")} <strong>{tv("sellCondition", sellRequest.condition)}</strong>
           </span>
         </div>
         {sellRequest.condition_description && (
@@ -119,7 +121,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
       {specs.length > 0 && (
         <div className="admin-card">
           <p className="admin-form__label" style={{ marginBottom: 8 }}>
-            SPECIFICATIONS
+            {t("admin.sell.specifications")}
           </p>
           <div className="spec-table spec-table--admin">
             {specs.map((spec) => (
@@ -134,22 +136,22 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
 
       <div className="admin-card">
         <p className="admin-form__label" style={{ marginBottom: 8 }}>
-          PRICE
+          {t("admin.sell.price")}
         </p>
         <p style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 800 }}>
           {formatPrice(sellRequest.expected_price, sellRequest.currency)}
         </p>
         <p style={{ margin: 0, fontSize: 12.5, color: "var(--admin-text-muted)" }}>
-          {sellRequest.price_negotiable ? "Negotiable" : "Not negotiable"}
+          {sellRequest.price_negotiable ? t("admin.sell.negotiable") : t("admin.sell.notNegotiable")}
         </p>
         {latestOffer && (
           <p style={{ margin: "10px 0 0", fontSize: 13.5 }}>
-            Store offer: <strong>{formatPrice(latestOffer.offer_price, latestOffer.currency)}</strong> (
-            {latestOffer.status})
+            {t("admin.sell.storeOffer")} <strong>{formatPrice(latestOffer.offer_price, latestOffer.currency)}</strong> (
+            {tv("offerStatus", latestOffer.status)})
           </p>
         )}
         <p style={{ margin: "8px 0 0", fontSize: 12, color: "var(--admin-text-muted)" }}>
-          Submitted {formatDate(sellRequest.created_at)}
+          {t("admin.sell.submitted", { date: formatDate(sellRequest.created_at) })}
         </p>
       </div>
 
@@ -161,10 +163,10 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
           loading={updatingStatus === "Under Review"}
           onClick={() => updateStatus("Under Review")}
         >
-          Mark Under Review
+          {t("admin.markUnderReview")}
         </Button>
         <Button surface="admin" variant="primary" size="sm" onClick={() => setShowOfferModal(true)}>
-          Make Offer
+          {t("admin.makeOffer")}
         </Button>
         <Button
           surface="admin"
@@ -173,7 +175,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
           loading={updatingStatus === "Accepted"}
           onClick={() => updateStatus("Accepted")}
         >
-          Accept Device
+          {t("admin.acceptDevice")}
         </Button>
         <Button
           surface="admin"
@@ -182,7 +184,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
           loading={updatingStatus === "Rejected"}
           onClick={() => updateStatus("Rejected")}
         >
-          Reject Request
+          {t("admin.rejectRequest")}
         </Button>
         <Button
           surface="admin"
@@ -191,7 +193,7 @@ export default function SellRequestDetail({ sellRequest, onUpdated }: SellReques
           loading={updatingStatus === "Completed"}
           onClick={() => updateStatus("Completed")}
         >
-          Mark Completed
+          {t("admin.markCompleted")}
         </Button>
       </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MessageSquareText, ExternalLink } from "lucide-react";
 import { apiGet, apiPatch, ApiError } from "@/lib/apiClient";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import { useToast } from "@/components/ui/Toast";
 import { Spinner } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
@@ -14,6 +15,7 @@ export default function RequestsList() {
   const [requests, setRequests] = useState<ProductRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { showToast } = useToast();
+  const { t, tv } = useLanguage();
 
   useEffect(() => {
     apiGet<{ requests: ProductRequest[] }>("/api/requests")
@@ -27,10 +29,10 @@ export default function RequestsList() {
     setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
     try {
       await apiPatch(`/api/requests/${id}`, { status });
-      showToast("success", `Request marked as ${status}.`);
+      showToast("success", t("admin.requestsList.markedAs", { status: tv("requestStatus", status) }));
     } catch (error) {
       setRequests(previous);
-      showToast("error", error instanceof ApiError ? error.message : "Unable to update request.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.requestsList.updateError"));
     }
   }
 
@@ -47,8 +49,8 @@ export default function RequestsList() {
       <EmptyState
         surface="admin"
         icon={<MessageSquareText size={24} />}
-        title="No product requests yet."
-        description="Customer requests for products will appear here."
+        title={t("admin.requestsList.emptyTitle")}
+        description={t("admin.requestsList.emptyDescription")}
       />
     );
   }
@@ -59,20 +61,20 @@ export default function RequestsList() {
         <div className="admin-list-item" key={request.id}>
           <div className="admin-list-item__top">
             <div>
-              <p className="admin-list-item__title">{request.product?.name ?? "Product"}</p>
+              <p className="admin-list-item__title">{request.product?.name ?? t("product.product")}</p>
               <p className="admin-list-item__subtitle">
                 {request.customer_name}
                 {request.username ? ` · @${request.username}` : ""}
               </p>
             </div>
             <span className={`admin-badge admin-badge--${request.status.toLowerCase()}`}>
-              {request.status}
+              {tv("requestStatus", request.status)}
             </span>
           </div>
           <div className="admin-list-item__meta-row">
             {request.product && (
               <span>
-                Price: <strong>{formatPrice(request.product.price, request.product.currency)}</strong>
+                {t("admin.requestsList.price")} <strong>{formatPrice(request.product.price, request.product.currency)}</strong>
               </span>
             )}
             <span>{formatDate(request.created_at)}</span>
@@ -82,18 +84,18 @@ export default function RequestsList() {
               <a href={`https://t.me/${request.username}`} target="_blank" rel="noopener noreferrer">
                 <Button surface="admin" variant="secondary" size="sm">
                   <ExternalLink size={14} />
-                  Contact Customer
+                  {t("admin.contact")}
                 </Button>
               </a>
             )}
             <Button surface="admin" variant="secondary" size="sm" onClick={() => updateStatus(request.id, "Completed")}>
-              Mark Completed
+              {t("admin.markCompleted")}
             </Button>
             <Button surface="admin" variant="secondary" size="sm" onClick={() => updateStatus(request.id, "Sold")}>
-              Mark Sold
+              {t("admin.markSold")}
             </Button>
             <Button surface="admin" variant="secondary" size="sm" onClick={() => updateStatus(request.id, "Unavailable")}>
-              Mark Unavailable
+              {t("admin.markUnavailable")}
             </Button>
           </div>
         </div>

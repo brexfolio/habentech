@@ -434,6 +434,14 @@ select {
   color: var(--store-primary);
 }
 
+.select-sheet-option--admin .select-sheet-option__code {
+  color: var(--admin-text-muted);
+}
+
+.select-sheet-option--admin.select-sheet-option--active .select-sheet-option__code {
+  color: var(--admin-primary);
+}
+
 .select-sheet-option--admin {
   color: var(--admin-text);
 }

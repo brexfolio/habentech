@@ -1,6 +1,8 @@
 "use client";
 
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/store/LanguageSwitcher";
 
 interface AdminNavigationProps {
   title: string;
@@ -9,11 +11,13 @@ interface AdminNavigationProps {
 }
 
 export default function AdminNavigation({ title, subtitle, onBack }: AdminNavigationProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="admin-topnav">
       <div className="admin-topnav__left">
         {onBack && (
-          <button type="button" className="admin-topnav__back" onClick={onBack} aria-label="Go back">
+          <button type="button" className="admin-topnav__back" onClick={onBack} aria-label={t("admin.back")}>
             <ArrowLeft size={19} />
           </button>
         )}
@@ -22,11 +26,7 @@ export default function AdminNavigation({ title, subtitle, onBack }: AdminNaviga
           {subtitle && <p className="admin-topnav__subtitle">{subtitle}</p>}
         </div>
       </div>
-      {!onBack && (
-        <div className="admin-topnav__badge" aria-hidden="true">
-          <ShieldCheck size={20} />
-        </div>
-      )}
+      <LanguageSwitcher surface="admin" />
     </div>
   );
 }

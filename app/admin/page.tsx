@@ -25,6 +25,7 @@ import RequestsList from "@/components/admin/RequestsList";
 import AnalyticsCards from "@/components/admin/AnalyticsCards";
 import SettingsForm from "@/components/admin/SettingsForm";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import { useTelegramUser } from "@/lib/useTelegramUser";
 import type { Product } from "@/types/product";
 
@@ -41,22 +42,23 @@ type AdminView =
   | "settings";
 
 const VIEW_TITLES: Record<AdminView, string> = {
-  menu: "Admin Dashboard",
-  products: "Products",
-  "add-product": "Add Product",
-  "edit-product": "Edit Product",
-  orders: "Orders",
-  requests: "Requests",
-  stock: "Manage Stock",
-  analytics: "Analytics",
-  featured: "Featured Products",
-  settings: "Settings",
+  menu: "admin.menu.title",
+  products: "admin.products",
+  "add-product": "admin.addProduct",
+  "edit-product": "admin.editProduct",
+  orders: "admin.orders",
+  requests: "admin.requests",
+  stock: "admin.stock",
+  analytics: "admin.analytics",
+  featured: "admin.featured",
+  settings: "admin.settings",
 };
 
 export default function AdminPage() {
   useTelegramUser();
   const router = useRouter();
   const { showToast } = useToast();
+  const { t } = useLanguage();
 
   const [view, setView] = useState<AdminView>("menu");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -86,8 +88,8 @@ export default function AdminPage() {
     <AdminGate>
       <div className="admin-shell">
         <AdminNavigation
-          title={VIEW_TITLES[view]}
-          subtitle={view === "menu" ? "Manage your electronics store" : undefined}
+          title={t(VIEW_TITLES[view])}
+          subtitle={view === "menu" ? t("admin.menu.subtitle") : undefined}
           onBack={view === "menu" ? undefined : handleBack}
         />
 
@@ -95,76 +97,76 @@ export default function AdminPage() {
           <div className="admin-grid">
             <AdminActionCard
               icon={Package}
-              label="Products"
-              description="View and manage all products"
+              label={t("admin.products")}
+              description={t("admin.card.viewProducts")}
               onClick={() => goTo("products")}
             />
             <AdminActionCard
               icon={PlusCircle}
-              label="Add Product"
-              description="Publish a new product"
+              label={t("admin.addProduct")}
+              description={t("admin.card.publishProduct")}
               tone="accent"
               onClick={() => goTo("add-product")}
             />
             <AdminActionCard
               icon={ShoppingCart}
-              label="Orders"
-              description="Track customer orders"
+              label={t("admin.orders")}
+              description={t("admin.card.trackOrders")}
               tone="success"
               onClick={() => goTo("orders")}
             />
             <AdminActionCard
               icon={MessageSquareText}
-              label="Requests"
-              description="Respond to product requests"
+              label={t("admin.requests")}
+              description={t("admin.card.respondRequests")}
               tone="warning"
               onClick={() => goTo("requests")}
             />
             <AdminActionCard
               icon={Smartphone}
-              label="Sell Requests"
-              description="Review customer devices for sale"
+              label={t("admin.sellRequests")}
+              description={t("admin.card.reviewDevices")}
               tone="accent"
               onClick={() => router.push("/admin/sell-requests")}
             />
             <AdminActionCard
               icon={PencilLine}
-              label="Edit Product"
-              description="Update product details"
+              label={t("admin.editProduct")}
+              description={t("admin.card.updateProducts")}
               onClick={() => goTo("products")}
             />
             <AdminActionCard
               icon={Boxes}
-              label="Manage Stock"
-              description="Update product availability"
+              label={t("admin.stock")}
+              description={t("admin.card.updateAvailability")}
               tone="accent"
               onClick={() => goTo("stock")}
             />
             <AdminActionCard
               icon={Warehouse}
-              label="Inventory"
-              description="Quantities, cost & stock history"
+              label={t("admin.inventory")}
+              description={t("admin.card.stockHistory")}
               tone="success"
               onClick={() => router.push("/admin/inventory")}
             />
             <AdminActionCard
               icon={BarChart3}
-              label="Analytics"
-              description="Store performance at a glance"
+              label={t("admin.analytics")}
+              description={t("admin.card.performance")}
               tone="success"
               onClick={() => goTo("analytics")}
             />
             <AdminActionCard
               icon={Star}
-              label="Featured Products"
-              description="Highlight products on the store"
+              label={t("admin.featured")}
+              description={t("admin.card.highlightProducts")}
               tone="warning"
               onClick={() => goTo("featured")}
             />
             <AdminActionCard
               icon={Settings}
-              label="Settings"
-              description="Store profile & channel"
+              label={t("admin.settings")}
+              description={t("admin.card.profileChannel")}
               onClick={() => goTo("settings")}
             />
           </div>

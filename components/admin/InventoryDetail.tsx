@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PackagePlus, PackageMinus, SlidersHorizontal, ImageOff } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import { getStockStatus, type InventoryRecord } from "@/types/inventory";
 import StockActionModal, { type StockAction } from "./StockActionModal";
 import InventoryTransactionHistory from "./InventoryTransactionHistory";
@@ -23,6 +24,7 @@ export default function InventoryDetail({
 }) {
   const [action, setAction] = useState<StockAction | null>(null);
   const [historyKey, setHistoryKey] = useState(0);
+  const { t, tv } = useLanguage();
   const status = getStockStatus(inventory.quantity, inventory.minimum_stock_level);
   const image = inventory.product?.images?.[0]?.image_url;
 
@@ -55,45 +57,44 @@ export default function InventoryDetail({
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p className="admin-list-item__title">{inventory.product?.name}</p>
-          <p className="admin-list-item__subtitle">SKU: {inventory.sku || "—"}</p>
+          <p className="admin-list-item__subtitle">{t("admin.sku")} {inventory.sku || "—"}</p>
         </div>
-        <span className={`admin-badge ${STATUS_CLASS[status]}`}>{status}</span>
+        <span className={`admin-badge ${STATUS_CLASS[status]}`}>{tv("availability", status)}</span>
       </div>
 
       <div className="admin-stat-grid" style={{ padding: 0, marginBottom: 14 }}>
         <div className="admin-stat-card">
           <p className="admin-stat-card__value">{inventory.quantity}</p>
-          <p className="admin-stat-card__label">Current Quantity</p>
+          <p className="admin-stat-card__label">{t("admin.inventoryList.currentQty")}</p>
         </div>
         <div className="admin-stat-card">
           <p className="admin-stat-card__value">{inventory.minimum_stock_level}</p>
-          <p className="admin-stat-card__label">Minimum Stock Level</p>
+          <p className="admin-stat-card__label">{t("admin.inventoryList.minStock")}</p>
         </div>
         <div className="admin-stat-card">
           <p className="admin-stat-card__value">{inventory.cost_price != null ? formatPrice(inventory.cost_price) : "—"}</p>
-          <p className="admin-stat-card__label">Cost Price</p>
+          <p className="admin-stat-card__label">{t("admin.inventoryList.costPrice")}</p>
         </div>
         <div className="admin-stat-card">
           <p className="admin-stat-card__value">
             {inventory.product ? formatPrice(inventory.product.price, inventory.product.currency) : "—"}
           </p>
-          <p className="admin-stat-card__label">Selling Price</p>
+          <p className="admin-stat-card__label">{t("admin.inventoryList.sellingPrice")}</p>
         </div>
       </div>
 
       <div className="admin-card">
         <div className="admin-list-item__meta-row" style={{ marginBottom: 0 }}>
           <span>
-            Supplier: <strong>{inventory.supplier || "—"}</strong>
+            {t("admin.inventoryList.supplier")} <strong>{inventory.supplier || "—"}</strong>
           </span>
           <span>
-            Location: <strong>{inventory.storage_location || "—"}</strong>
+            {t("admin.inventoryList.location")} <strong>{inventory.storage_location || "—"}</strong>
           </span>
           <span>
-            Purchase Date: <strong>{inventory.purchase_date || "—"}</strong>
+            {t("admin.inventoryList.purchaseDate")} <strong>{inventory.purchase_date || "—"}</strong>
           </span>
-        </div>
-        {inventory.notes && (
+        </div>{inventory.notes && (
           <p style={{ margin: "8px 0 0", fontSize: 13, color: "var(--admin-text-muted)" }}>{inventory.notes}</p>
         )}
       </div>
@@ -101,20 +102,20 @@ export default function InventoryDetail({
       <div className="admin-list-item__actions" style={{ marginBottom: 18 }}>
         <Button surface="admin" variant="primary" size="sm" onClick={() => setAction("add")}>
           <PackagePlus size={14} />
-          Add Stock
+          {t("admin.stockAction.add")}
         </Button>
         <Button surface="admin" variant="secondary" size="sm" onClick={() => setAction("remove")}>
           <PackageMinus size={14} />
-          Remove Stock
+          {t("admin.stockAction.remove")}
         </Button>
         <Button surface="admin" variant="secondary" size="sm" onClick={() => setAction("adjust")}>
           <SlidersHorizontal size={14} />
-          Adjust Stock
+          {t("admin.stockAction.adjust")}
         </Button>
       </div>
 
       <p className="admin-form__label" style={{ padding: "0 0 10px" }}>
-        TRANSACTION HISTORY
+        {t("admin.inventoryList.transactionHistory")}
       </p>
       <div style={{ margin: "0 -18px" }}>
         <InventoryTransactionHistory key={historyKey} productId={inventory.product_id} />

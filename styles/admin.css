@@ -79,6 +79,28 @@
   flex-shrink: 0;
 }
 
+.store-header__lang-btn--admin {
+  background: var(--admin-surface-alt);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+}
+
+.store-header__lang-btn--admin:active {
+  transform: scale(0.96);
+}
+
+.store-header__lang-code--admin {
+  color: var(--admin-text);
+}
+
+.store-header__lang-chevron--admin {
+  color: var(--admin-text-muted);
+}
+
+.store-header__lang-btn--admin[aria-expanded="true"] .store-header__lang-chevron--admin {
+  transform: rotate(180deg);
+}
+
 /* ---------- Action grid ---------- */
 .admin-grid {
   display: grid;

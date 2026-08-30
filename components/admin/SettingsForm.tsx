@@ -6,6 +6,7 @@ import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Loading";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import type { StoreSettings } from "@/types/settings";
 
 export default function SettingsForm() {
@@ -18,6 +19,7 @@ export default function SettingsForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { showToast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     apiGet<{ settings: StoreSettings | null }>("/api/settings")
@@ -46,9 +48,9 @@ export default function SettingsForm() {
         contact_email: contactEmail.trim() || null,
       });
       setSettings(result.settings);
-      showToast("success", "Store settings saved.");
+      showToast("success", t("admin.settingsForm.saved"));
     } catch (error) {
-      showToast("error", error instanceof ApiError ? error.message : "Unable to save settings.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.settingsForm.saveError"));
     } finally {
       setIsSaving(false);
     }
@@ -64,46 +66,41 @@ export default function SettingsForm() {
 
   return (
     <form className="admin-form" onSubmit={handleSave}>
-      <Input surface="admin" label="Store Name" value={storeName} onChange={(e) => setStoreName(e.target.value)} required />
+      <Input surface="admin" label={t("admin.settingsForm.storeName")} value={storeName} onChange={(e) => setStoreName(e.target.value)} required />
       <Textarea
         surface="admin"
-        label="Store Description"
+        label={t("admin.settingsForm.storeDescription")}
         value={storeDescription}
         onChange={(e) => setStoreDescription(e.target.value)}
         rows={3}
       />
       <Input
         surface="admin"
-        label="Telegram Channel"
+        label={t("admin.settingsForm.telegramChannel")}
         value={telegramChannel}
         onChange={(e) => setTelegramChannel(e.target.value)}
-        placeholder="@my_electronics_store"
+        placeholder={t("admin.settingsForm.channelPlaceholder")}
       />
       <Input
         surface="admin"
-        label="Contact Phone"
+        label={t("admin.settingsForm.contactPhone")}
         value={contactPhone}
         onChange={(e) => setContactPhone(e.target.value)}
-        placeholder="+251..."
+        placeholder={t("admin.settingsForm.phonePlaceholder")}
       />
       <Input
         surface="admin"
-        label="Contact Email"
+        label={t("admin.settingsForm.contactEmail")}
         type="email"
         value={contactEmail}
         onChange={(e) => setContactEmail(e.target.value)}
-        placeholder="store@example.com"
+        placeholder={t("admin.settingsForm.emailPlaceholder")}
       />
-      <span className="admin-form__hint">
-        Sensitive credentials (bot token, database keys) are managed via environment variables and cannot be
-        edited here.
-      </span>
+      <span className="admin-form__hint">{t("admin.settingsForm.credentialsHint")}</span>
       <Button surface="admin" variant="primary" block type="submit" loading={isSaving}>
-        Save Settings
+        {t("admin.settingsForm.save")}
       </Button>
-      {settings === null && (
-        <span className="admin-form__hint">No settings row found yet — saving will create one.</span>
-      )}
+      {settings === null && <span className="admin-form__hint">{t("admin.settingsForm.noSettingsHint")}</span>}
     </form>
   );
 }

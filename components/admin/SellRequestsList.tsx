@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Smartphone, ImageOff } from "lucide-react";
 import { apiGet } from "@/lib/apiClient";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import { Spinner } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import type { SellRequest } from "@/types/sellRequest";
@@ -15,6 +16,7 @@ interface SellRequestsListProps {
 export default function SellRequestsList({ onSelect }: SellRequestsListProps) {
   const [requests, setRequests] = useState<SellRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t, tv } = useLanguage();
 
   const loadRequests = useCallback(() => {
     setIsLoading(true);
@@ -41,8 +43,8 @@ export default function SellRequestsList({ onSelect }: SellRequestsListProps) {
       <EmptyState
         surface="admin"
         icon={<Smartphone size={24} />}
-        title="No sell requests yet."
-        description="Devices customers submit for sale will appear here."
+        title={t("admin.sell.emptyTitle")}
+        description={t("admin.sell.emptyDescription")}
       />
     );
   }
@@ -85,17 +87,17 @@ export default function SellRequestsList({ onSelect }: SellRequestsListProps) {
                 <div>
                   <p className="admin-list-item__title">{deviceName}</p>
                   <p className="admin-list-item__subtitle">
-                    {request.category} · {request.condition}
+                    {tv("sellCategory", request.category)} · {tv("sellCondition", request.condition)}
                   </p>
                 </div>
               </div>
               <span className={`admin-badge admin-badge--${request.status.toLowerCase().replace(/\s+/g, "-")}`}>
-                {request.status}
+                {tv("sellRequestStatus", request.status)}
               </span>
             </div>
             <div className="admin-list-item__meta-row">
               <span>
-                Expected: <strong>{formatPrice(request.expected_price, request.currency)}</strong>
+                {t("admin.sell.expected")} <strong>{formatPrice(request.expected_price, request.currency)}</strong>
               </span>
               <span>
                 {request.customer_name}

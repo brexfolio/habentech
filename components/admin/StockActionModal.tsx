@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import { useToast } from "@/components/ui/Toast";
+import { useLanguage } from "@/lib/i18n";
 import { apiPost, ApiError } from "@/lib/apiClient";
 import { REMOVE_STOCK_REASONS, type InventoryRecord, type InventoryTransaction } from "@/types/inventory";
 
@@ -19,9 +20,9 @@ interface StockActionModalProps {
 }
 
 const TITLES: Record<StockAction, string> = {
-  add: "Add Stock",
-  remove: "Remove Stock",
-  adjust: "Adjust Stock",
+  add: "admin.stockAction.add",
+  remove: "admin.stockAction.remove",
+  adjust: "admin.stockAction.adjust",
 };
 
 const ENDPOINTS: Record<StockAction, string> = {
@@ -40,6 +41,7 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const { showToast } = useToast();
+  const { t, tv } = useLanguage();
 
   if (!action) return null;
   const currentAction: StockAction = action;
@@ -52,7 +54,7 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
       if (action === "add") {
         const qty = Number(quantity);
         if (!qty || qty <= 0) {
-          showToast("error", "Quantity to add must be greater than zero.");
+          showToast("error", t("admin.stockAction.quantityError"));
           setIsSaving(false);
           return;
         }
@@ -65,7 +67,7 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
       } else if (action === "remove") {
         const qty = Number(quantity);
         if (!qty || qty <= 0) {
-          showToast("error", "Quantity must be greater than zero.");
+          showToast("error", t("admin.stockAction.removeQuantityError"));
           setIsSaving(false);
           return;
         }
@@ -73,12 +75,12 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
       } else {
         const qty = Number(newQuantity);
         if (qty < 0 || Number.isNaN(qty)) {
-          showToast("error", "New quantity cannot be negative.");
+          showToast("error", t("admin.stockAction.negativeError"));
           setIsSaving(false);
           return;
         }
         if (!adjustReason.trim()) {
-          showToast("error", "A reason is required for stock adjustments.");
+          showToast("error", t("admin.stockAction.reasonRequired"));
           setIsSaving(false);
           return;
         }
@@ -92,12 +94,16 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
 
       showToast(
         "success",
-        action === "add" ? "Stock added successfully." : action === "remove" ? "Stock removed successfully." : "Inventory updated successfully."
+        action === "add"
+          ? t("admin.stockAction.addSuccess")
+          : action === "remove"
+          ? t("admin.stockAction.removeSuccess")
+          : t("admin.stockAction.adjustSuccess")
       );
       onApplied(result.inventory, result.transaction);
       onClose();
     } catch (error) {
-      showToast("error", error instanceof ApiError ? error.message : "Unable to update inventory.");
+      showToast("error", error instanceof ApiError ? error.message : t("admin.stockAction.updateError"));
     } finally {
       setIsSaving(false);
     }
@@ -107,41 +113,41 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
     <Modal
       isOpen
       onClose={onClose}
-      title={TITLES[action]}
+      title={t(TITLES[action])}
       surface="admin"
       footer={
         <>
           <Button surface="admin" variant="secondary" block onClick={onClose}>
-            Cancel
+            {t("admin.cancel")}
           </Button>
           <Button surface="admin" variant="primary" block loading={isSaving} onClick={handleSubmit}>
-            {TITLES[action]}
+            {t(TITLES[action])}
           </Button>
         </>
       }
     >
       <p style={{ margin: 0, fontSize: 13, color: "var(--admin-text-muted)" }}>
-        Current Quantity: <strong style={{ color: "var(--admin-text)" }}>{inventory.quantity}</strong>
+        {t("admin.stockAction.currentQuantity")} <strong style={{ color: "var(--admin-text)" }}>{inventory.quantity}</strong>
       </p>
 
       {action === "add" && (
         <>
-          <Input surface="admin" label="Quantity to Add" type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          <Input surface="admin" label={t("admin.stockAction.quantityToAdd")} type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
           <div className="admin-form__row">
             <Input
               surface="admin"
-              label="Cost Price"
+              label={t("admin.stockAction.costPrice")}
               type="number"
               min="0"
               step="0.01"
               value={costPrice}
               onChange={(e) => setCostPrice(e.target.value)}
             />
-            <Input surface="admin" label="Supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} />
+            <Input surface="admin" label={t("admin.stockAction.supplier")} value={supplier} onChange={(e) => setSupplier(e.target.value)} />
           </div>
           {quantity && Number(quantity) > 0 && (
             <p style={{ margin: 0, fontSize: 12.5, color: "var(--admin-text-muted)" }}>
-              New Quantity: <strong>{inventory.quantity + (Number(quantity) || 0)}</strong>
+              {t("admin.stockAction.newQuantity")} <strong>{inventory.quantity + (Number(quantity) || 0)}</strong>
             </p>
           )}
         </>
@@ -149,13 +155,13 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
 
       {action === "remove" && (
         <>
-          <Input surface="admin" label="Quantity" type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          <Input surface="admin" label={t("admin.stockAction.quantity")} type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
           <Select
             surface="admin"
-            label="Reason"
+            label={t("admin.stockAction.reason")}
             value={reason}
             onChange={(value) => setReason(value)}
-            options={REMOVE_STOCK_REASONS.map((r) => ({ value: r, label: r }))}
+            options={REMOVE_STOCK_REASONS.map((r) => ({ value: r, label: tv("stockRemoveReason", r) }))}
           />
         </>
       )}
@@ -164,7 +170,7 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
         <>
           <Input
             surface="admin"
-            label="New Quantity"
+            label={t("admin.stockAction.newQuantity")}
             type="number"
             min="0"
             value={newQuantity}
@@ -172,15 +178,15 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
           />
           <Input
             surface="admin"
-            label="Reason"
+            label={t("admin.stockAction.reason")}
             value={adjustReason}
             onChange={(e) => setAdjustReason(e.target.value)}
-            placeholder="e.g. Physical stock count correction"
+            placeholder={t("admin.stockAction.adjustReasonPlaceholder")}
           />
         </>
       )}
 
-      <Textarea surface="admin" label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+      <Textarea surface="admin" label={t("admin.stockAction.notes")} value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
     </Modal>
   );
 }

@@ -6,12 +6,14 @@ import AdminGate from "@/components/admin/AdminGate";
 import AdminNavigation from "@/components/admin/AdminNavigation";
 import SellRequestsList from "@/components/admin/SellRequestsList";
 import SellRequestDetail from "@/components/admin/SellRequestDetail";
+import { useLanguage } from "@/lib/i18n";
 import type { SellRequest } from "@/types/sellRequest";
 
 export default function AdminSellRequestsPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<SellRequest | null>(null);
   const [listKey, setListKey] = useState(0);
+  const { t } = useLanguage();
 
   function handleBack() {
     if (selected) {
@@ -26,8 +28,8 @@ export default function AdminSellRequestsPage() {
     <AdminGate>
       <div className="admin-shell">
         <AdminNavigation
-          title={selected ? selected.product_name || `${selected.brand} ${selected.model}` : "Sell Requests"}
-          subtitle={selected ? undefined : "Review devices submitted by customers"}
+          title={selected ? selected.product_name || `${selected.brand} ${selected.model}` : t("admin.sellRequests")}
+          subtitle={selected ? undefined : t("admin.sellRequestsSubtitle")}
           onBack={handleBack}
         />
 
