@@ -7,9 +7,11 @@ import AdminNavigation from "@/components/admin/AdminNavigation";
 import SellRequestsList from "@/components/admin/SellRequestsList";
 import SellRequestDetail from "@/components/admin/SellRequestDetail";
 import { useLanguage } from "@/lib/i18n";
+import { useTelegramUser } from "@/lib/useTelegramUser";
 import type { SellRequest } from "@/types/sellRequest";
 
 export default function AdminSellRequestsPage() {
+  useTelegramUser();
   const router = useRouter();
   const [selected, setSelected] = useState<SellRequest | null>(null);
   const [listKey, setListKey] = useState(0);

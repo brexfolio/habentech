@@ -86,6 +86,7 @@
   --store-danger-bg: rgba(226, 72, 61, 0.16);
 }
 
+/* Admin — light mode when Telegram reports light theme */
 [data-tg-theme="light"] {
   --store-bg: #f4f6fb;
   --store-surface: #ffffff;
@@ -93,4 +94,30 @@
   --store-border: #e4e8f2;
   --store-text: #101425;
   --store-text-muted: #6b7280;
+
+  --admin-bg: #eef2f9;
+  --admin-bg-gradient: radial-gradient(circle at 18% -10%, #dfe8ff 0%, rgba(223, 232, 255, 0) 45%),
+    radial-gradient(circle at 100% 15%, rgba(108, 75, 255, 0.1) 0%, rgba(108, 75, 255, 0) 40%),
+    radial-gradient(circle at 0% 100%, rgba(23, 166, 114, 0.06) 0%, rgba(23, 166, 114, 0) 35%),
+    #eef2f9;
+  --admin-surface: #ffffff;
+  --admin-surface-alt: #e7edf7;
+  --admin-border: #d7deef;
+  --admin-border-soft: rgba(10, 14, 26, 0.06);
+  --admin-highlight: rgba(10, 14, 26, 0.05);
+  --admin-text: #101425;
+  --admin-text-muted: #6b7280;
+  --admin-primary: #2f6bff;
+  --admin-primary-soft: rgba(47, 107, 255, 0.12);
+  --admin-accent: #6a4bff;
+  --admin-brand-gradient: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%);
+  --admin-success: #17a672;
+  --admin-success-bg: rgba(23, 166, 114, 0.12);
+  --admin-warning: #e8a600;
+  --admin-warning-bg: rgba(232, 166, 0, 0.12);
+  --admin-danger: #e2483d;
+  --admin-danger-bg: rgba(226, 72, 61, 0.12);
+  --admin-shadow-card: 0 12px 28px rgba(16, 20, 37, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --admin-shadow-card-hover: 0 16px 34px rgba(16, 20, 37, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --admin-shadow-raised: 0 6px 18px rgba(16, 20, 37, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }

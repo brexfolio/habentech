@@ -7,9 +7,11 @@ import AdminNavigation from "@/components/admin/AdminNavigation";
 import InventoryList from "@/components/admin/InventoryList";
 import InventoryDetail from "@/components/admin/InventoryDetail";
 import { useLanguage } from "@/lib/i18n";
+import { useTelegramUser } from "@/lib/useTelegramUser";
 import type { InventoryRecord } from "@/types/inventory";
 
 export default function AdminInventoryPage() {
+  useTelegramUser();
   const router = useRouter();
   const [selected, setSelected] = useState<InventoryRecord | null>(null);
   const [listKey, setListKey] = useState(0);

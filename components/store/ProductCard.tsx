@@ -8,15 +8,6 @@ import { useFavorites } from "@/lib/useFavorites";
 import { hapticImpact } from "@/lib/telegram";
 import { useLanguage } from "@/lib/i18n";
 
-function buildSpecLine(product: Product, tv: (prefix: string, value: string) => string): string {
-  const specs = product.specifications ?? [];
-  if (specs.length === 0) return tv("productCategory", product.category);
-  return specs
-    .slice(0, 2)
-    .map((spec) => spec.value)
-    .join(" • ");
-}
-
 const BADGE_CLASS: Record<string, string> = {
   Available: "",
   "Low Stock": "product-card__badge--low-stock",
@@ -27,7 +18,7 @@ const BADGE_CLASS: Record<string, string> = {
 
 export default function ProductCard({ product }: { product: Product }) {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { t, tv } = useLanguage();
+  const { t } = useLanguage();
   const image = product.images?.[0];
   const favorite = isFavorite(product.id);
 
@@ -61,7 +52,6 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="product-card__body">
         <p className="product-card__name">{product.name}</p>
-        <p className="product-card__spec">{buildSpecLine(product, tv)}</p>
         <div className="product-card__footer">
           <span className="product-card__price">{formatPrice(product.price, product.currency)}</span>
         </div>
