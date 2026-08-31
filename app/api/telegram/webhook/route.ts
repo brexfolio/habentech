@@ -91,16 +91,20 @@ async function handleMessage(message: NonNullable<TelegramUpdate["message"]>) {
       row.push({ text: "🏬 My Store", web_app: { url: `${appUrl}/admin` } });
     }
 
-    // Customers get a persistent "Shop Now" button; the admin keeps the
-    // ☰ commands menu (Open Store / My Store). A web_app menu button can
-    // only be pinned per-chat via the Bot API — it isn't honored as the
-    // global default — so this self-heals it on every /start.
+    // Replace the ☰ hamburger menu with a single "Shop Now" button for
+    // everyone (customers and admin alike). A web_app menu button can only
+    // be pinned per-chat via the Bot API — it isn't honored as the global
+    // default — so this self-heals it per-chat on every /start. We also set
+    // the default scope so new/unknown chats inherit "Shop Now" too.
     await setTelegramChatMenuButton(
-      isAdmin
-        ? { type: "commands" }
-        : { type: "web_app", text: "Shop Now", web_app: { url: appUrl } },
+      { type: "web_app", text: "Shop Now", web_app: { url: appUrl } },
       message.chat.id
     ).catch(() => {});
+    await setTelegramChatMenuButton({
+      type: "web_app",
+      text: "Shop Now",
+      web_app: { url: appUrl },
+    }).catch(() => {});
 
     await sendTelegramMessageWithWebApp(
       message.chat.id,
