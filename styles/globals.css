@@ -586,18 +586,20 @@ select {
 }
 
 .skeleton-card {
-  border-radius: var(--store-radius-md);
-  overflow: hidden;
+  border-radius: 22px;
   border: 1px solid var(--store-border);
+  background: var(--store-surface);
+  padding: 12px;
 }
 
 .skeleton-card__image {
   width: 100%;
   aspect-ratio: 1 / 1;
+  border-radius: 16px;
 }
 
 .skeleton-card__body {
-  padding: 10px 12px;
+  padding: 12px 2px 2px;
   display: flex;
   flex-direction: column;
   gap: 8px;

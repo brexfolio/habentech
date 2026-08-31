@@ -18,7 +18,7 @@ const BADGE_CLASS: Record<string, string> = {
 
 export default function ProductCard({ product }: { product: Product }) {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { t } = useLanguage();
+  const { t, tv } = useLanguage();
   const image = product.images?.[0];
   const favorite = isFavorite(product.id);
 

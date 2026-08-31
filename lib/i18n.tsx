@@ -32,6 +32,8 @@ const en = {
   home: {
     heroTitle: "Find Your Next Device",
     heroSubtitle: "Browse the latest electronics available in our store.",
+    shopNow: "Shop Now",
+    browseProducts: "Browse products",
     filterByCategory: "Filter by category",
     telegramUser: "Telegram User",
   },
@@ -532,6 +534,8 @@ const am: typeof en = {
   home: {
     heroTitle: "የሚቀጥለውን መሳሪያ ያግኙ",
     heroSubtitle: "በመደብራችን ውስጥ ያሉትን አዳዲስ የኤሌክትሮኒክስ ዕቃዎች ያስሱ።",
+    shopNow: "አሁን ይግዙ",
+    browseProducts: "ምርቶችን ይመልከቱ",
     filterByCategory: "በምድብ ያጣሩ",
     telegramUser: "የቴሌግራም ተጠቃሚ",
   },

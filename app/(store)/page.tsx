@@ -3,15 +3,14 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/store/Header";
 import SearchBar from "@/components/store/SearchBar";
+import PromoBanner from "@/components/store/PromoBanner";
 import CategoryFilter from "@/components/store/CategoryFilter";
 import ProductGrid from "@/components/store/ProductGrid";
 import { ProductGridSkeleton } from "@/components/ui/Loading";
 import { apiGet } from "@/lib/apiClient";
-import { useLanguage } from "@/lib/i18n";
 import type { Product } from "@/types/product";
 
 export default function HomePage() {
-  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -41,13 +40,8 @@ export default function HomePage() {
   return (
     <div className="store-shell">
       <Header />
-
-      <div className="store-hero">
-        <h1 className="store-hero__title">{t("home.heroTitle")}</h1>
-        <p className="store-hero__subtitle">{t("home.heroSubtitle")}</p>
-      </div>
-
       <SearchBar value={search} onChange={setSearch} />
+      <PromoBanner />
       <CategoryFilter selected={category} onSelect={setCategory} />
 
       {isLoading ? <ProductGridSkeleton /> : <ProductGrid products={products} />}
