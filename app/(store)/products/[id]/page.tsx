@@ -69,6 +69,13 @@ export default function ProductDetailPage() {
       .finally(() => setIsLoading(false));
   }, [params.id]);
 
+  const isDeepLinkEntry = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const webApp = (window as { Telegram?: any }).Telegram?.WebApp;
+    const startParam: unknown = webApp?.initDataUnsafe?.start_param;
+    return typeof startParam === "string" && /^product_/.test(startParam);
+  }, []);
+
   function getShareUrl(): string {
     if (typeof window === "undefined") return "";
     const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
@@ -137,13 +144,6 @@ export default function ProductDetailPage() {
   const specs = product.specifications ?? [];
   const favorite = isFavorite(product.id);
   const isOrderable = product.availability === "Available" || product.availability === "Low Stock";
-
-  const isDeepLinkEntry = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    const webApp = (window as { Telegram?: any }).Telegram?.WebApp;
-    const startParam: unknown = webApp?.initDataUnsafe?.start_param;
-    return typeof startParam === "string" && /^product_/.test(startParam);
-  }, []);
 
   function handleBack() {
     if (isDeepLinkEntry) {
