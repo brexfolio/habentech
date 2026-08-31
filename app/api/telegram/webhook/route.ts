@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { editTelegramMessageText, answerCallbackQuery, setTelegramChatMenuButton } from "@/lib/telegramBot";
+import { editTelegramMessageText, answerCallbackQuery, setTelegramChatMenuButton, sendTelegramMessage } from "@/lib/telegramBot";
 import { reduceInventoryForCompletedOrder, restoreInventoryForReversedOrder } from "@/lib/inventoryService";
 
 interface TelegramUpdate {
@@ -168,6 +168,7 @@ async function handleCallbackQuery(
   if (action in REQUEST_STATUS_LABELS) {
     const status = REQUEST_STATUS_LABELS[action];
     await supabase.from("product_requests").update({ status }).eq("id", id);
+    await notifyCustomerOfRequestStatus(id, status);
     await answerCallbackQuery(callbackQuery.id, `Request marked as ${status}.`);
     await clearMessageKeyboard(callbackQuery, `✅ Status updated: ${status}`);
     return;
@@ -208,6 +209,48 @@ async function handleCallbackQuery(
   }
 
   await answerCallbackQuery(callbackQuery.id);
+}
+
+async function notifyCustomerOfRequestStatus(requestId: string, status: string) {
+  const supabase = getSupabaseAdmin();
+
+  const { data: request } = await supabase
+    .from("product_requests")
+    .select("telegram_user_id, customer_name, product:products(name)")
+    .eq("id", requestId)
+    .single();
+
+  if (!request?.telegram_user_id) return;
+
+  const productArr = request.product as unknown as Array<{ name: string }> | { name: string } | null;
+  const productName = Array.isArray(productArr) ? productArr[0]?.name : productArr?.name;
+  const productLabel = productName?.trim() || "your requested product";
+  const customerName = request.customer_name?.trim() || "there";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const openStore = appUrl
+    ? `\n\n🛒 Tap "Shop Now" in the menu, or send /store to keep browsing.`
+    : "";
+
+  let message: string;
+  switch (status) {
+    case "Sold":
+      message = `📦 Hey ${customerName}, great news!\n\nThe product you requested — <b>${productLabel}</b> — is now available as <b>sold</b> and we'd love to hand it over to you. We'll be in touch to arrange delivery.${openStore}`;
+      break;
+    case "Completed":
+      message = `✅ Hi ${customerName}!\n\nYour request for <b>${productLabel}</b> has been marked as <b>completed</b>. We'll contact you shortly with the next steps.${openStore}`;
+      break;
+    case "Unavailable":
+      message = `🚫 Hi ${customerName}, we're sorry.\n\n<b>${productLabel}</b> is currently <b>unavailable</b>. Please check back later, or browse other products we have in stock.${openStore}`;
+      break;
+    default:
+      message = `ℹ️ Hi ${customerName}, your request for <b>${productLabel}</b> is now <b>${status}</b>.${openStore}`;
+  }
+
+  try {
+    await sendTelegramMessage(Number(request.telegram_user_id), message);
+  } catch (error) {
+    console.error("Failed to notify customer of request status:", error);
+  }
 }
 
 async function clearMessageKeyboard(

@@ -576,6 +576,52 @@
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(4px);
+  position: relative;
+  transition: color 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.product-detail__icon-btn:active {
+  transform: scale(0.85);
+}
+
+.product-detail__heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-detail__heart--pop {
+  animation: favoritePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.product-detail__burst {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.product-detail__particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ff5470;
+  left: -2.5px;
+  top: -2.5px;
+  transform: rotate(var(--angle)) translateX(16px);
+  opacity: 0;
+}
+
+.product-detail__burst--on .product-detail__particle {
+  animation: particleBurst 0.55s cubic-bezier(0.22, 0.8, 0.36, 1) forwards;
+}
+
+.product-detail__burst--off .product-detail__particle {
+  animation: particleBurstOff 0.4s ease-out forwards;
 }
 
 .product-detail__topbar-actions {

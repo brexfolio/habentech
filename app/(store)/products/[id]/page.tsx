@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ChevronLeft,
@@ -21,7 +21,7 @@ import { formatPrice } from "@/lib/utils";
 import { apiGet, apiPost, ApiError } from "@/lib/apiClient";
 import { useFavorites } from "@/lib/useFavorites";
 import { useTelegramUser } from "@/lib/useTelegramUser";
-import { hapticNotification } from "@/lib/telegram";
+import { hapticNotification, hapticImpact } from "@/lib/telegram";
 import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n";
 import Modal from "@/components/ui/Modal";
@@ -36,6 +36,9 @@ const BADGE_CLASS: Record<string, string> = {
   Unavailable: "status-pill--unavailable",
   "Out of Stock": "status-pill--out-of-stock",
 };
+
+const PARTICLE_COUNT = 8;
+const PARTICLE_ANGLES = Array.from({ length: PARTICLE_COUNT }, (_, i) => (360 / PARTICLE_COUNT) * i + 22.5);
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
@@ -53,6 +56,8 @@ export default function ProductDetailPage() {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [heartKey, setHeartKey] = useState(0);
+  const [burst, setBurst] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -133,6 +138,28 @@ export default function ProductDetailPage() {
   const favorite = isFavorite(product.id);
   const isOrderable = product.availability === "Available" || product.availability === "Low Stock";
 
+  const isDeepLinkEntry = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const webApp = (window as { Telegram?: any }).Telegram?.WebApp;
+    const startParam: unknown = webApp?.initDataUnsafe?.start_param;
+    return typeof startParam === "string" && /^product_/.test(startParam);
+  }, []);
+
+  function handleBack() {
+    if (isDeepLinkEntry) {
+      router.replace("/");
+    } else {
+      router.back();
+    }
+  }
+
+  function handleFavorite() {
+    hapticImpact("light");
+    setHeartKey((k) => k + 1);
+    setBurst((b) => b + 1);
+    toggleFavorite(product!.id);
+  }
+
   function scrollToImage(index: number) {
     const track = galleryRef.current;
     if (!track) return;
@@ -176,7 +203,7 @@ export default function ProductDetailPage() {
     <div className="product-detail">
       <div className="product-gallery">
         <div className="product-detail__topbar">
-          <button type="button" className="product-detail__icon-btn" onClick={() => router.back()} aria-label={t("product.goBack")}>
+          <button type="button" className="product-detail__icon-btn" onClick={handleBack} aria-label={t("product.goBack")}>
             <ArrowLeft size={18} />
           </button>
           <div className="product-detail__topbar-actions">
@@ -192,13 +219,26 @@ export default function ProductDetailPage() {
             </button>
             <button
               type="button"
-              className="product-detail__icon-btn"
-              onClick={() => toggleFavorite(product.id)}
+              className="product-detail__icon-btn product-detail__favorite"
+              onClick={handleFavorite}
               aria-label={favorite ? t("favorites.remove") : t("favorites.add")}
               aria-pressed={favorite}
               style={favorite ? { color: "#ff5470" } : undefined}
             >
-              <Heart size={18} fill={favorite ? "currentColor" : "none"} />
+              <span key={heartKey} className={`product-detail__heart ${favorite ? "product-detail__heart--pop" : ""}`}>
+                <Heart size={18} fill={favorite ? "currentColor" : "none"} />
+              </span>
+              {burst > 0 && (
+                <span className={`product-detail__burst ${favorite ? "product-detail__burst--on" : "product-detail__burst--off"}`} key={`burst-${burst}`}>
+                  {PARTICLE_ANGLES.map((angle, i) => (
+                    <span
+                      key={i}
+                      className="product-detail__particle"
+                      style={{ ["--angle" as string]: `${angle}deg` }}
+                    />
+                  ))}
+                </span>
+              )}
             </button>
           </div>
         </div>
