@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Smartphone, ArrowLeft } from "lucide-react";
+import { Smartphone, ArrowLeft, WifiOff } from "lucide-react";
 import Header from "@/components/store/Header";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
@@ -17,14 +17,19 @@ export default function MySellRequestsPage() {
   const { t, tv } = useLanguage();
   const [requests, setRequests] = useState<SellRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [respondingId, setRespondingId] = useState<string | null>(null);
   const { showToast } = useToast();
 
   function loadRequests() {
     setIsLoading(true);
+    setHasError(false);
     apiGet<{ sellRequests: SellRequest[] }>("/api/sell-requests/my")
       .then((data) => setRequests(data.sellRequests))
-      .catch(() => setRequests([]))
+      .catch(() => {
+        setRequests([]);
+        setHasError(true);
+      })
       .finally(() => setIsLoading(false));
   }
 
@@ -57,6 +62,17 @@ export default function MySellRequestsPage() {
 
       {isLoading ? (
         <LoadingPage />
+      ) : hasError ? (
+        <EmptyState
+          icon={<WifiOff size={26} />}
+          title={t("common.loadErrorTitle")}
+          description={t("common.loadErrorDescription")}
+          action={
+            <Button onClick={loadRequests} style={{ marginTop: 12 }}>
+              {t("common.retry")}
+            </Button>
+          }
+        />
       ) : requests.length === 0 ? (
         <EmptyState
           icon={<Smartphone size={26} />}

@@ -17,7 +17,6 @@ export default function HomePage() {
   const [category, setCategory] = useState("All");
 
   useEffect(() => {
-    const controller = new AbortController();
     setIsLoading(true);
 
     const params = new URLSearchParams();
@@ -31,10 +30,7 @@ export default function HomePage() {
         .finally(() => setIsLoading(false));
     }, 250);
 
-    return () => {
-      clearTimeout(timeout);
-      controller.abort();
-    };
+    return () => clearTimeout(timeout);
   }, [search, category]);
 
   return (

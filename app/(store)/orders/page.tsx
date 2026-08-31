@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PackageX } from "lucide-react";
+import { PackageX, WifiOff } from "lucide-react";
 import Header from "@/components/store/Header";
 import EmptyState from "@/components/ui/EmptyState";
 import { LoadingPage } from "@/components/ui/Loading";
@@ -14,11 +14,12 @@ export default function OrdersPage() {
   const { t, tv } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     apiGet<{ orders: Order[] }>("/api/orders")
       .then((data) => setOrders(data.orders))
-      .catch(() => setOrders([]))
+      .catch(() => setHasError(true))
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -31,6 +32,12 @@ export default function OrdersPage() {
 
       {isLoading ? (
         <LoadingPage />
+      ) : hasError ? (
+        <EmptyState
+          icon={<WifiOff size={26} />}
+          title={t("common.loadErrorTitle")}
+          description={t("common.loadErrorDescription")}
+        />
       ) : orders.length === 0 ? (
         <EmptyState
           icon={<PackageX size={26} />}

@@ -14,6 +14,13 @@ import {
   CheckCircle2,
   User as UserIcon,
   ClipboardList,
+  Smartphone,
+  Laptop,
+  Tablet,
+  Watch,
+  Gamepad2,
+  Headphones,
+  Package,
 } from "lucide-react";
 import {
   SELL_DEVICE_CATEGORIES,
@@ -43,6 +50,20 @@ interface SpecDraft {
 }
 
 const TOTAL_STEPS = 6;
+
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+const CATEGORY_ICONS: Record<SellDeviceCategory, LucideIcon> = {
+  Smartphone: Smartphone,
+  Laptop: Laptop,
+  Tablet: Tablet,
+  "Smart Watch": Watch,
+  "Gaming Device": Gamepad2,
+  Accessory: Headphones,
+  Other: Package,
+};
+
+type LucideIcon = typeof Smartphone;
 
 export default function SellDevicePage() {
   const router = useRouter();
@@ -107,16 +128,26 @@ export default function SellDevicePage() {
     setIsUploading(true);
     try {
       for (const file of Array.from(files)) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
-          "/api/sell-requests/upload-image",
-          formData
-        );
-        setImages((prev) => [...prev, { telegram_file_id: result.telegram_file_id, image_url: result.image_url }]);
+        if (!file.type.startsWith("image/")) {
+          showToast("error", t("sell.uploadTypeError"));
+          continue;
+        }
+        if (file.size > MAX_UPLOAD_BYTES) {
+          showToast("error", t("sell.uploadTooLarge"));
+          continue;
+        }
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
+            "/api/sell-requests/upload-image",
+            formData
+          );
+          setImages((prev) => [...prev, { telegram_file_id: result.telegram_file_id, image_url: result.image_url }]);
+        } catch (uploadError) {
+          showToast("error", uploadError instanceof ApiError ? uploadError.message : t("sell.uploadFailed"));
+        }
       }
-    } catch (uploadError) {
-      showToast("error", uploadError instanceof ApiError ? uploadError.message : t("sell.uploadFailed"));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -276,28 +307,34 @@ export default function SellDevicePage() {
           <>
             <div className="field">
               <span className="field__label">{t("sell.deviceCategory")}</span>
-              <div className="option-grid">
-                {SELL_DEVICE_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`option-card ${category === cat ? "option-card--active" : ""}`}
-                    onClick={() => setCategory(cat)}
-                  >
-                    {tv("sellCategory", cat)}
-                  </button>
-                ))}
+              <div className="category-picker">
+                {SELL_DEVICE_CATEGORIES.map((cat) => {
+                  const Icon = CATEGORY_ICONS[cat];
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`category-tile ${category === cat ? "category-tile--active" : ""}`}
+                      onClick={() => setCategory(cat)}
+                    >
+                      <span className="category-tile__icon">
+                        <Icon size={22} />
+                      </span>
+                      <span className="category-tile__label">{tv("sellCategory", cat)}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div className="field">
               <span className="field__label">{t("sell.brand")}</span>
-              <div className="option-grid">
+              <div className="brand-chip-wrap">
                 {DEVICE_BRANDS.map((b) => (
                   <button
                     key={b}
                     type="button"
-                    className={`option-card ${brand === b ? "option-card--active" : ""}`}
+                    className={`brand-chip ${brand === b ? "brand-chip--active" : ""}`}
                     onClick={() => setBrand(b)}
                   >
                     {tv("brand", b)}

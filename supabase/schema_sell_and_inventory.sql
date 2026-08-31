@@ -150,6 +150,16 @@ create index if not exists idx_inventory_transactions_created_at on inventory_tr
 -- Sale/Return transaction for it.
 create index if not exists idx_inventory_transactions_related_order_id on inventory_transactions (related_order_id);
 
+-- Hard guarantee that an order's stock can only ever be reduced once
+-- and restored once, even if two "Complete"/"reverse" requests race.
+-- Combined with the service-layer idempotency check, this makes a
+-- double stock reduction (or double restoration) impossible.
+create unique index if not exists uq_inventory_sale_per_order
+  on inventory_transactions (related_order_id) where transaction_type = 'Sale';
+
+create unique index if not exists uq_inventory_return_per_order
+  on inventory_transactions (related_order_id) where transaction_type = 'Return';
+
 alter table inventory enable row level security;
 alter table inventory_transactions enable row level security;
 -- No anon policies: inventory is admin-only and always accessed

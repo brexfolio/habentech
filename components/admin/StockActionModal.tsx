@@ -71,6 +71,11 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
           setIsSaving(false);
           return;
         }
+        if (qty > inventory.quantity) {
+          showToast("error", t("admin.stockAction.insufficientStock"));
+          setIsSaving(false);
+          return;
+        }
         payload = { quantity: qty, reason, notes: notes.trim() || undefined };
       } else {
         const qty = Number(newQuantity);
@@ -155,7 +160,15 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
 
       {action === "remove" && (
         <>
-          <Input surface="admin" label={t("admin.stockAction.quantity")} type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          <Input
+            surface="admin"
+            label={t("admin.stockAction.quantity")}
+            type="number"
+            min="1"
+            max={inventory.quantity}
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
           <Select
             surface="admin"
             label={t("admin.stockAction.reason")}
@@ -163,6 +176,11 @@ export default function StockActionModal({ action, inventory, onClose, onApplied
             onChange={(value) => setReason(value)}
             options={REMOVE_STOCK_REASONS.map((r) => ({ value: r, label: tv("stockRemoveReason", r) }))}
           />
+          {quantity && Number(quantity) > 0 && Number(quantity) <= inventory.quantity && (
+            <p style={{ margin: 0, fontSize: 12.5, color: "var(--admin-text-muted)" }}>
+              {t("admin.stockAction.newQuantity")} <strong>{inventory.quantity - (Number(quantity) || 0)}</strong>
+            </p>
+          )}
         </>
       )}
 

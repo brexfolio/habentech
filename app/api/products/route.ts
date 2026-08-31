@@ -34,6 +34,17 @@ export async function GET(request: Request) {
       query = query.eq("featured", true);
     }
 
+    const idsParam = searchParams.get("ids");
+    if (idsParam) {
+      const ids = idsParam
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
+      if (ids.length > 0) {
+        query = query.in("id", ids);
+      }
+    }
+
     if (search) {
       let matchingIds: string[] = [];
       const { data: specMatches } = await supabase

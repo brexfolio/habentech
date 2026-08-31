@@ -70,7 +70,7 @@ select {
   justify-content: center;
   gap: 8px;
   font-size: 14.5px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 13px 20px;
   border-radius: var(--store-radius-sm);
   border: 1px solid transparent;
@@ -297,7 +297,7 @@ select {
 
 .field__label {
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--store-text-muted);
 }
 
@@ -409,7 +409,7 @@ select {
   background: transparent;
   color: var(--store-text);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   text-align: left;
 }
@@ -426,7 +426,7 @@ select {
 .select-sheet-option__code {
   margin-left: 6px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--store-text-muted);
 }
 
@@ -478,7 +478,7 @@ select {
 .quantity-stepper__value {
   width: 42px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 15px;
 }
 
@@ -508,7 +508,7 @@ select {
   background: #1a1f33;
   color: #fff;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 500;
   box-shadow: var(--store-shadow-lg);
   animation: toastIn 0.2s ease;
   pointer-events: auto;
@@ -526,15 +526,15 @@ select {
 }
 
 .toast--success {
-  background: #0f5d43;
+  background: #1a1f33;
 }
 
 .toast--error {
-  background: #6e1f24;
+  background: #1a1f33;
 }
 
 .toast--warning {
-  background: #6e4c0f;
+  background: #1a1f33;
 }
 
 .toast__icon {
@@ -642,7 +642,7 @@ select {
 
 .empty-state__title {
   font-size: 14.5px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--store-text);
   margin: 0;
 }

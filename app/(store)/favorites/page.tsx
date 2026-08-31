@@ -19,8 +19,21 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     if (!isLoaded) return;
-    apiGet<{ products: Product[] }>("/api/products")
-      .then((data) => setProducts(data.products.filter((p) => favorites.includes(p.id))))
+
+    if (favorites.length === 0) {
+      setProducts([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const ids = Array.from(new Set(favorites));
+    apiGet<{ products: Product[] }>(`/api/products?ids=${encodeURIComponent(ids.join(","))}`)
+      .then((data) => {
+        const order = new Map(ids.map((id, index) => [id, index]));
+        const matched = data.products.filter((p) => order.has(p.id));
+        matched.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+        setProducts(matched);
+      })
       .catch(() => setProducts([]))
       .finally(() => setIsLoading(false));
   }, [isLoaded, favorites]);

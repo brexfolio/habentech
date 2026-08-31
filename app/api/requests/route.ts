@@ -63,8 +63,8 @@ export async function POST(request: Request) {
       return apiError("Product not found.", 404);
     }
 
-    if (product.availability === "Unavailable") {
-      return apiError("This product is not currently available.", 409);
+    if (["Sold", "Unavailable", "Out of Stock"].includes(product.availability)) {
+      return apiError("This product is not currently available to request.", 409);
     }
 
     const customerName = getCustomerDisplayName(verified.user);
