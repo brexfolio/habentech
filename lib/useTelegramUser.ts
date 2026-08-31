@@ -5,6 +5,7 @@ import {
   initTelegramApp,
   getTelegramUser,
   getColorScheme,
+  getTelegramWebApp,
   isTelegramEnvironment,
   type TelegramUser,
 } from "./telegram";
@@ -20,8 +21,19 @@ export function useTelegramUser() {
     setInTelegram(isTelegramEnvironment());
     setIsReady(true);
 
-    const theme = getColorScheme();
-    document.documentElement.setAttribute("data-tg-theme", theme);
+    const applyTheme = () => {
+      const theme = getColorScheme();
+      document.documentElement.setAttribute("data-tg-theme", theme);
+    };
+
+    applyTheme();
+
+    const webApp = getTelegramWebApp();
+    webApp?.onEvent("themeChanged", applyTheme);
+
+    return () => {
+      webApp?.offEvent("themeChanged", applyTheme);
+    };
   }, []);
 
   return { user, isReady, inTelegram };
