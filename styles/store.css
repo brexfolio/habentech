@@ -129,8 +129,8 @@
   display: flex;
   align-items: center;
   margin: 0 16px 14px;
-  background: transparent;
-  border: 1px solid transparent;
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
   border-radius: var(--store-radius-md);
   padding: 0 14px;
   height: 46px;
