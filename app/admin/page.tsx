@@ -183,52 +183,41 @@ export default function AdminPage() {
               </div>
               <div className="admin-dashboard-analytics" style={{ marginTop: 16 }}>
                 <div className="admin-dashboard-stat">
-                  <div className="admin-dashboard-stat__row">
-                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.totalProducts")}</p>
-                    <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--primary">
-                      <Package size={17} strokeWidth={2} />
-                    </div>
+                  <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--primary">
+                    <Package size={17} strokeWidth={2} />
                   </div>
-                  <div className="admin-dashboard-stat__row">
+                  <div className="admin-dashboard-stat__text">
+                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.totalProducts")}</p>
                     <p className="admin-dashboard-stat__value">{analytics?.totalProducts ?? "\u2014"}</p>
                   </div>
                 </div>
 
                 <div className="admin-dashboard-stat">
-                  <div className="admin-dashboard-stat__row">
-                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.pendingOrdersLabel")}</p>
-                    <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--warning">
-                      <ShoppingBag size={17} strokeWidth={2} />
-                    </div>
+                  <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--warning">
+                    <ShoppingBag size={17} strokeWidth={2} />
                   </div>
-                  <div className="admin-dashboard-stat__row">
+                  <div className="admin-dashboard-stat__text">
+                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.pendingOrdersLabel")}</p>
                     <p className="admin-dashboard-stat__value">{analytics?.pendingOrders ?? "\u2014"}</p>
                   </div>
                 </div>
 
                 <div className="admin-dashboard-stat">
-                  <div className="admin-dashboard-stat__row">
-                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.lowStockAlerts")}</p>
-                    <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--danger">
-                      <CircleAlert size={17} strokeWidth={2} />
-                    </div>
+                  <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--danger">
+                    <CircleAlert size={17} strokeWidth={2} />
                   </div>
-                  <div className="admin-dashboard-stat__row">
+                  <div className="admin-dashboard-stat__text">
+                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.lowStockAlerts")}</p>
                     <p className="admin-dashboard-stat__value">{analytics?.lowStockProducts ?? "\u2014"}</p>
-                    {analytics && analytics.lowStockProducts > 0 && (
-                      <span className="admin-dashboard-stat__change admin-dashboard-stat__change--neutral">{t("admin.dashboard.check")}</span>
-                    )}
                   </div>
                 </div>
 
                 <div className="admin-dashboard-stat">
-                  <div className="admin-dashboard-stat__row">
-                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.revenueToday")}</p>
-                    <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--teal">
-                      <DollarSign size={17} strokeWidth={2} />
-                    </div>
+                  <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--teal">
+                    <DollarSign size={17} strokeWidth={2} />
                   </div>
-                  <div className="admin-dashboard-stat__row">
+                  <div className="admin-dashboard-stat__text">
+                    <p className="admin-dashboard-stat__label">{t("admin.dashboard.revenueToday")}</p>
                     <p className="admin-dashboard-stat__value admin-dashboard-stat__value--sm">
                       {analytics?.inventoryValue != null
                         ? analytics.inventoryValue.toLocaleString()
