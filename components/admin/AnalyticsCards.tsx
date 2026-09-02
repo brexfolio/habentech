@@ -14,8 +14,6 @@ import {
   PackageX,
   Database,
   ArrowLeft,
-  MoreVertical,
-  ChevronDown,
 } from "lucide-react";
 import { apiGet, ApiError } from "@/lib/apiClient";
 import { Spinner } from "@/components/ui/Loading";
@@ -42,7 +40,7 @@ interface AnalyticsCardsProps {
   storeName?: string;
 }
 
-export default function AnalyticsCards({ onBack, storeName = "Haben tech" }: AnalyticsCardsProps) {
+export default function AnalyticsCards({ onBack }: AnalyticsCardsProps) {
   const [data, setData] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,18 +60,6 @@ export default function AnalyticsCards({ onBack, storeName = "Haben tech" }: Ana
   if (isLoading) {
     return (
       <div className="admin-analytics">
-        <div className="analytics-topbar">
-          <button type="button" className="analytics-topbar__icon" onClick={back} aria-label={t("admin.back")}>
-            <ArrowLeft size={18} />
-          </button>
-          <div className="analytics-topbar__brand">
-            <span className="analytics-topbar__name">{storeName}</span>
-            <ChevronDown size={16} />
-          </div>
-          <button type="button" className="analytics-topbar__icon" aria-label="Menu">
-            <MoreVertical size={18} />
-          </button>
-        </div>
         <div className="loading-page">
           <Spinner surface="admin" />
         </div>
@@ -84,18 +70,6 @@ export default function AnalyticsCards({ onBack, storeName = "Haben tech" }: Ana
   if (!data) {
     return (
       <div className="admin-analytics">
-        <div className="analytics-topbar">
-          <button type="button" className="analytics-topbar__icon" onClick={back} aria-label={t("admin.back")}>
-            <ArrowLeft size={18} />
-          </button>
-          <div className="analytics-topbar__brand">
-            <span className="analytics-topbar__name">{storeName}</span>
-            <ChevronDown size={16} />
-          </div>
-          <button type="button" className="analytics-topbar__icon" aria-label="Menu">
-            <MoreVertical size={18} />
-          </button>
-        </div>
         <EmptyState
           surface="admin"
           icon={<AlertTriangle size={24} />}
@@ -121,19 +95,6 @@ export default function AnalyticsCards({ onBack, storeName = "Haben tech" }: Ana
 
   return (
     <div className="admin-analytics">
-      <div className="analytics-topbar">
-        <button type="button" className="analytics-topbar__icon" onClick={back} aria-label={t("admin.back")}>
-          <ArrowLeft size={18} />
-        </button>
-        <div className="analytics-topbar__brand">
-          <span className="analytics-topbar__name">{storeName}</span>
-          <ChevronDown size={16} />
-        </div>
-        <button type="button" className="analytics-topbar__icon" aria-label="Menu">
-          <MoreVertical size={18} />
-        </button>
-      </div>
-
       <div className="analytics-header">
         <button type="button" className="analytics-header__back" onClick={back} aria-label={t("admin.back")}>
           <ArrowLeft size={20} />
