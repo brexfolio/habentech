@@ -104,7 +104,7 @@ export default function AdminPage() {
   useEffect(() => {
     apiGet<{ settings: StoreSettings | null }>("/api/settings")
       .then((res) => {
-        if (res.settings?.store_name) setStoreName(res.settings.store_name);
+        if (res.settings?.store_name) setStoreName("Haben Tech");
       })
       .catch(() => {});
 
