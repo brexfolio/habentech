@@ -51,11 +51,11 @@
   --admin-danger-bg: rgba(239, 68, 68, 0.12);
   --admin-teal: #14B8A6;
   --admin-teal-soft: rgba(20, 184, 166, 0.12);
-  --admin-radius-xl: 36px;
-  --admin-radius-lg: 28px;
-  --admin-radius-md: 20px;
-  --admin-radius-sm: 14px;
-  --admin-radius-xs: 10px;
+  --admin-radius-xl: 24px;
+  --admin-radius-lg: 20px;
+  --admin-radius-md: 14px;
+  --admin-radius-sm: 10px;
+  --admin-radius-xs: 8px;
   --admin-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
   --admin-shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
   --admin-shadow-raised: 0 4px 12px rgba(0, 0, 0, 0.35);

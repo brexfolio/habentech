@@ -184,7 +184,7 @@ export default function AdminPage() {
               <div className="admin-dashboard-analytics" style={{ marginTop: 16 }}>
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--primary">
-                    <Package size={17} strokeWidth={2} />
+                    <Package size={14} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.totalProducts")}</p>
@@ -194,7 +194,7 @@ export default function AdminPage() {
 
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--warning">
-                    <ShoppingBag size={17} strokeWidth={2} />
+                    <ShoppingBag size={14} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.pendingOrdersLabel")}</p>
@@ -204,7 +204,7 @@ export default function AdminPage() {
 
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--danger">
-                    <CircleAlert size={17} strokeWidth={2} />
+                    <CircleAlert size={14} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.lowStockAlerts")}</p>
@@ -214,7 +214,7 @@ export default function AdminPage() {
 
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--teal">
-                    <DollarSign size={17} strokeWidth={2} />
+                    <DollarSign size={14} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.revenueToday")}</p>

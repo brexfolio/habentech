@@ -85,7 +85,7 @@ export default function AnalyticsCards() {
       {cards.map(({ icon: Icon, label, value }) => (
         <div className="admin-stat-card" key={label}>
           <div className="admin-stat-card__icon">
-            <Icon size={18} />
+            <Icon size={14} />
           </div>
           <p className="admin-stat-card__value">{value}</p>
           <p className="admin-stat-card__label">{label}</p>
