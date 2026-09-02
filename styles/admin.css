@@ -246,8 +246,9 @@
   padding: 16px;
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
   aspect-ratio: 1 / 1;
   min-width: 0;
   overflow: hidden;
@@ -259,12 +260,13 @@
   box-shadow: var(--admin-shadow-card-hover);
 }
 
-.admin-dashboard-stat__text {
+.admin-dashboard-stat__row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   min-width: 0;
-  gap: 2px;
-  align-self: flex-start;
+  gap: 12px;
 }
 
 .admin-dashboard-stat__icon {
@@ -275,8 +277,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-left: auto;
-  order: 2;
 }
 
 .admin-dashboard-stat__icon--primary {
@@ -332,13 +332,12 @@
 }
 
 .admin-dashboard-stat__change {
-  position: absolute;
-  bottom: 16px;
-  right: 18px;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 999px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .admin-dashboard-stat__change--positive {
