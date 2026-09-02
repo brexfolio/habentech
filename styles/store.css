@@ -149,7 +149,7 @@
 }
 
 .search-bar__input::placeholder {
-  color: color-mix(in srgb, var(--store-text) 55%, var(--store-text-muted));
+  color: var(--store-placeholder, #A4ACB9);
 }
 
 .search-bar__clear {
@@ -678,7 +678,7 @@
 }
 
 .share-sheet__icon-wrap--more {
-  background: var(--store-primary, #4f46e5);
+  background: var(--store-primary, #1A38FF);
 }
 
 .share-sheet__label {

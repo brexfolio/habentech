@@ -1,11 +1,11 @@
 :root {
   /* Store — light (default / Telegram light theme) */
-  --store-bg: #f3f4f5;
-  --store-surface: #ffffff;
-  --store-surface-alt: #f0f1f3;
-  --store-border: #e6e7e9;
-  --store-text: #1a1b1c;
-  --store-text-muted: #6b6c6e;
+  --store-bg: #ECEFF3;
+  --store-surface: #ECEFF3;
+  --store-surface-alt: #DFE1E7;
+  --store-border: #DFE1E7;
+  --store-text: #1E293B;
+  --store-text-muted: #666D80;
   --store-primary: #2f6bff;
   --store-primary-hover: #1f56e0;
   --store-primary-contrast: #ffffff;
@@ -19,6 +19,8 @@
   --store-radius-sm: 10px;
   --store-radius-md: 16px;
   --store-radius-lg: 22px;
+  --store-placeholder: #666D80;
+  --admin-placeholder: #A4ACB9;
   --store-shadow-sm: 0 1px 2px rgba(16, 20, 37, 0.06);
   --store-shadow-md: 0 8px 24px rgba(16, 20, 37, 0.08);
   --store-shadow-lg: 0 16px 40px rgba(16, 20, 37, 0.14);
@@ -37,8 +39,8 @@
   --admin-text-muted: #818898;
   --admin-primary: #1A38FF;
   --admin-primary-soft: rgba(26, 56, 255, 0.14);
-  --admin-accent: #6366F1;
-  --admin-accent-soft: rgba(99, 102, 241, 0.14);
+  --admin-accent: #1A38FF;
+  --admin-accent-soft: rgba(26, 56, 255, 0.14);
   --admin-brand-gradient: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%);
   --admin-success: #10B981;
   --admin-success-soft: rgba(16, 185, 129, 0.12);
@@ -59,6 +61,9 @@
   --admin-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
   --admin-shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
   --admin-shadow-raised: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --admin-bar-bg: rgba(39, 40, 53, 0.9);
+  --admin-icon-bg: #36394A;
+  --admin-icon-color: #FFFFFF;
 
   --font-sans: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -116,6 +121,7 @@
     --store-success-bg: rgba(23, 166, 114, 0.16);
     --store-warning-bg: rgba(232, 166, 0, 0.16);
     --store-danger-bg: rgba(226, 72, 61, 0.16);
+    --store-placeholder: #A4ACB9;
     --store-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --store-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
     --store-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
@@ -133,32 +139,35 @@
   --store-success-bg: rgba(23, 166, 114, 0.16);
   --store-warning-bg: rgba(232, 166, 0, 0.16);
   --store-danger-bg: rgba(226, 72, 61, 0.16);
+  --store-placeholder: #A4ACB9;
 }
 
 /* Admin — light mode when Telegram reports light theme */
 [data-tg-theme="light"] {
-  --store-bg: #f3f4f5;
-  --store-surface: #ffffff;
-  --store-surface-alt: #f0f1f3;
-  --store-border: #e6e7e9;
-  --store-text: #1a1b1c;
-  --store-text-muted: #6b6c6e;
+  --store-bg: #ECEFF3;
+  --store-surface: #ECEFF3;
+  --store-surface-alt: #DFE1E7;
+  --store-border: #DFE1E7;
+  --store-text: #1E293B;
+  --store-text-muted: #666D80;
+  --store-placeholder: #666D80;
 
-  --admin-bg: #f3f4f5;
+  --admin-bg: #ECEFF3;
   --admin-bg-gradient: none;
-  --admin-surface: #FFFFFF;
-  --admin-surface-alt: #F1F5F9;
-  --admin-surface-elevated: #F8FAFC;
-  --admin-border: #E2E8F0;
-  --admin-border-soft: rgba(0, 0, 0, 0.05);
+  --admin-surface: #DFE1E7;
+  --admin-surface-alt: #ECEFF3;
+  --admin-surface-elevated: #DFE1E7;
+  --admin-border: #DFE1E7;
+  --admin-border-soft: rgba(0, 0, 0, 0.06);
   --admin-highlight: rgba(0, 0, 0, 0.03);
-  --admin-text: #0F172A;
-  --admin-text-secondary: #475569;
-  --admin-text-muted: #94A3B8;
+  --admin-text: #1E293B;
+  --admin-text-secondary: #666D80;
+  --admin-text-muted: #666D80;
+  --admin-placeholder: #666D80;
   --admin-primary: #2563EB;
   --admin-primary-soft: rgba(37, 99, 235, 0.08);
-  --admin-accent: #4F46E5;
-  --admin-accent-soft: rgba(79, 70, 229, 0.08);
+  --admin-accent: #2563EB;
+  --admin-accent-soft: rgba(37, 99, 235, 0.08);
   --admin-brand-gradient: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%);
   --admin-success: #059669;
   --admin-success-soft: rgba(5, 150, 105, 0.08);
@@ -174,4 +183,7 @@
   --admin-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
   --admin-shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
   --admin-shadow-raised: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --admin-bar-bg: rgba(255, 255, 255, 0.9);
+  --admin-icon-bg: #DFE1E7;
+  --admin-icon-color: #666D80;
 }

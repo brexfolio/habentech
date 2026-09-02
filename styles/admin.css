@@ -6,7 +6,7 @@
   min-height: 100vh;
   background:
     radial-gradient(circle at 18% -8%, rgba(59, 130, 246, 0.18), transparent 55%),
-    radial-gradient(circle at 92% 4%, rgba(139, 92, 246, 0.14), transparent 45%),
+    radial-gradient(circle at 92% 4%, rgba(26, 56, 255, 0.16), transparent 45%),
     radial-gradient(circle at 50% 100%, rgba(20, 184, 166, 0.12), transparent 50%),
     var(--admin-bg);
   color: var(--admin-text);
@@ -40,8 +40,8 @@
   width: 40px;
   height: 40px;
   border-radius: var(--admin-radius-sm);
-  background: #36394A;
-  color: #FFFFFF;
+  background: var(--admin-icon-bg);
+  color: var(--admin-icon-color);
   border: 1px solid var(--admin-border);
   display: flex;
   align-items: center;
@@ -598,7 +598,7 @@
   left: -120px;
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(26, 56, 255, 0.07) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -650,11 +650,6 @@
 .admin-stat-card__icon--green {
   background: rgba(16, 185, 129, 0.14);
   color: #34d399;
-}
-
-.admin-stat-card__icon--purple {
-  background: rgba(139, 92, 246, 0.14);
-  color: #a78bfa;
 }
 
 .admin-stat-card__icon--orange {
@@ -735,7 +730,7 @@
   right: -40px;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.22) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(26, 56, 255, 0.22) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -762,7 +757,7 @@
 .analytics-inventory__currency {
   font-size: 18px;
   font-weight: 800;
-  color: #a78bfa;
+  color: #1A38FF;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0 0 8px;
@@ -1203,7 +1198,7 @@
   right: 0;
   z-index: 25;
   padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
-  background: rgba(15, 18, 32, 0.9);
+  background: var(--admin-bar-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--admin-border-soft);
@@ -1242,7 +1237,7 @@
   color: var(--admin-text);
   background:
     radial-gradient(circle at 18% -8%, rgba(59, 130, 246, 0.18), transparent 55%),
-    radial-gradient(circle at 92% 4%, rgba(139, 92, 246, 0.14), transparent 45%),
+    radial-gradient(circle at 92% 4%, rgba(26, 56, 255, 0.16), transparent 45%),
     radial-gradient(circle at 50% 100%, rgba(20, 184, 166, 0.12), transparent 50%),
     var(--admin-bg);
 }

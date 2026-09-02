@@ -72,7 +72,7 @@ export default function AnalyticsCards() {
   const cards = [
     { icon: Package, label: t("admin.analyticsCards.totalProducts"), value: data.totalProducts, tone: "cyan" },
     { icon: CheckCircle2, label: t("admin.analyticsCards.availableProducts"), value: data.availableProducts, tone: "green" },
-    { icon: TrendingUp, label: t("admin.analyticsCards.soldProducts"), value: data.soldProducts, tone: "purple" },
+    { icon: TrendingUp, label: t("admin.analyticsCards.soldProducts"), value: data.soldProducts, tone: "blue" },
     { icon: ShoppingBag, label: t("admin.analyticsCards.totalOrders"), value: data.totalOrders, tone: "orange" },
     { icon: Clock, label: t("admin.analyticsCards.pendingOrders"), value: data.pendingOrders, tone: "blue" },
     { icon: MessageSquareText, label: t("admin.analyticsCards.productRequests"), value: data.productRequests, tone: "pink" },
@@ -98,7 +98,7 @@ export default function AnalyticsCards() {
 
       <div className="analytics-inventory">
         <div className="analytics-inventory__glow" />
-        <div className={`admin-stat-card__icon admin-stat-card__icon--purple analytics-inventory__icon`}>
+        <div className={`admin-stat-card__icon admin-stat-card__icon--blue analytics-inventory__icon`}>
           <Database size={22} />
         </div>
         <div className="analytics-inventory__value">{data.inventoryValue.toLocaleString("en-US")}</div>

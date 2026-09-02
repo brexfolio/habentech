@@ -321,6 +321,18 @@ select {
   border-color: var(--store-primary);
 }
 
+.input::placeholder,
+.select::placeholder,
+.textarea::placeholder {
+  color: var(--store-placeholder, #A4ACB9);
+}
+
+.input--admin::placeholder,
+.select--admin::placeholder,
+.textarea--admin::placeholder {
+  color: var(--admin-placeholder, #A4ACB9);
+}
+
 .textarea {
   resize: vertical;
   min-height: 90px;
@@ -365,14 +377,14 @@ select {
 }
 
 .select-trigger__placeholder {
-  color: var(--store-text-muted);
+  color: var(--store-placeholder, #A4ACB9);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .select-trigger--admin .select-trigger__placeholder {
-  color: var(--admin-text-muted);
+  color: var(--admin-placeholder, #A4ACB9);
 }
 
 .select-trigger__chevron {
