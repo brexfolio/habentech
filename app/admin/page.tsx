@@ -29,7 +29,6 @@ import { useToast } from "@/components/ui/Toast";
 import { useLanguage } from "@/lib/i18n";
 import { useTelegramUser } from "@/lib/useTelegramUser";
 import { apiGet } from "@/lib/apiClient";
-import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/types/product";
 import type { Order } from "@/types/order";
 import type { StoreSettings } from "@/types/settings";
@@ -186,8 +185,8 @@ export default function AdminPage() {
                     <Package size={17} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
-                    <p className="admin-dashboard-stat__value">{analytics?.totalProducts ?? "\u2014"}</p>
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.totalProducts")}</p>
+                    <p className="admin-dashboard-stat__value">{analytics?.totalProducts ?? "\u2014"}</p>
                   </div>
                 </div>
 
@@ -196,8 +195,8 @@ export default function AdminPage() {
                     <ShoppingBag size={17} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
-                    <p className="admin-dashboard-stat__value">{analytics?.pendingOrders ?? "\u2014"}</p>
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.pendingOrdersLabel")}</p>
+                    <p className="admin-dashboard-stat__value">{analytics?.pendingOrders ?? "\u2014"}</p>
                   </div>
                 </div>
 
@@ -206,8 +205,8 @@ export default function AdminPage() {
                     <CircleAlert size={17} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
-                    <p className="admin-dashboard-stat__value">{analytics?.lowStockProducts ?? "\u2014"}</p>
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.lowStockAlerts")}</p>
+                    <p className="admin-dashboard-stat__value">{analytics?.lowStockProducts ?? "\u2014"}</p>
                   </div>
                   {analytics && analytics.lowStockProducts > 0 && (
                     <span className="admin-dashboard-stat__change admin-dashboard-stat__change--neutral">{t("admin.dashboard.check")}</span>
@@ -219,10 +218,15 @@ export default function AdminPage() {
                     <DollarSign size={17} strokeWidth={2} />
                   </div>
                   <div className="admin-dashboard-stat__text">
-                    <p className="admin-dashboard-stat__value">
-                      {analytics?.inventoryValue != null ? formatPrice(analytics.inventoryValue) : "\u2014"}
-                    </p>
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.revenueToday")}</p>
+                    <p className="admin-dashboard-stat__value">
+                      {analytics?.inventoryValue != null
+                        ? analytics.inventoryValue.toLocaleString()
+                        : "\u2014"}
+                      {analytics?.inventoryValue != null && (
+                        <span className="admin-dashboard-stat__value-sub">ETB</span>
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
