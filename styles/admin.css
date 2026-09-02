@@ -243,11 +243,12 @@
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-lg);
-  padding: 14px;
+  padding: 16px;
   position: relative;
   display: flex;
   align-items: flex-start;
   gap: 14px;
+  aspect-ratio: 1 / 1;
   min-width: 0;
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -263,6 +264,7 @@
   flex-direction: column;
   min-width: 0;
   gap: 2px;
+  align-self: flex-start;
 }
 
 .admin-dashboard-stat__icon {
@@ -274,6 +276,7 @@
   justify-content: center;
   flex-shrink: 0;
   margin-left: auto;
+  order: 2;
 }
 
 .admin-dashboard-stat__icon--primary {
@@ -990,7 +993,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(9, 11, 18, 0.8);
+  background: rgba(15, 18, 32, 0.8);
   color: #fff;
   border: none;
   display: flex;
@@ -1004,7 +1007,7 @@
   left: 4px;
   font-size: 10px;
   font-weight: 700;
-  background: rgba(9, 11, 18, 0.8);
+  background: rgba(15, 18, 32, 0.8);
   color: #fff;
   padding: 2px 6px;
   border-radius: 999px;
@@ -1033,7 +1036,7 @@
   right: 0;
   z-index: 25;
   padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
-  background: rgba(9, 11, 18, 0.9);
+  background: rgba(15, 18, 32, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--admin-border-soft);
