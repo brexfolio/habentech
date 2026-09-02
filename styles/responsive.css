@@ -37,6 +37,10 @@
     left: 50%;
     transform: translateX(-50%);
   }
+
+  .admin-dashboard {
+    padding: 28px 32px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -50,6 +54,12 @@
 
   .admin-stat-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .admin-dashboard {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px;
   }
 }
 
@@ -65,6 +75,10 @@
   .admin-stat-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .admin-dashboard {
+    max-width: 800px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -74,6 +88,27 @@
   }
 
   .admin-action-card {
+    padding: 14px 12px;
+  }
+
+  .admin-dashboard {
+    padding: 20px 16px;
+    gap: 24px;
+  }
+
+  .admin-welcome {
+    padding: 20px;
+  }
+
+  .admin-welcome__greeting {
+    font-size: 20px;
+  }
+
+  .admin-dashboard-stat {
     padding: 16px 14px;
+  }
+
+  .admin-dashboard-stat__value {
+    font-size: 22px;
   }
 }
