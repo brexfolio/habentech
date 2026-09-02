@@ -14,6 +14,10 @@ import {
   CircleAlert,
   DollarSign,
   Package,
+  Smartphone,
+  Boxes,
+  Star,
+  Pencil,
 } from "lucide-react";
 import AdminGate from "@/components/admin/AdminGate";
 import AdminNavigation from "@/components/admin/AdminNavigation";
@@ -278,6 +282,34 @@ export default function AdminPage() {
                   description={t("admin.dashboard.configurations")}
                   tone="primary"
                   onClick={() => goTo("settings")}
+                />
+                <AdminActionCard
+                  icon={Smartphone}
+                  label={t("admin.sellRequests")}
+                  description={t("admin.card.reviewDevices")}
+                  tone="accent"
+                  onClick={() => router.push("/admin/sell-requests")}
+                />
+                <AdminActionCard
+                  icon={Boxes}
+                  label={t("admin.inventory")}
+                  description={t("admin.card.stockHistory")}
+                  tone="success"
+                  onClick={() => router.push("/admin/inventory")}
+                />
+                <AdminActionCard
+                  icon={Star}
+                  label={t("admin.featured")}
+                  description={t("admin.card.highlightProducts")}
+                  tone="warning"
+                  onClick={() => goTo("featured")}
+                />
+                <AdminActionCard
+                  icon={Pencil}
+                  label={t("admin.dashboard.editProduct")}
+                  description={t("admin.card.updateProducts")}
+                  tone="accent"
+                  onClick={() => goTo("products")}
                 />
               </div>
             </div>
