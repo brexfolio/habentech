@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquareText, ExternalLink } from "lucide-react";
+import { MessageSquareText, ExternalLink, ChevronDown, Check, X } from "lucide-react";
 import { apiGet, apiPatch, ApiError } from "@/lib/apiClient";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n";
@@ -9,11 +9,19 @@ import { useToast } from "@/components/ui/Toast";
 import { Spinner } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import Button from "@/components/ui/Button";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/scrollLock";
 import type { ProductRequest, RequestStatus } from "@/types/request";
+
+const STATUS_OPTIONS: { status: RequestStatus; labelKey: "admin.markCompleted" | "admin.markSold" | "admin.markUnavailable" }[] = [
+  { status: "Completed", labelKey: "admin.markCompleted" },
+  { status: "Sold", labelKey: "admin.markSold" },
+  { status: "Unavailable", labelKey: "admin.markUnavailable" },
+];
 
 export default function RequestsList() {
   const [requests, setRequests] = useState<ProductRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [menuRequestId, setMenuRequestId] = useState<string | null>(null);
   const { showToast } = useToast();
   const { t, tv } = useLanguage();
 
@@ -24,9 +32,16 @@ export default function RequestsList() {
       .finally(() => setIsLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!menuRequestId) return;
+    lockBodyScroll();
+    return () => unlockBodyScroll();
+  }, [menuRequestId]);
+
   async function updateStatus(id: string, status: RequestStatus) {
     const previous = requests;
     setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    setMenuRequestId(null);
     try {
       await apiPatch(`/api/requests/${id}`, { status });
       showToast("success", t("admin.requestsList.markedAs", { status: tv("requestStatus", status) }));
@@ -88,18 +103,40 @@ export default function RequestsList() {
                 </Button>
               </a>
             )}
-            <Button surface="admin" variant="secondary" size="sm" onClick={() => updateStatus(request.id, "Completed")}>
-              {t("admin.markCompleted")}
-            </Button>
-            <Button surface="admin" variant="secondary" size="sm" onClick={() => updateStatus(request.id, "Sold")}>
-              {t("admin.markSold")}
-            </Button>
-            <Button surface="admin" variant="secondary" size="sm" onClick={() => updateStatus(request.id, "Unavailable")}>
-              {t("admin.markUnavailable")}
+            <Button surface="admin" variant="secondary" size="sm" onClick={() => setMenuRequestId(request.id)}>
+              {t("admin.updateStatusLabel")}
+              <ChevronDown size={14} />
             </Button>
           </div>
         </div>
       ))}
+
+      {menuRequestId && (
+        <div className="modal-overlay" role="presentation" onClick={() => setMenuRequestId(null)}>
+          <div className="modal modal--admin" role="menu" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h2 className="modal__title">{t("admin.updateStatusTitle")}</h2>
+              <button type="button" className="modal__close" onClick={() => setMenuRequestId(null)} aria-label={t("admin.cancel")}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="select-sheet-list">
+              {STATUS_OPTIONS.map(({ status, labelKey }) => (
+                <button
+                  key={status}
+                  type="button"
+                  role="menuitem"
+                  className="select-sheet-option select-sheet-option--admin"
+                  onClick={() => menuRequestId && updateStatus(menuRequestId, status)}
+                >
+                  <span>{t(labelKey)}</span>
+                  <Check size={18} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
