@@ -267,7 +267,7 @@
   gap: 2px;
   min-width: 0;
   width: 100%;
-  padding-top: 44px;
+  padding-top: 10px;
 }
 
 .admin-dashboard-stat__icon {
@@ -318,7 +318,7 @@
 }
 
 .admin-dashboard-stat__label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--admin-text-muted);
   text-transform: uppercase;
