@@ -435,7 +435,7 @@ const en = {
       recentActivity: "Recent Activity",
       totalProducts: "Total Products",
       pendingOrdersLabel: "Pending Orders",
-      lowStockAlerts: "Low Stock Alerts",
+      lowStockAlerts: "Low Stock",
       revenueToday: "Revenue Today",
       check: "Check",
       addProduct: "Add Product",
