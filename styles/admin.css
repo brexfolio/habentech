@@ -105,10 +105,10 @@
 
 /* ---------- Dashboard layout ---------- */
 .admin-dashboard {
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
 /* ---------- Welcome Card ---------- */
@@ -179,11 +179,11 @@
 }
 
 .admin-welcome__greeting {
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--admin-text);
   margin: 0 0 6px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .admin-welcome__subtitle {
@@ -255,12 +255,12 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .admin-dashboard-stat__icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--admin-radius-sm);
   display: flex;
   align-items: center;
@@ -288,7 +288,7 @@
 }
 
 .admin-dashboard-stat__value {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--admin-text);
   margin: 0 0 4px;
@@ -296,11 +296,11 @@
 }
 
 .admin-dashboard-stat__label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--admin-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   margin: 0;
 }
 
@@ -340,8 +340,9 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 14px;
-  padding: 18px 16px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
   border-radius: var(--admin-radius-lg);
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
@@ -363,13 +364,14 @@
 }
 
 .admin-action-card__icon {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--admin-radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  order: 2;
 }
 
 .admin-action-card__icon--primary {
@@ -400,17 +402,18 @@
 .admin-action-card__content {
   flex: 1;
   min-width: 0;
+  order: 1;
 }
 
 .admin-action-card__label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   margin: 0 0 2px;
   color: var(--admin-text);
 }
 
 .admin-action-card__desc {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--admin-text-muted);
   margin: 0;
   line-height: 1.4;
@@ -418,19 +421,20 @@
 
 .admin-action-card__badge {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  min-width: 22px;
-  height: 22px;
+  top: 12px;
+  right: 12px;
+  min-width: 20px;
+  height: 20px;
   border-radius: 999px;
   background: var(--admin-danger);
   color: #fff;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
+  padding: 0 5px;
+  z-index: 2;
 }
 
 /* ---------- Recent Activity ---------- */

@@ -39,7 +39,7 @@
   }
 
   .admin-dashboard {
-    padding: 28px 32px;
+    padding: 28px;
   }
 }
 
@@ -59,7 +59,7 @@
   .admin-dashboard {
     max-width: 720px;
     margin: 0 auto;
-    padding: 32px;
+    padding: 28px;
   }
 }
 
@@ -88,11 +88,11 @@
   }
 
   .admin-action-card {
-    padding: 14px 12px;
+    padding: 13px 12px;
   }
 
   .admin-dashboard {
-    padding: 20px 16px;
+    padding: 16px;
     gap: 24px;
   }
 
@@ -101,14 +101,14 @@
   }
 
   .admin-welcome__greeting {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .admin-dashboard-stat {
-    padding: 16px 14px;
+    padding: 15px 13px;
   }
 
   .admin-dashboard-stat__value {
-    font-size: 22px;
+    font-size: 20px;
   }
 }

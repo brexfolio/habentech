@@ -30,7 +30,7 @@ export default function AdminActionCard({
   return (
     <button type="button" className="admin-action-card" onClick={onClick}>
       <div className={`admin-action-card__icon ${ICON_TONE_CLASS[tone]}`}>
-        <Icon size={22} strokeWidth={2} />
+        <Icon size={20} strokeWidth={2} />
       </div>
       <div className="admin-action-card__content">
         <p className="admin-action-card__label">{label}</p>

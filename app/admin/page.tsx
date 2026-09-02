@@ -75,17 +75,17 @@ interface ActivityItem {
   dotColor: string;
 }
 
-function formatRelativeTime(dateStr: string): string {
+function formatRelativeTime(dateStr: string, t: (key: string, params?: Record<string, string | number>) => string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffMs = now - then;
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffMin < 1) return t("admin.dashboard.justNow");
+  if (diffMin < 60) return t("admin.dashboard.minAgo", { n: diffMin });
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffHr < 24) return t("admin.dashboard.hourAgo", { n: diffHr });
   const diffDay = Math.floor(diffHr / 24);
-  return `${diffDay}d ago`;
+  return t("admin.dashboard.dayAgo", { n: diffDay });
 }
 
 export default function AdminPage() {
@@ -119,17 +119,17 @@ export default function AdminPage() {
         const items: ActivityItem[] = orders.map((o) => ({
           id: o.id,
           type: "order" as const,
-          title: `New order #${o.id.slice(0, 8)}`,
+          title: t("admin.dashboard.newOrder"),
           description: o.product
             ? `${o.quantity}x ${o.product.name} \u2022 ${o.status}`
-            : `${o.quantity} item(s) \u2022 ${o.status}`,
-          time: formatRelativeTime(o.created_at),
+            : `${o.quantity} ${t("admin.dashboard.items")}`,
+          time: formatRelativeTime(o.created_at, t),
           dotColor: o.status === "Pending" ? "blue" : o.status === "Completed" ? "green" : o.status === "Cancelled" ? "red" : "amber",
         }));
         setActivity(items);
       })
       .catch(() => {});
-  }, []);
+  }, [t]);
 
   function goTo(next: AdminView) {
     setView(next);
@@ -167,112 +167,112 @@ export default function AdminPage() {
                 <LanguageSwitcher surface="admin" />
               </div>
               <div className="admin-welcome__message">
-                <h1 className="admin-welcome__greeting">Welcome back, Admin 👋</h1>
+                <h1 className="admin-welcome__greeting">{t("admin.dashboard.greeting")}</h1>
                 <p className="admin-welcome__subtitle">
-                  You have{" "}
-                  <strong>{analytics?.pendingOrders ?? "\u2014"} pending orders</strong>{" "}
-                  to review today.
+                  {t("admin.dashboard.youHave")}{" "}
+                  <strong>{analytics?.pendingOrders ?? "\u2014"} {t("admin.dashboard.pendingOrders")}</strong>{" "}
+                  {t("admin.dashboard.toReview")}
                 </p>
               </div>
             </div>
 
             <div>
               <div className="admin-section-header">
-                <h2 className="admin-section-title">Key Analytics</h2>
+                <h2 className="admin-section-title">{t("admin.dashboard.keyAnalytics")}</h2>
               </div>
               <div className="admin-dashboard-analytics" style={{ marginTop: 16 }}>
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__header">
                     <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--primary">
-                      <Package size={20} strokeWidth={2} />
+                      <Package size={17} strokeWidth={2} />
                     </div>
                   </div>
                   <p className="admin-dashboard-stat__value">{analytics?.totalProducts ?? "\u2014"}</p>
-                  <p className="admin-dashboard-stat__label">Total Products</p>
+                  <p className="admin-dashboard-stat__label">{t("admin.dashboard.totalProducts")}</p>
                 </div>
 
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__header">
                     <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--warning">
-                      <ShoppingBag size={20} strokeWidth={2} />
+                      <ShoppingBag size={17} strokeWidth={2} />
                     </div>
                   </div>
                   <p className="admin-dashboard-stat__value">{analytics?.pendingOrders ?? "\u2014"}</p>
-                  <p className="admin-dashboard-stat__label">Pending Orders</p>
+                  <p className="admin-dashboard-stat__label">{t("admin.dashboard.pendingOrdersLabel")}</p>
                 </div>
 
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__header">
                     <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--danger">
-                      <CircleAlert size={20} strokeWidth={2} />
+                      <CircleAlert size={17} strokeWidth={2} />
                     </div>
                   </div>
                   <p className="admin-dashboard-stat__value">{analytics?.lowStockProducts ?? "\u2014"}</p>
-                  <p className="admin-dashboard-stat__label">Low Stock Alerts</p>
+                  <p className="admin-dashboard-stat__label">{t("admin.dashboard.lowStockAlerts")}</p>
                   {analytics && analytics.lowStockProducts > 0 && (
-                    <span className="admin-dashboard-stat__change admin-dashboard-stat__change--neutral">Check</span>
+                    <span className="admin-dashboard-stat__change admin-dashboard-stat__change--neutral">{t("admin.dashboard.check")}</span>
                   )}
                 </div>
 
                 <div className="admin-dashboard-stat">
                   <div className="admin-dashboard-stat__header">
                     <div className="admin-dashboard-stat__icon admin-dashboard-stat__icon--teal">
-                      <DollarSign size={20} strokeWidth={2} />
+                      <DollarSign size={17} strokeWidth={2} />
                     </div>
                   </div>
                   <p className="admin-dashboard-stat__value">
                     {analytics?.inventoryValue != null ? formatPrice(analytics.inventoryValue) : "\u2014"}
                   </p>
-                  <p className="admin-dashboard-stat__label">Revenue Today</p>
+                  <p className="admin-dashboard-stat__label">{t("admin.dashboard.revenueToday")}</p>
                 </div>
               </div>
             </div>
 
             <div>
               <div className="admin-section-header">
-                <h2 className="admin-section-title">Quick Actions</h2>
+                <h2 className="admin-section-title">{t("admin.dashboard.quickActions")}</h2>
               </div>
               <div className="admin-grid" style={{ marginTop: 16 }}>
                 <AdminActionCard
                   icon={Plus}
-                  label={t("admin.addProduct")}
-                  description="New electronics"
+                  label={t("admin.dashboard.addProduct")}
+                  description={t("admin.dashboard.newElectronics")}
                   tone="accent"
                   onClick={() => goTo("add-product")}
                 />
                 <AdminActionCard
                   icon={ClipboardList}
-                  label={t("admin.orders")}
-                  description="Review queue"
+                  label={t("admin.dashboard.viewOrders")}
+                  description={t("admin.dashboard.reviewQueue")}
                   tone="primary"
                   badge={analytics?.pendingOrders}
                   onClick={() => goTo("orders")}
                 />
                 <AdminActionCard
                   icon={Archive}
-                  label={t("admin.stock")}
-                  description="Update counts"
+                  label={t("admin.dashboard.manageStock")}
+                  description={t("admin.dashboard.updateCounts")}
                   tone="accent"
                   onClick={() => goTo("stock")}
                 />
                 <AdminActionCard
                   icon={MessageSquare}
-                  label={t("admin.requests")}
-                  description="User inquiries"
+                  label={t("admin.dashboard.requests")}
+                  description={t("admin.dashboard.userInquiries")}
                   tone="warning"
                   onClick={() => goTo("requests")}
                 />
                 <AdminActionCard
                   icon={BarChart3}
-                  label={t("admin.analytics")}
-                  description="Shop performance"
+                  label={t("admin.dashboard.analytics")}
+                  description={t("admin.dashboard.shopPerformance")}
                   tone="success"
                   onClick={() => goTo("analytics")}
                 />
                 <AdminActionCard
                   icon={Settings}
-                  label={t("admin.settings")}
-                  description="Configurations"
+                  label={t("admin.dashboard.settings")}
+                  description={t("admin.dashboard.configurations")}
                   tone="primary"
                   onClick={() => goTo("settings")}
                 />
@@ -281,11 +281,11 @@ export default function AdminPage() {
 
             <div>
               <div className="admin-section-header">
-                <h2 className="admin-section-title">Recent Activity</h2>
+                <h2 className="admin-section-title">{t("admin.dashboard.recentActivity")}</h2>
               </div>
               <div className="admin-activity" style={{ marginTop: 16 }}>
                 {activity.length === 0 ? (
-                  <div className="admin-activity__empty">No recent activity</div>
+                  <div className="admin-activity__empty">{t("admin.dashboard.noRecentActivity")}</div>
                 ) : (
                   activity.map((item) => (
                     <div className="admin-activity__item" key={item.id}>
