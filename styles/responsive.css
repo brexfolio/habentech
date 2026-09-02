@@ -87,8 +87,12 @@
     gap: 10px;
   }
 
+  .admin-shell {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .admin-dashboard {
-    padding: 16px;
     gap: 24px;
   }
 

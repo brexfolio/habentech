@@ -8,17 +8,21 @@
   color: var(--admin-text);
   padding-bottom: 40px;
   overflow-x: hidden;
+  margin-left: -14px;
+  margin-right: -14px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .admin-container {
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0;
 }
 
 /* ---------- Top navigation ---------- */
 .admin-topnav {
-  padding: 20px 24px 0;
+  padding: 20px 0 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -106,7 +110,7 @@
 
 /* ---------- Dashboard layout ---------- */
 .admin-dashboard {
-  padding: 20px;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -243,14 +247,16 @@
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-lg);
-  padding: 16px;
+  padding: 12px;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
-  aspect-ratio: 1 / 1;
+  gap: 8px;
+  width: min(180px, calc(50% - 6px));
+  height: 84px;
   min-width: 0;
+  box-sizing: border-box;
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -266,12 +272,12 @@
   justify-content: space-between;
   width: 100%;
   min-width: 0;
-  gap: 12px;
+  gap: 8px;
 }
 
 .admin-dashboard-stat__icon {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--admin-radius-sm);
   display: flex;
   align-items: center;
