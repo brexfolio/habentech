@@ -13,13 +13,11 @@ import {
   AlertTriangle,
   PackageX,
   Database,
-  ArrowLeft,
 } from "lucide-react";
 import { apiGet, ApiError } from "@/lib/apiClient";
 import { Spinner } from "@/components/ui/Loading";
 import EmptyState from "@/components/ui/EmptyState";
 import { useLanguage } from "@/lib/i18n";
-import LanguageSwitcher from "@/components/store/LanguageSwitcher";
 
 interface Analytics {
   totalProducts: number;
@@ -35,12 +33,7 @@ interface Analytics {
   inventoryValue: number;
 }
 
-interface AnalyticsCardsProps {
-  onBack?: () => void;
-  storeName?: string;
-}
-
-export default function AnalyticsCards({ onBack }: AnalyticsCardsProps) {
+export default function AnalyticsCards() {
   const [data, setData] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,10 +45,6 @@ export default function AnalyticsCards({ onBack }: AnalyticsCardsProps) {
       .catch((err) => setError(err instanceof ApiError ? err.message : t("admin.analyticsCards.loadError")))
       .finally(() => setIsLoading(false));
   }, [t]);
-
-  const back = () => {
-    if (onBack) onBack();
-  };
 
   if (isLoading) {
     return (
@@ -95,14 +84,6 @@ export default function AnalyticsCards({ onBack }: AnalyticsCardsProps) {
 
   return (
     <div className="admin-analytics">
-      <div className="analytics-header">
-        <button type="button" className="analytics-header__back" onClick={back} aria-label={t("admin.back")}>
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="analytics-header__title">{t("admin.analytics")}</h1>
-        <LanguageSwitcher surface="admin" />
-      </div>
-
       <div className="admin-stat-grid">
         {cards.map(({ icon: Icon, label, value, tone }) => (
           <div className="admin-stat-card" key={label}>

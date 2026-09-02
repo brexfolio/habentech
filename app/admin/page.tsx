@@ -306,12 +306,10 @@ export default function AdminPage() {
           </div>
         ) : (
           <>
-            {view !== "analytics" && (
-              <AdminNavigation
-                title={t(VIEW_TITLES[view])}
-                onBack={handleBack}
-              />
-            )}
+            <AdminNavigation
+              title={t(VIEW_TITLES[view])}
+              onBack={handleBack}
+            />
 
             {view === "products" && (
               <ProductList
@@ -342,7 +340,7 @@ export default function AdminPage() {
             {view === "orders" && <OrdersList />}
             {view === "requests" && <RequestsList />}
             {view === "stock" && <ProductList key={listKey} mode="stock" />}
-            {view === "analytics" && <AnalyticsCards onBack={handleBack} storeName={storeName} />}
+            {view === "analytics" && <AnalyticsCards />}
             {view === "featured" && <ProductList key={listKey} mode="featured" />}
             {view === "settings" && <SettingsForm />}
           </>

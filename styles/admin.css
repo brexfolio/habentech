@@ -575,7 +575,7 @@
   right: -120px;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(20, 184, 166, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.06) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -587,54 +587,9 @@
   left: -120px;
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
-}
-
-/* ---------- Analytics page header ---------- */
-.analytics-header {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 22px 20px 18px;
-}
-
-.analytics-header__back {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--admin-surface-alt);
-  border: 1px solid var(--admin-border);
-  color: var(--admin-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.analytics-header__back:hover {
-  background: var(--admin-surface-elevated);
-  transform: scale(1.04);
-}
-
-.analytics-header__title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: var(--admin-text);
-  flex: 1;
-}
-
-.analytics-header .store-header__lang-btn--admin {
-  width: 52px;
-  height: 44px;
-  border-radius: 14px;
 }
 
 /* ---------- Analytics stat grid cards ---------- */
@@ -649,31 +604,30 @@
 
 .admin-stat-card {
   background: var(--admin-surface);
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 24px;
-  padding: 18px;
-  min-height: 132px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  padding: 16px;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .admin-stat-card:hover {
-  border-color: rgba(34, 211, 238, 0.35);
-  transform: translateY(-1px);
+  border-color: var(--admin-primary);
+  box-shadow: var(--admin-shadow-card-hover);
 }
 
 .admin-stat-card__icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--admin-radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   flex-shrink: 0;
 }
 
@@ -723,7 +677,7 @@
 }
 
 .admin-stat-card__value {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   margin: auto 0 2px;
   color: var(--admin-text);
@@ -735,12 +689,15 @@
 }
 
 .admin-stat-card__label {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--admin-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin: 0;
-  white-space: normal;
-  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---------- Analytics inventory feature card ---------- */
@@ -750,11 +707,15 @@
   margin: 8px 20px 0;
   padding: 28px 24px;
   background: var(--admin-surface);
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
-  border: 1px solid rgba(167, 139, 250, 0.28);
-  border-radius: 26px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
   overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analytics-inventory:hover {
+  border-color: var(--admin-primary);
+  box-shadow: var(--admin-shadow-card-hover);
 }
 
 .analytics-inventory__glow {
