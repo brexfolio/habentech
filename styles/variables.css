@@ -26,19 +26,19 @@
   /* Admin — fixed dark-navy futuristic theme (not affected by Telegram theme) */
   --admin-bg: #0f1220;
   --admin-bg-gradient: none;
-  --admin-surface: #111827;
-  --admin-surface-alt: #1A2235;
-  --admin-surface-elevated: #1E293B;
-  --admin-border: #1E293B;
-  --admin-border-soft: rgba(255, 255, 255, 0.04);
+  --admin-surface: #272835;
+  --admin-surface-alt: #272835;
+  --admin-surface-elevated: #2e3040;
+  --admin-border: #36394A;
+  --admin-border-soft: rgba(255, 255, 255, 0.05);
   --admin-highlight: rgba(255, 255, 255, 0.03);
-  --admin-text: #F1F5F9;
-  --admin-text-secondary: #94A3B8;
-  --admin-text-muted: #64748B;
-  --admin-primary: #3B82F6;
-  --admin-primary-soft: rgba(59, 130, 246, 0.12);
+  --admin-text: #FFFFFF;
+  --admin-text-secondary: #818898;
+  --admin-text-muted: #818898;
+  --admin-primary: #1A38FF;
+  --admin-primary-soft: rgba(26, 56, 255, 0.14);
   --admin-accent: #6366F1;
-  --admin-accent-soft: rgba(99, 102, 241, 0.12);
+  --admin-accent-soft: rgba(99, 102, 241, 0.14);
   --admin-brand-gradient: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%);
   --admin-success: #10B981;
   --admin-success-soft: rgba(16, 185, 129, 0.12);
@@ -107,11 +107,12 @@
 
 :root {
     --store-bg: #0f1220;
-    --store-surface: #171b2e;
-    --store-surface-alt: #1e2338;
-    --store-border: #2a2f47;
-    --store-text: #f2f4fb;
-    --store-text-muted: #9aa1c2;
+    --store-surface: #272835;
+    --store-surface-alt: #36394A;
+    --store-border: #36394A;
+    --store-text: #FFFFFF;
+    --store-text-muted: #818898;
+    --store-primary: #1A38FF;
     --store-success-bg: rgba(23, 166, 114, 0.16);
     --store-warning-bg: rgba(232, 166, 0, 0.16);
     --store-danger-bg: rgba(226, 72, 61, 0.16);
@@ -123,11 +124,12 @@
 
 [data-tg-theme="dark"] {
   --store-bg: #0f1220;
-  --store-surface: #171b2e;
-  --store-surface-alt: #1e2338;
-  --store-border: #2a2f47;
-  --store-text: #f2f4fb;
-  --store-text-muted: #9aa1c2;
+  --store-surface: #272835;
+  --store-surface-alt: #36394A;
+  --store-border: #36394A;
+  --store-text: #FFFFFF;
+  --store-text-muted: #818898;
+  --store-primary: #1A38FF;
   --store-success-bg: rgba(23, 166, 114, 0.16);
   --store-warning-bg: rgba(232, 166, 0, 0.16);
   --store-danger-bg: rgba(226, 72, 61, 0.16);

@@ -4,7 +4,11 @@
 
 .admin-shell {
   min-height: 100vh;
-  background: var(--admin-bg);
+  background:
+    radial-gradient(circle at 18% -8%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(circle at 92% 4%, rgba(139, 92, 246, 0.14), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(20, 184, 166, 0.12), transparent 50%),
+    var(--admin-bg);
   color: var(--admin-text);
   padding-bottom: 40px;
   overflow-x: hidden;
@@ -36,8 +40,8 @@
   width: 40px;
   height: 40px;
   border-radius: var(--admin-radius-sm);
-  background: var(--admin-surface);
-  color: var(--admin-text-muted);
+  background: #36394A;
+  color: #FFFFFF;
   border: 1px solid var(--admin-border);
   display: flex;
   align-items: center;
@@ -813,11 +817,22 @@
   margin-bottom: 8px;
 }
 
+.admin-list-item__top > * {
+  min-width: 0;
+}
+
+.admin-list-item__top > * > * {
+  min-width: 0;
+}
+
 .admin-list-item__title {
   font-size: 14.5px;
   font-weight: 700;
   color: var(--admin-text);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .admin-list-item__subtitle {
@@ -1225,7 +1240,11 @@
   padding: 32px;
   text-align: center;
   color: var(--admin-text);
-  background: var(--admin-bg);
+  background:
+    radial-gradient(circle at 18% -8%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(circle at 92% 4%, rgba(139, 92, 246, 0.14), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(20, 184, 166, 0.12), transparent 50%),
+    var(--admin-bg);
 }
 
 .admin-unauthorized__icon {
