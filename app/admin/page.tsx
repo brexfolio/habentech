@@ -88,7 +88,7 @@ function formatRelativeTime(dateStr: string, t: (key: string, params?: Record<st
 }
 
 export default function AdminPage() {
-  useTelegramUser();
+  const { user } = useTelegramUser();
   const router = useRouter();
   const { showToast } = useToast();
   const { t } = useLanguage();
@@ -166,7 +166,9 @@ export default function AdminPage() {
                 <LanguageSwitcher surface="admin" />
               </div>
               <div className="admin-welcome__message">
-                <h1 className="admin-welcome__greeting">{t("admin.dashboard.greeting")}</h1>
+                <h1 className="admin-welcome__greeting">
+                  {user?.first_name ? t("admin.dashboard.greeting", { name: user.first_name }) : t("admin.dashboard.greetingNoName")}
+                </h1>
                 <p className="admin-welcome__subtitle">
                   {t("admin.dashboard.youHave")}{" "}
                   <strong>{analytics?.pendingOrders ?? "\u2014"} {t("admin.dashboard.pendingOrders")}</strong>{" "}

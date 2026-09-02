@@ -425,7 +425,8 @@ const en = {
       reason: "Reason:",
     },
     dashboard: {
-      greeting: "Welcome back, Admin 👋",
+      greeting: "Welcome back, {name} 👋",
+      greetingNoName: "Welcome back, Admin 👋",
       youHave: "You have",
       pendingOrders: "pending orders",
       toReview: "to review today.",
@@ -976,7 +977,8 @@ const am: typeof en = {
       reason: "ምክንያት፡",
     },
     dashboard: {
-      greeting: "እንኳን ደህና መጡ፣ አስተዳዳሪ 👋",
+      greeting: "እንኳን ደህና መጡ፣ {name} 👋",
+      greetingNoName: "እንኳን ደህና መጡ፣ አስተዳዳሪ 👋",
       youHave: "ዛሬ እስከ",
       pendingOrders: "በመጠባበቅ ላይ ያሉ ትዕዛዞች",
       toReview: "አሉዎት።",

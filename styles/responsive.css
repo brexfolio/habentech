@@ -49,11 +49,11 @@
   }
 
   .admin-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .admin-stat-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .admin-dashboard {
@@ -69,11 +69,11 @@
   }
 
   .admin-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .admin-stat-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .admin-dashboard {
@@ -85,10 +85,6 @@
   .admin-grid,
   .product-grid {
     gap: 10px;
-  }
-
-  .admin-action-card {
-    padding: 16px 14px;
   }
 
   .admin-dashboard {
@@ -105,7 +101,7 @@
   }
 
   .admin-dashboard-stat {
-    padding: 15px 13px;
+    padding: 13px 12px;
   }
 
   .admin-dashboard-stat__value {
