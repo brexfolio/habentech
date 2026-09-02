@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -42,6 +42,7 @@ import { apiPost, apiUpload, ApiError } from "@/lib/apiClient";
 interface ImageDraft {
   telegram_file_id: string | null;
   image_url: string;
+  file?: File;
 }
 
 interface SpecDraft {
@@ -96,6 +97,20 @@ export default function SellDevicePage() {
 
   const [images, setImages] = useState<ImageDraft[]>([]);
 
+  const imagesRef = useRef(images);
+
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
+
+  useEffect(() => {
+    return () => {
+      imagesRef.current.forEach((image) => {
+        if (image.file) URL.revokeObjectURL(image.image_url);
+      });
+    };
+  }, []);
+
   const effectiveBrand = brand === "Other" ? customBrand.trim() : brand;
   const predefined = hasPredefinedSpecs(category);
 
@@ -123,39 +138,53 @@ export default function SellDevicePage() {
     setCustomSpecs((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleFilesSelected(files: FileList | null) {
+  function handleFilesSelected(files: FileList | null) {
     if (!files || files.length === 0) return;
-    setIsUploading(true);
-    try {
-      for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) {
-          showToast("error", t("sell.uploadTypeError"));
-          continue;
-        }
-        if (file.size > MAX_UPLOAD_BYTES) {
-          showToast("error", t("sell.uploadTooLarge"));
-          continue;
-        }
-        try {
-          const formData = new FormData();
-          formData.append("file", file);
-          const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
-            "/api/sell-requests/upload-image",
-            formData
-          );
-          setImages((prev) => [...prev, { telegram_file_id: result.telegram_file_id, image_url: result.image_url }]);
-        } catch (uploadError) {
-          showToast("error", uploadError instanceof ApiError ? uploadError.message : t("sell.uploadFailed"));
-        }
+    const drafts: ImageDraft[] = [];
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) {
+        showToast("error", t("sell.uploadTypeError"));
+        continue;
       }
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (file.size > MAX_UPLOAD_BYTES) {
+        showToast("error", t("sell.uploadTooLarge"));
+        continue;
+      }
+      drafts.push({
+        telegram_file_id: null,
+        image_url: URL.createObjectURL(file),
+        file,
+      });
     }
+    if (drafts.length > 0) setImages((prev) => [...prev, ...drafts]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function uploadPendingImages(): Promise<ImageDraft[]> {
+    const resolved: ImageDraft[] = [];
+    for (const image of images) {
+      if (!image.file) {
+        resolved.push({ telegram_file_id: image.telegram_file_id, image_url: image.image_url });
+        continue;
+      }
+      const formData = new FormData();
+      formData.append("file", image.file);
+      const result = await apiUpload<{ telegram_file_id: string; image_url: string }>(
+        "/api/sell-requests/upload-image",
+        formData
+      );
+      URL.revokeObjectURL(image.image_url);
+      resolved.push({ telegram_file_id: result.telegram_file_id, image_url: result.image_url });
+    }
+    return resolved;
   }
 
   function removeImage(index: number) {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => {
+      const target = prev[index];
+      if (target?.file) URL.revokeObjectURL(target.image_url);
+      return prev.filter((_, i) => i !== index);
+    });
   }
 
   function moveImage(index: number, direction: -1 | 1) {
@@ -221,6 +250,9 @@ export default function SellDevicePage() {
   async function handleSubmit() {
     setIsSubmitting(true);
     try {
+      setIsUploading(true);
+      const uploadedImages = await uploadPendingImages();
+      setIsUploading(false);
       await apiPost("/api/sell-requests", {
         category,
         brand: effectiveBrand,
@@ -232,12 +264,13 @@ export default function SellDevicePage() {
         currency: "ETB",
         price_negotiable: priceNegotiable,
         specifications: buildFinalSpecs(),
-        images,
+        images: uploadedImages,
       });
       setSubmitted(true);
     } catch (submitError) {
       showToast("error", submitError instanceof ApiError ? submitError.message : t("sell.submitFailed"));
     } finally {
+      setIsUploading(false);
       setIsSubmitting(false);
     }
   }
