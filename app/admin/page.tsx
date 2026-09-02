@@ -219,7 +219,7 @@ export default function AdminPage() {
                   </div>
                   <div className="admin-dashboard-stat__text">
                     <p className="admin-dashboard-stat__label">{t("admin.dashboard.revenueToday")}</p>
-                    <p className="admin-dashboard-stat__value">
+                    <p className="admin-dashboard-stat__value admin-dashboard-stat__value--sm">
                       {analytics?.inventoryValue != null
                         ? analytics.inventoryValue.toLocaleString()
                         : "\u2014"}
