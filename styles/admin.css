@@ -241,8 +241,12 @@
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-lg);
-  padding: 20px 18px;
+  padding: 18px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -251,11 +255,10 @@
   box-shadow: var(--admin-shadow-card-hover);
 }
 
-.admin-dashboard-stat__header {
+.admin-dashboard-stat__text {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 14px;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .admin-dashboard-stat__icon {
@@ -265,6 +268,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  order: 2;
 }
 
 .admin-dashboard-stat__icon--primary {
@@ -306,7 +311,7 @@
 
 .admin-dashboard-stat__change {
   position: absolute;
-  top: 18px;
+  bottom: 16px;
   right: 18px;
   font-size: 11px;
   font-weight: 700;
@@ -340,9 +345,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px;
+  gap: 14px;
+  padding: 18px 16px;
   border-radius: var(--admin-radius-lg);
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
@@ -364,14 +368,13 @@
 }
 
 .admin-action-card__icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--admin-radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  order: 2;
 }
 
 .admin-action-card__icon--primary {
@@ -402,18 +405,17 @@
 .admin-action-card__content {
   flex: 1;
   min-width: 0;
-  order: 1;
 }
 
 .admin-action-card__label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   margin: 0 0 2px;
   color: var(--admin-text);
 }
 
 .admin-action-card__desc {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--admin-text-muted);
   margin: 0;
   line-height: 1.4;
@@ -421,20 +423,19 @@
 
 .admin-action-card__badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  min-width: 20px;
-  height: 20px;
+  top: 14px;
+  right: 14px;
+  min-width: 22px;
+  height: 22px;
   border-radius: 999px;
   background: var(--admin-danger);
   color: #fff;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 5px;
-  z-index: 2;
+  padding: 0 6px;
 }
 
 /* ---------- Recent Activity ---------- */
