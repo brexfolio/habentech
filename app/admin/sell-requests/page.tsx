@@ -31,9 +31,12 @@ export default function AdminSellRequestsPage() {
       <div className="admin-shell">
         <AdminNavigation
           title={selected ? selected.product_name || `${selected.brand} ${selected.model}` : t("admin.sellRequests")}
-          subtitle={selected ? undefined : t("admin.sellRequestsSubtitle")}
           onBack={handleBack}
         />
+
+        {!selected && (
+          <p className="admin-page-subheading">{t("admin.sellRequestsSubtitle")}</p>
+        )}
 
         {selected ? (
           <SellRequestDetail sellRequest={selected} onUpdated={setSelected} />

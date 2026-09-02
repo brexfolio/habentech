@@ -60,7 +60,7 @@ export default function InventoryList({ onSelect }: InventoryListProps) {
           description={t("admin.inventoryList.emptyDescription")}
         />
       ) : (
-        <div className="admin-list">
+        <div className="admin-list admin-list--flat">
           {inventory.map((item) => {
             const status = getStockStatus(item.quantity, item.minimum_stock_level);
             const image = item.product?.images?.[0]?.image_url;

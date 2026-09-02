@@ -50,7 +50,7 @@ export default function SellRequestsList({ onSelect }: SellRequestsListProps) {
   }
 
   return (
-    <div className="admin-list">
+    <div className="admin-list admin-list--flat">
       {requests.map((request) => {
         const image = [...(request.images ?? [])].sort((a, b) => a.display_order - b.display_order)[0];
         const deviceName = request.product_name || `${request.brand} ${request.model}`;

@@ -31,9 +31,12 @@ export default function AdminInventoryPage() {
       <div className="admin-shell">
         <AdminNavigation
           title={selected ? selected.product?.name ?? t("admin.inventory") : t("admin.inventory")}
-          subtitle={selected ? undefined : t("admin.inventorySubtitle")}
           onBack={handleBack}
         />
+
+        {!selected && (
+          <p className="admin-page-subheading">{t("admin.inventorySubtitle")}</p>
+        )}
 
         {selected ? (
           <InventoryDetail inventory={selected} onUpdated={setSelected} />
