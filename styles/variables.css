@@ -37,10 +37,10 @@
   --admin-text: #FFFFFF;
   --admin-text-secondary: #818898;
   --admin-text-muted: #818898;
-  --admin-primary: #1A38FF;
-  --admin-primary-soft: rgba(26, 56, 255, 0.14);
-  --admin-accent: #1A38FF;
-  --admin-accent-soft: rgba(26, 56, 255, 0.14);
+  --admin-primary: #4860FF;
+  --admin-primary-soft: rgba(72, 96, 255, 0.14);
+  --admin-accent: #4860FF;
+  --admin-accent-soft: rgba(72, 96, 255, 0.14);
   --admin-brand-gradient: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%);
   --admin-success: #10B981;
   --admin-success-soft: rgba(16, 185, 129, 0.12);

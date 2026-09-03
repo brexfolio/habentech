@@ -598,7 +598,7 @@
   left: -120px;
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(26, 56, 255, 0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(72, 96, 255, 0.07) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -730,7 +730,7 @@
   right: -40px;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(26, 56, 255, 0.22) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(72, 96, 255, 0.22) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -757,7 +757,7 @@
 .analytics-inventory__currency {
   font-size: 18px;
   font-weight: 800;
-  color: #1A38FF;
+  color: #4860FF;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0 0 8px;
