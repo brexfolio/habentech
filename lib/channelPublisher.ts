@@ -260,16 +260,21 @@ export async function publishProductById(
   let warning: string | null = null;
 
   if (result.success) {
-    await supabase
-      .from("products")
-      .update({
-        channel_published: true,
-        telegram_channel_id: result.channelId,
-        telegram_channel_message_id: result.messageId,
-        telegram_channel_media_message_ids: result.mediaMessageIds,
-        channel_published_at: new Date().toISOString(),
-      })
-      .eq("id", productId);
+    try {
+      await supabase
+        .from("products")
+        .update({
+          channel_published: true,
+          telegram_channel_id: result.channelId,
+          telegram_channel_message_id: result.messageId,
+          telegram_channel_media_message_ids: result.mediaMessageIds,
+          channel_published_at: new Date().toISOString(),
+        })
+        .eq("id", productId);
+    } catch (updateError) {
+      console.error("Failed to persist channel publish state:", updateError);
+      warning = "Product could not be saved, but was successfully published to the Telegram channel.";
+    }
   } else {
     warning = result.error ?? "Failed to publish to the Telegram channel.";
   }

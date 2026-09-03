@@ -152,6 +152,11 @@ export async function POST(request: Request) {
       finalProduct = data;
     }
 
+    if (!finalProduct) {
+      const { data: fallbackProduct } = await supabase.from("products").select(PRODUCT_SELECT).eq("id", created.id).single();
+      finalProduct = fallbackProduct;
+    }
+
     return apiSuccess({ product: finalProduct, channelWarning }, 201);
   } catch (error) {
     console.error("POST /api/products failed:", error);
