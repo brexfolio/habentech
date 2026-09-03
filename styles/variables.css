@@ -154,9 +154,9 @@
 
   --admin-bg: #F6F8FA;
   --admin-bg-gradient: none;
-  --admin-surface: #DFE1E7;
-  --admin-surface-alt: #ECEFF3;
-  --admin-surface-elevated: #DFE1E7;
+  --admin-surface: #F8FAFB;
+  --admin-surface-alt: #F8FAFB;
+  --admin-surface-elevated: #F8FAFB;
   --admin-border: #DFE1E7;
   --admin-border-soft: rgba(0, 0, 0, 0.06);
   --admin-highlight: rgba(0, 0, 0, 0.03);
