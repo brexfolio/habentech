@@ -1,7 +1,7 @@
 :root {
   /* Store — light (default / Telegram light theme) */
-  --store-bg: #ECEFF3;
-  --store-surface: #ECEFF3;
+  --store-bg: #F6F8FA;
+  --store-surface: #F6F8FA;
   --store-surface-alt: #DFE1E7;
   --store-border: #DFE1E7;
   --store-text: #1E293B;
@@ -144,15 +144,15 @@
 
 /* Admin — light mode when Telegram reports light theme */
 [data-tg-theme="light"] {
-  --store-bg: #ECEFF3;
-  --store-surface: #ECEFF3;
+  --store-bg: #F6F8FA;
+  --store-surface: #F6F8FA;
   --store-surface-alt: #DFE1E7;
   --store-border: #DFE1E7;
   --store-text: #1E293B;
   --store-text-muted: #666D80;
   --store-placeholder: #666D80;
 
-  --admin-bg: #F8F9FB;
+  --admin-bg: #F6F8FA;
   --admin-bg-gradient: none;
   --admin-surface: #DFE1E7;
   --admin-surface-alt: #ECEFF3;
