@@ -26,7 +26,7 @@
   --store-shadow-lg: 0 16px 40px rgba(16, 20, 37, 0.14);
 
   /* Admin — fixed dark-navy futuristic theme (not affected by Telegram theme) */
-  --admin-bg: #0f1220;
+  --admin-bg: #1A1B25;
   --admin-bg-gradient: none;
   --admin-surface: #272835;
   --admin-surface-alt: #272835;
