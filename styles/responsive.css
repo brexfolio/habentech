@@ -31,6 +31,8 @@
   .category-filter,
   .product-grid,
   .page-header,
+  .step-header,
+  .sell-form,
   .order-card,
   .request-card {
     max-width: 1200px;
@@ -60,6 +62,12 @@
 
   .page-header {
     padding-top: calc(env(safe-area-inset-top, 0px) + 105px);
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .step-header,
+  .sell-form {
     padding-left: 24px;
     padding-right: 24px;
   }
@@ -111,9 +119,17 @@
   .category-filter,
   .product-grid,
   .page-header,
+  .step-header,
+  .sell-form,
   .order-card,
   .request-card {
     max-width: 1200px;
+  }
+
+  .step-header,
+  .sell-form {
+    padding-left: 28px;
+    padding-right: 28px;
   }
 
   .promo-banner {
@@ -267,9 +283,17 @@
   .category-filter,
   .product-grid,
   .page-header,
+  .step-header,
+  .sell-form,
   .order-card,
   .request-card {
     max-width: 1200px;
+  }
+
+  .step-header,
+  .sell-form {
+    padding-left: 32px;
+    padding-right: 32px;
   }
 
   .promo-banner {
