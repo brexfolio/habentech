@@ -92,7 +92,7 @@ export default function CreateInventoryModal({
           {t("admin.inventoryModal.allTracked")}
         </p>
       ) : (
-        <div className="admin-form__grid-3">
+        <div className="admin-form__grid-2">
           <Select
             surface="admin"
             label={t("admin.inventoryModal.product")}

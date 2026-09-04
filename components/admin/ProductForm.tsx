@@ -193,7 +193,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
 
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
-      <div className="admin-form__grid-3">
+      <div className="admin-form__grid-2">
         <Input
           surface="admin"
           label={t("admin.form.productName")}

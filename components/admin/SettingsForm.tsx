@@ -129,7 +129,7 @@ export default function SettingsForm() {
 
   return (
     <form className="admin-form" onSubmit={handleSave}>
-      <div className="admin-form__grid-3">
+      <div className="admin-form__grid-2">
         <Input
           surface="admin"
           label={t("admin.settingsForm.storeName")}

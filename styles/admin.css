@@ -996,6 +996,7 @@
   color: var(--admin-text-muted);
 }
 
+.admin-form__grid-2,
 .admin-form__grid-3,
 .admin-form__row {
   display: grid;
@@ -1005,8 +1006,13 @@
 }
 
 @media (min-width: 640px) {
-  .admin-form__grid-3,
+  .admin-form__grid-2,
   .admin-form__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .admin-form__grid-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
   }

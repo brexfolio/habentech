@@ -383,19 +383,21 @@ export default function SellDevicePage() {
               )}
             </div>
 
-            <Input
-              label={t("sell.modelName")}
-              placeholder={t("sell.modelPlaceholder")}
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-            />
+            <div className="store-form__grid-2">
+              <Input
+                label={t("sell.modelName")}
+                placeholder={t("sell.modelPlaceholder")}
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+              />
 
-            <Input
-              label={t("sell.productName")}
-              placeholder={t("sell.productNamePlaceholder")}
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-            />
+              <Input
+                label={t("sell.productName")}
+                placeholder={t("sell.productNamePlaceholder")}
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+              />
+            </div>
           </>
         )}
 
@@ -626,16 +628,16 @@ export default function SellDevicePage() {
         )}
 
         <div className="form-inline-actions">
-          <Button variant="secondary" block onClick={goBack} disabled={isSubmitting}>
+          <Button variant="secondary" onClick={goBack} disabled={isSubmitting}>
             <ArrowLeft size={16} />
             {t("sell.back")}
           </Button>
           {reviewing ? (
-            <Button variant="primary" block loading={isSubmitting} onClick={handleSubmit}>
+            <Button variant="primary" loading={isSubmitting} onClick={handleSubmit}>
               {t("sell.submitForReview")}
             </Button>
           ) : (
-            <Button variant="primary" block onClick={goNext}>
+            <Button variant="primary" onClick={goNext}>
               {t("sell.next")}
               <ArrowRight size={16} />
             </Button>
