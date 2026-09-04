@@ -31,7 +31,7 @@
   top: 0;
   z-index: 20;
   background: var(--store-bg);
-  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 54px) 20px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -574,8 +574,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 12px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent);
+  padding: calc(env(safe-area-inset-top, 0px) + 56px) 20px 14px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .product-detail__topbar--solid {
@@ -927,7 +927,7 @@
 
 /* ---------- Favorites / Orders pages ---------- */
 .page-header {
-  padding: calc(env(safe-area-inset-top, 0px) + 22px) 20px 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 54px) 20px 12px;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
