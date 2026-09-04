@@ -23,12 +23,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   try {
     const { product, warning } = await publishProductById(id);
-    if (warning) {
+    const hasPublished = product.channel_published || product.group_published;
+
+    if (!hasPublished && warning) {
       return apiError(warning, 502);
     }
-    return apiSuccess({ product });
+
+    return apiSuccess({ product, channelWarning: warning });
   } catch (error) {
     console.error(`POST /api/products/${id}/publish-channel failed:`, error);
-    return apiError("Unable to publish to the Telegram channel right now.", 500);
+    return apiError("Unable to publish to Telegram right now.", 500);
   }
 }

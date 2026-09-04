@@ -78,23 +78,17 @@ export function createProductLink(product: Pick<Product, "id">): string {
     return `https://t.me/${botUsername}/${appName}?startapp=${startParam}`;
   }
 
+  if (botUsername) {
+    return `https://t.me/${botUsername}?startapp=${startParam}`;
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   return `${baseUrl}/products/${product.id}`;
 }
 
 function buildViewProductKeyboard(product: Product): { inline_keyboard: InlineKeyboardButton[][] } {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
-  const webAppUrl = appUrl ? `${appUrl}/products/${product.id}` : null;
-  const directLink = createProductLink(product);
-
-  if (webAppUrl) {
-    return {
-      inline_keyboard: [[{ text: "🛍 View Product", web_app: { url: webAppUrl } }]],
-    };
-  }
-
   return {
-    inline_keyboard: [[{ text: "🛍 View Product", url: directLink }]],
+    inline_keyboard: [[{ text: "🛍 View Product", url: createProductLink(product) }]],
   };
 }
 
@@ -174,7 +168,70 @@ export async function publishProductToChat(
 
     if (images.length === 1) {
       const media = images[0].telegram_file_id || images[0].image_url;
-      const result = await sendTelegramPhoto(chatId, media, caption, {
+      try {
+        const result = await sendTelegramPhoto(chatId, media, caption, {
+          replyMarkup: keyboard,
+          messageThreadId: threadId ?? undefined,
+        });
+        return {
+          success: true,
+          channelId: chatId,
+          messageId: String(result.message_id),
+          mediaMessageIds: [String(result.message_id)],
+        };
+      } catch (photoError) {
+        console.warn("sendTelegramPhoto failed, falling back to text message:", photoError);
+        const result = await sendTelegramMessage(chatId, caption, {
+          replyMarkup: keyboard,
+          messageThreadId: threadId ?? undefined,
+        });
+        return {
+          success: true,
+          channelId: chatId,
+          messageId: String(result.message_id),
+          mediaMessageIds: [String(result.message_id)],
+        };
+      }
+    }
+
+    try {
+      const mediaGroup = images.map((image, index) => ({
+        type: "photo" as const,
+        media: image.telegram_file_id || image.image_url,
+        ...(index === 0 ? { caption, parse_mode: "HTML" as const } : {}),
+      }));
+
+      const groupResults = await sendTelegramMediaGroup(chatId, mediaGroup, {
+        messageThreadId: threadId ?? undefined,
+      });
+      const mediaMessageIds = groupResults.map((r) => String(r.message_id));
+
+      let buttonMessageId: string | null = null;
+      try {
+        const buttonMessage = await sendTelegramMessage(
+          chatId,
+          `👉 Tap below to view <b>${escapeHtml(product.name)}</b> in the Mini App:`,
+          {
+            replyMarkup: keyboard,
+            messageThreadId: threadId ?? undefined,
+          }
+        );
+        buttonMessageId = String(buttonMessage.message_id);
+      } catch (btnErr) {
+        console.error("Failed to send follow-up button message for media group:", btnErr);
+      }
+
+      const allMessageIds = buttonMessageId ? [...mediaMessageIds, buttonMessageId] : mediaMessageIds;
+
+      return {
+        success: true,
+        channelId: chatId,
+        messageId: buttonMessageId ?? mediaMessageIds[0],
+        mediaMessageIds: allMessageIds,
+      };
+    } catch (mediaGroupError) {
+      console.warn("sendTelegramMediaGroup failed, falling back to text message:", mediaGroupError);
+      const result = await sendTelegramMessage(chatId, caption, {
         replyMarkup: keyboard,
         messageThreadId: threadId ?? undefined,
       });
@@ -185,31 +242,6 @@ export async function publishProductToChat(
         mediaMessageIds: [String(result.message_id)],
       };
     }
-
-    const mediaGroup = images.map((image, index) => ({
-      type: "photo" as const,
-      media: image.telegram_file_id || image.image_url,
-      ...(index === 0 ? { caption, parse_mode: "HTML" as const } : {}),
-    }));
-
-    const groupResults = await sendTelegramMediaGroup(chatId, mediaGroup, {
-      messageThreadId: threadId ?? undefined,
-    });
-    const mediaMessageIds = groupResults.map((r) => String(r.message_id));
-
-    // For multi-photo media groups, Telegram API requires a separate message for inline buttons.
-    // Send a clean text label "🛍 View in Mini App" without any "👇" pointer or repeated product name.
-    const buttonMessage = await sendTelegramMessage(chatId, "🛍 <b>View in Mini App</b>", {
-      replyMarkup: keyboard,
-      messageThreadId: threadId ?? undefined,
-    });
-
-    return {
-      success: true,
-      channelId: chatId,
-      messageId: String(buttonMessage.message_id),
-      mediaMessageIds: [...mediaMessageIds, String(buttonMessage.message_id)],
-    };
   } catch (error) {
     return {
       success: false,
@@ -259,10 +291,11 @@ export async function updateChatProduct(
     await deleteChatMessages(chatId, mediaMessageIds);
     return publishProductToChat(product, chatId, threadId);
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown Telegram error.",
-    };
+    console.warn("Updating existing chat post failed, falling back to fresh publish:", error);
+    try {
+      await deleteChatMessages(chatId, mediaMessageIds);
+    } catch {}
+    return publishProductToChat(product, chatId, threadId);
   }
 }
 

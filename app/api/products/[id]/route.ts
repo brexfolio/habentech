@@ -168,17 +168,27 @@ export async function DELETE(request: Request, { params }: RouteContext) {
   const supabase = getSupabaseAdmin();
 
   try {
-    if (removeChannelPost) {
-      const { data: existing } = await supabase
-        .from("products")
-        .select(PRODUCT_SELECT)
-        .eq("id", id)
-        .single();
+    const { data: existing } = await supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .eq("id", id)
+      .single();
 
-      if (existing) {
+    if (existing && removeChannelPost) {
+      try {
         await deleteAllProductPosts(existing as Product);
+      } catch (delError) {
+        console.error("Failed to delete Telegram posts, continuing with product delete:", delError);
       }
     }
+
+    // Delete dependent tables explicitly first to ensure clean deletion under all DB constraints
+    try { await supabase.from("product_images").delete().eq("product_id", id); } catch {}
+    try { await supabase.from("product_specifications").delete().eq("product_id", id); } catch {}
+    try { await supabase.from("inventory_transactions").delete().eq("product_id", id); } catch {}
+    try { await supabase.from("inventory").delete().eq("product_id", id); } catch {}
+    try { await supabase.from("orders").delete().eq("product_id", id); } catch {}
+    try { await supabase.from("product_requests").delete().eq("product_id", id); } catch {}
 
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) throw error;

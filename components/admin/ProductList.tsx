@@ -73,9 +73,15 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
   async function handlePublish(product: Product) {
     setPublishingId(product.id);
     try {
-      const result = await apiPost<{ product: Product }>(`/api/products/${product.id}/publish-channel`);
+      const result = await apiPost<{ product: Product; channelWarning?: string | null }>(
+        `/api/products/${product.id}/publish-channel`
+      );
       setProducts((prev) => prev.map((p) => (p.id === product.id ? result.product : p)));
-      showToast("success", t("admin.productList.published"));
+      if (result.channelWarning) {
+        showToast("success", result.channelWarning);
+      } else {
+        showToast("success", t("admin.productList.published"));
+      }
     } catch (error) {
       showToast("error", error instanceof ApiError ? error.message : t("admin.productList.publishError"));
     } finally {
@@ -198,18 +204,16 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                   <Pencil size={14} />
                   {t("admin.productList.edit")}
                 </Button>
-                {(!product.channel_published || !product.group_published) && (
-                  <Button
-                    surface="admin"
-                    variant="secondary"
-                    size="sm"
-                    loading={publishingId === product.id}
-                    onClick={() => handlePublish(product)}
-                  >
-                    <Send size={14} />
-                    Publish
-                  </Button>
-                )}
+                <Button
+                  surface="admin"
+                  variant="secondary"
+                  size="sm"
+                  loading={publishingId === product.id}
+                  onClick={() => handlePublish(product)}
+                >
+                  <Send size={14} />
+                  {product.channel_published || product.group_published ? "Re-publish" : "Publish"}
+                </Button>
                 <Button
                   surface="admin"
                   variant="danger"
