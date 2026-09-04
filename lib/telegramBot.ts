@@ -228,7 +228,7 @@ export async function getTelegramChat(chatId: string | number): Promise<Telegram
 export async function sendTelegramMessageWithWebApp(
   chatId: string | number,
   text: string,
-  buttons: Array<Array<{ text: string; web_app: { url: string } }>>
+  buttons: Array<Array<InlineKeyboardButton>>
 ): Promise<void> {
   const token = getBotToken();
   await fetch(`${TELEGRAM_API_BASE}/bot${token}/sendMessage`, {

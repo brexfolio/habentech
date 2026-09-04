@@ -22,26 +22,26 @@ export async function notifyCustomerOfOrderStatus(orderId: string, status: strin
     let message: string;
     switch (status) {
       case "Confirmed":
-        message = `✅ <b>Order Confirmed!</b>\n\nHi ${customerName}, your order for <b>${productName}</b> (Qty: ${order.quantity}) has been <b>confirmed</b> by Habentech. We are preparing your item now.`;
+        message = `✅ <b>Order Confirmed!</b>\n\nHi ${customerName}, your order for <b>${productName}</b> (Qty: ${order.quantity}) has been confirmed by Habentech. We are preparing your item now.\n\n📱 <b>Need assistance or have questions?</b>\nContact Admin: @Tech_hub4`;
         break;
       case "Completed":
-        message = `🎉 <b>Order Completed!</b>\n\nHi ${customerName}, your order for <b>${productName}</b> (Qty: ${order.quantity}) is marked as <b>completed</b>. Thank you for shopping with Habentech!`;
+        message = `🎉 <b>Order Completed!</b>\n\nHi ${customerName}, your order for <b>${productName}</b> (Qty: ${order.quantity}) is marked as <b>completed</b>. Thank you for shopping with Habentech!\n\n📱 <b>Contact Admin:</b> @Tech_hub4`;
         break;
       case "Cancelled":
-        message = `❌ <b>Order Status Update</b>\n\nHi ${customerName}, your order for <b>${productName}</b> has been <b>cancelled</b>. If you have any questions, please contact support.`;
+        message = `❌ <b>Order Status Update</b>\n\nHi ${customerName}, your order for <b>${productName}</b> has been <b>cancelled</b>.\n\n📱 <b>Contact Admin:</b> @Tech_hub4`;
         break;
       default:
-        message = `ℹ️ <b>Order Status Update</b>\n\nHi ${customerName}, your order for <b>${productName}</b> status is now <b>${status}</b>.`;
+        message = `ℹ️ <b>Order Status Update</b>\n\nHi ${customerName}, your order for <b>${productName}</b> status is now <b>${status}</b>.\n\n📱 <b>Contact Admin:</b> @Tech_hub4`;
     }
 
+    const inlineButtons: Array<Array<{ text: string; web_app?: { url: string }; url?: string }>> = [];
+
     if (appUrl) {
-      const ordersUrl = `${appUrl}/orders`;
-      await sendTelegramMessageWithWebApp(Number(order.telegram_user_id), message, [
-        [{ text: "📦 View My Orders", web_app: { url: ordersUrl } }],
-      ]);
-    } else {
-      await sendTelegramMessage(Number(order.telegram_user_id), message);
+      inlineButtons.push([{ text: "📦 View My Orders", web_app: { url: `${appUrl}/orders` } }]);
     }
+    inlineButtons.push([{ text: "💬 Contact Admin (@Tech_hub4)", url: "https://t.me/Tech_hub4" }]);
+
+    await sendTelegramMessageWithWebApp(Number(order.telegram_user_id), message, inlineButtons);
   } catch (error) {
     console.error("Failed to notify customer of order status:", error);
   }

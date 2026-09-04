@@ -304,9 +304,9 @@ export default function SellDevicePage() {
     <div className="store-shell">
       <Header />
 
-      <div className="page-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className="page-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, width: "100%" }}>
         <h1 className="page-header__title">{t("sell.title")}</h1>
-        <Link href="/my-sell-requests" style={{ fontSize: 12.5, fontWeight: 700, color: "var(--store-primary)", display: "flex", alignItems: "center", gap: 4 }}>
+        <Link href="/my-sell-requests" style={{ fontSize: 12.5, fontWeight: 700, color: "var(--store-primary)", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
           <ClipboardList size={14} />
           {t("sell.mySubmissions")}
         </Link>
