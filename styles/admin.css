@@ -790,6 +790,8 @@
 .admin-list-item {
   display: block;
   width: 100%;
+  height: auto;
+  align-self: flex-start;
   text-align: left;
   color: var(--admin-text);
   font-family: inherit;

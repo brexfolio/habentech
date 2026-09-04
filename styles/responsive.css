@@ -129,7 +129,7 @@
     border-top: none;
   }
 
-  /* Admin Dashboard Layout */
+  /* Admin Dashboard & Admin Cards Layout */
   .admin-container {
     max-width: 960px;
     margin: 0 auto;
@@ -145,11 +145,32 @@
   .admin-stat-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
+    align-items: start;
   }
 
   .admin-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
+    align-items: start;
+  }
+
+  .admin-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+    align-content: start;
+  }
+
+  .admin-list-item {
+    height: auto !important;
+    max-height: none;
+    align-self: start;
+  }
+
+  .admin-card {
+    height: auto !important;
+    align-self: start;
   }
 }
 
@@ -201,10 +222,19 @@
 
   .admin-stat-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
   }
 
   .admin-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .admin-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+    align-content: start;
   }
 }
 
