@@ -40,31 +40,31 @@
   }
 
   .store-header {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 58px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 105px);
     padding-left: 24px;
     padding-right: 24px;
   }
 
   .page-header {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 58px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 105px);
     padding-left: 24px;
     padding-right: 24px;
   }
 
   .product-detail__topbar {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 58px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 105px);
     padding-left: 24px;
     padding-right: 24px;
   }
 
   .admin-topnav {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 60px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 105px);
     padding-left: 28px;
     padding-right: 28px;
   }
 
   .admin-dashboard {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 58px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 105px);
   }
 
   .bottom-nav {
@@ -104,11 +104,11 @@
   }
 
   .store-header {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 60px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 110px);
   }
 
   .admin-topnav {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 62px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 110px);
   }
 
   .product-grid {
@@ -236,19 +236,19 @@
   }
 
   .store-header {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 115px);
     padding-left: 32px;
     padding-right: 32px;
   }
 
   .admin-topnav {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 115px);
     padding-left: 32px;
     padding-right: 32px;
   }
 
   .admin-dashboard {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 115px);
   }
 
   .product-grid {
