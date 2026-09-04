@@ -405,7 +405,7 @@ export default function SellDevicePage() {
           <>
             <div className="field">
               <span className="field__label">{t("sell.overallCondition")}</span>
-              <div className="option-grid">
+              <div className="option-grid option-grid--single-row">
                 {SELL_DEVICE_CONDITIONS.map((c) => (
                   <button
                     key={c}
@@ -431,14 +431,16 @@ export default function SellDevicePage() {
         {!reviewing && step === 3 && (
           <>
             {predefined ? (
-              CATEGORY_SPEC_FIELDS[category]!.map((label) => (
-                <Input
-                  key={label}
-                  label={tv("specLabel", label)}
-                  value={getPredefinedValue(label)}
-                  onChange={(e) => updatePredefinedSpec(label, e.target.value)}
-                />
-              ))
+              <div className="store-form__grid-2">
+                {CATEGORY_SPEC_FIELDS[category]!.map((label) => (
+                  <Input
+                    key={label}
+                    label={tv("specLabel", label)}
+                    value={getPredefinedValue(label)}
+                    onChange={(e) => updatePredefinedSpec(label, e.target.value)}
+                  />
+                ))}
+              </div>
             ) : (
               <div className="field">
                 <span className="field__label">{t("sell.specifications")}</span>
@@ -476,7 +478,7 @@ export default function SellDevicePage() {
         )}
 
         {!reviewing && step === 4 && (
-          <>
+          <div className="store-form__grid-2" style={{ alignItems: "center" }}>
             <Input
               label={t("sell.expectedPriceLabel")}
               type="number"
@@ -493,7 +495,7 @@ export default function SellDevicePage() {
                 <span className="store-switch__track" />
               </label>
             </div>
-          </>
+          </div>
         )}
 
         {!reviewing && step === 5 && (
