@@ -84,8 +84,13 @@ export function getTelegramWebApp(): TelegramWebApp | null {
 export function initTelegramApp(): void {
   const webApp = getTelegramWebApp();
   if (!webApp) return;
-  webApp.ready();
-  webApp.expand();
+  try {
+    webApp.ready();
+    webApp.expand();
+    if (typeof (webApp as unknown as { requestFullscreen?: () => void }).requestFullscreen === "function") {
+      (webApp as unknown as { requestFullscreen: () => void }).requestFullscreen();
+    }
+  } catch {}
 }
 
 export function getTelegramUser(): TelegramUser | null {

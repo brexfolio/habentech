@@ -20,7 +20,7 @@
 
 .store-container {
   width: 100%;
-  max-width: 640px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
 }
@@ -36,6 +36,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .store-header__brand {
@@ -112,7 +115,9 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin: 24px 16px 24px;
+  margin: 24px auto;
+  width: calc(100% - 32px);
+  max-width: 1200px;
   background: var(--store-surface);
   border: 1px solid var(--store-border);
   border-radius: 999px;
@@ -169,6 +174,9 @@
   gap: 8px;
   overflow-x: auto;
   padding: 2px 16px 16px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
   scrollbar-width: none;
 }
 
@@ -197,7 +205,9 @@
 /* ---------- Promo banner ---------- */
 .promo-banner {
   position: relative;
-  margin: 0 16px 20px;
+  margin: 0 auto 20px;
+  width: calc(100% - 32px);
+  max-width: 1200px;
   border-radius: var(--store-radius-lg);
   overflow: hidden;
   min-height: 150px;
