@@ -78,10 +78,10 @@ export default function CreateInventoryModal({
       surface="admin"
       footer={
         <>
-          <Button surface="admin" variant="secondary" block onClick={onClose}>
+          <Button surface="admin" variant="secondary" onClick={onClose}>
             {t("admin.cancel")}
           </Button>
-          <Button surface="admin" variant="primary" block loading={isSaving} onClick={handleCreate}>
+          <Button surface="admin" variant="primary" loading={isSaving} onClick={handleCreate}>
             {t("admin.inventoryModal.startTracking")}
           </Button>
         </>
@@ -92,7 +92,7 @@ export default function CreateInventoryModal({
           {t("admin.inventoryModal.allTracked")}
         </p>
       ) : (
-        <>
+        <div className="admin-form__grid-3">
           <Select
             surface="admin"
             label={t("admin.inventoryModal.product")}
@@ -100,37 +100,33 @@ export default function CreateInventoryModal({
             onChange={(value) => setProductId(value)}
             options={products.map((p) => ({ value: p.id, label: p.name }))}
           />
-          <div className="admin-form__row">
-            <Input
-              surface="admin"
-              label={t("admin.inventoryModal.currentQuantity")}
-              type="number"
-              min="0"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-            />
-            <Input
-              surface="admin"
-              label={t("admin.inventoryModal.minimumStock")}
-              type="number"
-              min="0"
-              value={minimumStockLevel}
-              onChange={(e) => setMinimumStockLevel(e.target.value)}
-            />
-          </div>
-          <div className="admin-form__row">
-            <Input
-              surface="admin"
-              label={t("admin.inventoryModal.costPrice")}
-              type="number"
-              min="0"
-              step="0.01"
-              value={costPrice}
-              onChange={(e) => setCostPrice(e.target.value)}
-            />
-            <Input surface="admin" label={t("admin.inventoryModal.sku")} value={sku} onChange={(e) => setSku(e.target.value)} />
-          </div>
-        </>
+          <Input
+            surface="admin"
+            label={t("admin.inventoryModal.currentQuantity")}
+            type="number"
+            min="0"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+          <Input
+            surface="admin"
+            label={t("admin.inventoryModal.minimumStock")}
+            type="number"
+            min="0"
+            value={minimumStockLevel}
+            onChange={(e) => setMinimumStockLevel(e.target.value)}
+          />
+          <Input
+            surface="admin"
+            label={t("admin.inventoryModal.costPrice")}
+            type="number"
+            min="0"
+            step="0.01"
+            value={costPrice}
+            onChange={(e) => setCostPrice(e.target.value)}
+          />
+          <Input surface="admin" label={t("admin.inventoryModal.sku")} value={sku} onChange={(e) => setSku(e.target.value)} />
+        </div>
       )}
     </Modal>
   );

@@ -193,16 +193,15 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
 
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
-      <Input
-        surface="admin"
-        label={t("admin.form.productName")}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder={t("admin.form.productNamePlaceholder")}
-        required
-      />
-
-      <div className="admin-form__row">
+      <div className="admin-form__grid-3">
+        <Input
+          surface="admin"
+          label={t("admin.form.productName")}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t("admin.form.productNamePlaceholder")}
+          required
+        />
         <Select
           surface="admin"
           label={t("admin.form.category")}
@@ -217,9 +216,6 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           onChange={(value) => setCondition(value as ProductCondition)}
           options={PRODUCT_CONDITIONS.map((c) => ({ value: c, label: tv("condition", c) }))}
         />
-      </div>
-
-      <div className="admin-form__row">
         <Input
           surface="admin"
           label={t("admin.form.price")}
@@ -238,20 +234,19 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           onChange={(value) => setAvailability(value as ProductAvailability)}
           options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: tv("availability", a) }))}
         />
+        <Select
+          surface="admin"
+          label="Publishing Destination"
+          value={publishTarget}
+          onChange={(val) => setPublishTarget(val)}
+          options={[
+            { value: "default", label: "Use Store Default Setting" },
+            { value: "channel", label: "Channel Only" },
+            { value: "group", label: "Group Only" },
+            { value: "both", label: "Both Channel & Group" },
+          ]}
+        />
       </div>
-
-      <Select
-        surface="admin"
-        label="Publishing Destination"
-        value={publishTarget}
-        onChange={(val) => setPublishTarget(val)}
-        options={[
-          { value: "default", label: "Use Store Default Setting" },
-          { value: "channel", label: "Channel Only" },
-          { value: "group", label: "Group Only" },
-          { value: "both", label: "Both Channel & Group" },
-        ]}
-      />
 
       <Textarea
         surface="admin"
@@ -403,10 +398,10 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
       )}
 
       <div className="admin-bottom-bar">
-        <Button surface="admin" variant="secondary" block type="button" onClick={onCancel}>
+        <Button surface="admin" variant="secondary" type="button" onClick={onCancel}>
           {t("admin.cancel")}
         </Button>
-        <Button surface="admin" variant="primary" block type="submit" loading={isSaving}>
+        <Button surface="admin" variant="primary" type="submit" loading={isSaving}>
           {isUploading ? t("admin.form.uploading") : isEditing ? t("admin.form.saveChanges") : t("admin.form.publishProduct")}
         </Button>
       </div>

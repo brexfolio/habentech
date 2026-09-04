@@ -129,13 +129,31 @@ export default function SettingsForm() {
 
   return (
     <form className="admin-form" onSubmit={handleSave}>
-      <Input
-        surface="admin"
-        label={t("admin.settingsForm.storeName")}
-        value={storeName}
-        onChange={(e) => setStoreName(e.target.value)}
-        required
-      />
+      <div className="admin-form__grid-3">
+        <Input
+          surface="admin"
+          label={t("admin.settingsForm.storeName")}
+          value={storeName}
+          onChange={(e) => setStoreName(e.target.value)}
+          required
+        />
+        <Input
+          surface="admin"
+          label={t("admin.settingsForm.contactPhone")}
+          value={contactPhone}
+          onChange={(e) => setContactPhone(e.target.value)}
+          placeholder={t("admin.settingsForm.phonePlaceholder")}
+        />
+        <Input
+          surface="admin"
+          label={t("admin.settingsForm.contactEmail")}
+          type="email"
+          value={contactEmail}
+          onChange={(e) => setContactEmail(e.target.value)}
+          placeholder={t("admin.settingsForm.emailPlaceholder")}
+        />
+      </div>
+
       <Textarea
         surface="admin"
         label={t("admin.settingsForm.storeDescription")}
@@ -175,21 +193,23 @@ export default function SettingsForm() {
           Telegram Group Connection
         </h3>
 
-        <Input
-          surface="admin"
-          label={t("admin.settingsForm.telegramGroup")}
-          value={telegramGroup}
-          onChange={(e) => handleGroupInputChange(e.target.value)}
-          placeholder={t("admin.settingsForm.groupPlaceholder")}
-        />
+        <div className="admin-form__grid-3">
+          <Input
+            surface="admin"
+            label={t("admin.settingsForm.telegramGroup")}
+            value={telegramGroup}
+            onChange={(e) => handleGroupInputChange(e.target.value)}
+            placeholder={t("admin.settingsForm.groupPlaceholder")}
+          />
 
-        <Input
-          surface="admin"
-          label={t("admin.settingsForm.telegramGroupThread")}
-          value={telegramGroupThread}
-          onChange={(e) => setTelegramGroupThread(e.target.value)}
-          placeholder={t("admin.settingsForm.threadPlaceholder")}
-        />
+          <Input
+            surface="admin"
+            label={t("admin.settingsForm.telegramGroupThread")}
+            value={telegramGroupThread}
+            onChange={(e) => setTelegramGroupThread(e.target.value)}
+            placeholder={t("admin.settingsForm.threadPlaceholder")}
+          />
+        </div>
 
         {telegramGroupTitle && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "13.5px", color: "var(--admin-success, #10b981)" }}>
@@ -205,30 +225,15 @@ export default function SettingsForm() {
           size="sm"
           loading={isTestingGroup}
           onClick={handleTestGroup}
+          style={{ width: "fit-content" }}
         >
           {isTestingGroup ? t("admin.settingsForm.testingGroup") : t("admin.settingsForm.testGroupConnection")}
         </Button>
       </div>
 
-      <Input
-        surface="admin"
-        label={t("admin.settingsForm.contactPhone")}
-        value={contactPhone}
-        onChange={(e) => setContactPhone(e.target.value)}
-        placeholder={t("admin.settingsForm.phonePlaceholder")}
-      />
-      <Input
-        surface="admin"
-        label={t("admin.settingsForm.contactEmail")}
-        type="email"
-        value={contactEmail}
-        onChange={(e) => setContactEmail(e.target.value)}
-        placeholder={t("admin.settingsForm.emailPlaceholder")}
-      />
-
       <span className="admin-form__hint">{t("admin.settingsForm.credentialsHint")}</span>
 
-      <Button surface="admin" variant="primary" block type="submit" loading={isSaving}>
+      <Button surface="admin" variant="primary" type="submit" loading={isSaving} style={{ width: "fit-content", minWidth: 160 }}>
         {t("admin.settingsForm.save")}
       </Button>
 
