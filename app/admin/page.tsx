@@ -163,7 +163,7 @@ export default function AdminPage() {
               <div className="admin-welcome__top">
                 <div className="admin-welcome__brand">
                   <div className="admin-welcome__logo">
-                    <Zap size={22} strokeWidth={2} />
+                    <img src="/logo.jpg" alt="Habentech Logo" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} />
                   </div>
                   <p className="admin-welcome__store-name">{storeName}</p>
                 </div>

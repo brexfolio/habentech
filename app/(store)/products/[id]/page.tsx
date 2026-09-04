@@ -202,47 +202,48 @@ export default function ProductDetailPage() {
 
   return (
     <div className="product-detail">
-      <div className="product-gallery">
-        <div className="product-detail__topbar">
-          <button type="button" className="product-detail__icon-btn" onClick={handleBack} aria-label={t("product.goBack")}>
-            <ArrowLeft size={18} />
+      <div className="product-detail__topbar">
+        <button type="button" className="product-detail__icon-btn" onClick={handleBack} aria-label={t("product.goBack")}>
+          <ArrowLeft size={18} />
+        </button>
+        <div className="product-detail__topbar-actions">
+          <button
+            type="button"
+            className="product-detail__icon-btn"
+            onClick={() => setShowShareSheet(true)}
+            aria-label={t("product.share")}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 128 128" fill="currentColor">
+              <path d="M8 116q-.459 0-.918-.105A4.01 4.01 0 0 1 4 112c0-36.348 4.598-66.578 60-67.953V16a4 4 0 0 1 6.715-2.937l52 48c.82.753 1.285 1.82 1.285 2.937s-.465 2.184-1.285 2.938l-52 48a3.99 3.99 0 0 1-4.32.727A4 4 0 0 1 64 112V84.047c-38.004.91-45.016 14.93-52.422 29.742A4 4 0 0 1 8 116m60-40c2.211 0 4 1.789 4 4v22.863L114.102 64 72 25.137V48c0 2.211-1.789 4-4 4-44.188 0-53.703 17.09-55.574 44.387C20.711 85.258 34.832 76 68 76" />
+            </svg>
           </button>
-          <div className="product-detail__topbar-actions">
-            <button
-              type="button"
-              className="product-detail__icon-btn"
-              onClick={() => setShowShareSheet(true)}
-              aria-label={t("product.share")}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 128 128" fill="currentColor">
-                <path d="M8 116q-.459 0-.918-.105A4.01 4.01 0 0 1 4 112c0-36.348 4.598-66.578 60-67.953V16a4 4 0 0 1 6.715-2.937l52 48c.82.753 1.285 1.82 1.285 2.937s-.465 2.184-1.285 2.938l-52 48a3.99 3.99 0 0 1-4.32.727A4 4 0 0 1 64 112V84.047c-38.004.91-45.016 14.93-52.422 29.742A4 4 0 0 1 8 116m60-40c2.211 0 4 1.789 4 4v22.863L114.102 64 72 25.137V48c0 2.211-1.789 4-4 4-44.188 0-53.703 17.09-55.574 44.387C20.711 85.258 34.832 76 68 76" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              className="product-detail__icon-btn product-detail__favorite"
-              onClick={handleFavorite}
-              aria-label={favorite ? t("favorites.remove") : t("favorites.add")}
-              aria-pressed={favorite}
-              style={favorite ? { color: "#ff5470" } : undefined}
-            >
-              <span key={heartKey} className={`product-detail__heart ${favorite ? "product-detail__heart--pop" : ""}`}>
-                <Heart size={18} fill={favorite ? "currentColor" : "none"} />
+          <button
+            type="button"
+            className="product-detail__icon-btn product-detail__favorite"
+            onClick={handleFavorite}
+            aria-label={favorite ? t("favorites.remove") : t("favorites.add")}
+            aria-pressed={favorite}
+            style={favorite ? { color: "#ff5470" } : undefined}
+          >
+            <span key={heartKey} className={`product-detail__heart ${favorite ? "product-detail__heart--pop" : ""}`}>
+              <Heart size={18} fill={favorite ? "currentColor" : "none"} />
+            </span>
+            {burst > 0 && (
+              <span className={`product-detail__burst ${favorite ? "product-detail__burst--on" : "product-detail__burst--off"}`} key={`burst-${burst}`}>
+                {PARTICLE_ANGLES.map((angle, i) => (
+                  <span
+                    key={i}
+                    className="product-detail__particle"
+                    style={{ ["--angle" as string]: `${angle}deg` }}
+                  />
+                ))}
               </span>
-              {burst > 0 && (
-                <span className={`product-detail__burst ${favorite ? "product-detail__burst--on" : "product-detail__burst--off"}`} key={`burst-${burst}`}>
-                  {PARTICLE_ANGLES.map((angle, i) => (
-                    <span
-                      key={i}
-                      className="product-detail__particle"
-                      style={{ ["--angle" as string]: `${angle}deg` }}
-                    />
-                  ))}
-                </span>
-              )}
-            </button>
-          </div>
+            )}
+          </button>
         </div>
+      </div>
+
+      <div className="product-gallery">
 
         {images.length > 0 ? (
           <>

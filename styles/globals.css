@@ -22,10 +22,9 @@ body {
   color: var(--store-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior-y: none;
-  overscroll-behavior-x: none;
   overflow-x: hidden !important;
-  touch-action: manipulation;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 a {

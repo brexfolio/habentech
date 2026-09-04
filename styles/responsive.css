@@ -148,9 +148,16 @@
   }
 
   .product-detail__topbar {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1200px;
     background: transparent;
-    padding: calc(env(safe-area-inset-top, 0px) + 16px) 0 16px 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 105px) 28px 16px;
+    z-index: 40;
+    pointer-events: none;
   }
 
   .product-detail__icon-btn {

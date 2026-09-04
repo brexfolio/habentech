@@ -13,7 +13,7 @@ export default function Header({ storeName = "Haben tech" }: { storeName?: strin
     <header className="store-header">
       <div className="store-header__brand">
         <div className="store-header__logo">
-          <Zap size={20} fill="currentColor" />
+          <img src="/logo.jpg" alt="Habentech Logo" className="store-header__logo-img" />
         </div>
         <div className="store-header__text">
           <p className="store-header__name">{storeName}</p>
