@@ -8,6 +8,7 @@ import {
   editTelegramMessageCaption,
   editTelegramMessageText,
   deleteTelegramMessage,
+  type InlineKeyboardButton,
 } from "./telegramBot";
 
 export interface ChannelPublishResult {
@@ -66,7 +67,7 @@ export async function resolveChannelId(): Promise<string | null> {
 }
 
 /**
- * Builds the deep link used for products.
+ * Builds the deep link used by the "View Product" button.
  */
 export function createProductLink(product: Pick<Product, "id">): string {
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
@@ -79,6 +80,12 @@ export function createProductLink(product: Pick<Product, "id">): string {
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   return `${baseUrl}/products/${product.id}`;
+}
+
+function buildViewProductKeyboard(product: Product): { inline_keyboard: InlineKeyboardButton[][] } {
+  return {
+    inline_keyboard: [[{ text: "🛍 View Product", url: createProductLink(product) }]],
+  };
 }
 
 function escapeHtml(value: string): string {
@@ -138,11 +145,13 @@ export async function publishProductToChat(
   threadId?: string | null
 ): Promise<ChannelPublishResult> {
   const caption = formatProductMessage(product);
+  const keyboard = buildViewProductKeyboard(product);
   const images = [...(product.images ?? [])].sort((a, b) => a.display_order - b.display_order);
 
   try {
     if (images.length === 0) {
       const result = await sendTelegramMessage(chatId, caption, {
+        replyMarkup: keyboard,
         messageThreadId: threadId ?? undefined,
       });
       return {
@@ -156,6 +165,7 @@ export async function publishProductToChat(
     if (images.length === 1) {
       const media = images[0].telegram_file_id || images[0].image_url;
       const result = await sendTelegramPhoto(chatId, media, caption, {
+        replyMarkup: keyboard,
         messageThreadId: threadId ?? undefined,
       });
       return {
@@ -177,11 +187,18 @@ export async function publishProductToChat(
     });
     const mediaMessageIds = groupResults.map((r) => String(r.message_id));
 
+    // For multi-photo media groups, Telegram API doesn't support direct inline keyboards on albums.
+    // Send a clean button message below without repeating the product name text.
+    const buttonMessage = await sendTelegramMessage(chatId, "👇", {
+      replyMarkup: keyboard,
+      messageThreadId: threadId ?? undefined,
+    });
+
     return {
       success: true,
       channelId: chatId,
-      messageId: mediaMessageIds[0],
-      mediaMessageIds: mediaMessageIds,
+      messageId: String(buttonMessage.message_id),
+      mediaMessageIds: [...mediaMessageIds, String(buttonMessage.message_id)],
     };
   } catch (error) {
     return {
@@ -204,15 +221,20 @@ export async function updateChatProduct(
   const images = [...(product.images ?? [])].sort((a, b) => a.display_order - b.display_order);
   const mediaMessageIds = existingMediaMessageIds ?? [];
   const wasSinglePost = mediaMessageIds.length <= 1;
+  const keyboard = buildViewProductKeyboard(product);
 
   try {
     if (wasSinglePost && images.length <= 1) {
       const caption = formatProductMessage(product);
 
       if (images.length === 1) {
-        await editTelegramMessageCaption(chatId, existingMessageId, caption);
+        await editTelegramMessageCaption(chatId, existingMessageId, caption, {
+          replyMarkup: keyboard,
+        });
       } else {
-        await editTelegramMessageText(chatId, existingMessageId, caption);
+        await editTelegramMessageText(chatId, existingMessageId, caption, {
+          replyMarkup: keyboard,
+        });
       }
 
       return {
