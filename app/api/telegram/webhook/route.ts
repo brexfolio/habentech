@@ -2,6 +2,10 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { editTelegramMessageText, answerCallbackQuery, setTelegramChatMenuButton, sendTelegramMessage } from "@/lib/telegramBot";
 import { reduceInventoryForCompletedOrder, restoreInventoryForReversedOrder } from "@/lib/inventoryService";
 
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 interface TelegramUpdate {
   message?: {
     message_id: number;
@@ -81,21 +85,34 @@ async function handleMessage(message: NonNullable<TelegramUpdate["message"]>) {
   if (text.startsWith("/start")) {
     const payload = text.slice("/start".length).trim();
     let storeUrl = appUrl;
+    let isProductDeepLink = false;
+    let productName = "";
+
     if (payload.startsWith("product_")) {
       const productId = payload.replace("product_", "");
       storeUrl = `${appUrl}/products/${productId}`;
+      isProductDeepLink = true;
+
+      try {
+        const supabase = getSupabaseAdmin();
+        const { data: p } = await supabase
+          .from("products")
+          .select("name")
+          .eq("id", productId)
+          .single();
+        if (p?.name) productName = p.name;
+      } catch {}
     }
 
-    const row = [{ text: "🛒 Open Store", web_app: { url: storeUrl } }];
+    const mainButtonText = isProductDeepLink
+      ? `🛍 View ${productName || "Product"}`
+      : "🛒 Open Store";
+
+    const row = [{ text: mainButtonText, web_app: { url: storeUrl } }];
     if (isAdmin) {
       row.push({ text: "🏬 My Store", web_app: { url: `${appUrl}/admin` } });
     }
 
-    // Replace the ☰ hamburger menu with a single "Shop Now" button for
-    // everyone (customers and admin alike). A web_app menu button can only
-    // be pinned per-chat via the Bot API — it isn't honored as the global
-    // default — so this self-heals it per-chat on every /start. We also set
-    // the default scope so new/unknown chats inherit "Shop Now" too.
     await setTelegramChatMenuButton(
       { type: "web_app", text: "Shop Now", web_app: { url: appUrl } },
       message.chat.id
@@ -106,11 +123,11 @@ async function handleMessage(message: NonNullable<TelegramUpdate["message"]>) {
       web_app: { url: appUrl },
     }).catch(() => {});
 
-    await sendTelegramMessageWithWebApp(
-      message.chat.id,
-      `👋 Welcome${name}! Browse the latest electronics or manage your store below.`,
-      [row]
-    );
+    const welcomeMessage = isProductDeepLink
+      ? `📱 Tap below to view <b>${escapeHtml(productName || "product details")}</b> in the Habentech Mini App:`
+      : `👋 Welcome${name}! Browse the latest electronics or manage your store below.`;
+
+    await sendTelegramMessageWithWebApp(message.chat.id, welcomeMessage, [row]);
     return;
   }
 
