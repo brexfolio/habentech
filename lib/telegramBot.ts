@@ -28,6 +28,7 @@ export interface InlineKeyboardButton {
   text: string;
   url?: string;
   callback_data?: string;
+  web_app?: { url: string };
 }
 
 export interface SendMessageResult {

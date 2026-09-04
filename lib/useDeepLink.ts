@@ -3,35 +3,73 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-/**
- * Handles Telegram Mini App deep links. When a customer taps a
- * channel "View Product" button, Telegram opens the Mini App with
- * `startapp=product_<id>`, which Telegram surfaces on the client as
- * `initDataUnsafe.start_param`. This hook reads it once on mount and
- * routes the customer straight to that product.
- *
- * Only triggers when there is a `product_` start parameter and we are
- * not already on that product page (e.g. a refresh of the deep link).
- */
+function extractStartParam(): string | null {
+  if (typeof window === "undefined") return null;
+
+  // 1. Telegram WebApp object
+  const webApp = (window as { Telegram?: { WebApp?: { initDataUnsafe?: { start_param?: string }; initData?: string } } }).Telegram?.WebApp;
+  if (typeof webApp?.initDataUnsafe?.start_param === "string" && webApp.initDataUnsafe.start_param) {
+    return webApp.initDataUnsafe.start_param;
+  }
+
+  // 2. Telegram WebApp initData query string
+  if (typeof webApp?.initData === "string" && webApp.initData) {
+    try {
+      const initParams = new URLSearchParams(webApp.initData);
+      const param = initParams.get("tgWebAppStartParam") || initParams.get("start_param") || initParams.get("startapp");
+      if (param) return param;
+    } catch {}
+  }
+
+  // 3. URL search params (window.location.search)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const param = urlParams.get("tgWebAppStartParam") || urlParams.get("startapp") || urlParams.get("start_param");
+    if (param) return param;
+  } catch {}
+
+  // 4. URL hash (window.location.hash)
+  try {
+    if (window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const param = hashParams.get("tgWebAppStartParam") || hashParams.get("startapp") || hashParams.get("start_param");
+      if (param) return param;
+    }
+  } catch {}
+
+  return null;
+}
+
 export function useDeepLink() {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const webApp = (window as { Telegram?: any }).Telegram?.WebApp;
-    const startParam: unknown = webApp?.initDataUnsafe?.start_param;
-    if (typeof startParam !== "string") return;
+    let checkCount = 0;
 
-    const match = /^product_(.+)$/.exec(startParam);
-    if (!match) return;
+    function checkAndRedirect(): boolean {
+      const rawParam = extractStartParam();
+      if (!rawParam) return false;
 
-    const productId = match[1];
-    if (!productId) return;
+      const match = /^product_(.+)$/.exec(rawParam);
+      if (!match || !match[1]) return false;
 
-    const currentPath =
-      typeof window !== "undefined" ? window.location.pathname : "";
-    if (currentPath === `/products/${productId}`) return;
+      const productId = match[1];
+      const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+      if (currentPath === `/products/${productId}`) return true;
 
-    router.replace(`/products/${productId}`);
+      router.replace(`/products/${productId}`);
+      return true;
+    }
+
+    if (checkAndRedirect()) return;
+
+    const interval = setInterval(() => {
+      checkCount++;
+      if (checkAndRedirect() || checkCount > 10) {
+        clearInterval(interval);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
   }, [router]);
 }

@@ -83,8 +83,18 @@ export function createProductLink(product: Pick<Product, "id">): string {
 }
 
 function buildViewProductKeyboard(product: Product): { inline_keyboard: InlineKeyboardButton[][] } {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const webAppUrl = appUrl ? `${appUrl}/products/${product.id}` : null;
+  const directLink = createProductLink(product);
+
+  if (webAppUrl) {
+    return {
+      inline_keyboard: [[{ text: "🛍 View Product", web_app: { url: webAppUrl } }]],
+    };
+  }
+
   return {
-    inline_keyboard: [[{ text: "🛍 View Product", url: createProductLink(product) }]],
+    inline_keyboard: [[{ text: "🛍 View Product", url: directLink }]],
   };
 }
 
@@ -187,9 +197,9 @@ export async function publishProductToChat(
     });
     const mediaMessageIds = groupResults.map((r) => String(r.message_id));
 
-    // For multi-photo media groups, Telegram API doesn't support direct inline keyboards on albums.
-    // Send a clean button message below without repeating the product name text.
-    const buttonMessage = await sendTelegramMessage(chatId, "👇", {
+    // For multi-photo media groups, Telegram API requires a separate message for inline buttons.
+    // Send a clean text label "🛍 View in Mini App" without any "👇" pointer or repeated product name.
+    const buttonMessage = await sendTelegramMessage(chatId, "🛍 <b>View in Mini App</b>", {
       replyMarkup: keyboard,
       messageThreadId: threadId ?? undefined,
     });
