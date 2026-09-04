@@ -1,6 +1,6 @@
 import { verifyAdminInitData, extractInitData } from "@/lib/telegramAuth";
 import { getTelegramChat } from "@/lib/telegramBot";
-import { apiError, apiSuccess } from "@/lib/utils";
+import { apiError, apiSuccess, parseTelegramLink } from "@/lib/utils";
 
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
@@ -15,7 +15,10 @@ export async function POST(request: Request) {
     return apiError("Unauthorized", 401);
   }
 
-  const chatId = typeof body.chat_id === "string" ? body.chat_id.trim() : "";
+  const rawInput = typeof body.chat_id === "string" ? body.chat_id.trim() : "";
+  const parsed = parseTelegramLink(rawInput);
+  const chatId = parsed.chatId;
+
   if (!chatId) {
     return apiError("Group Chat ID is required.", 400);
   }

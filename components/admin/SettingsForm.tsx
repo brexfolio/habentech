@@ -11,6 +11,8 @@ import { useLanguage } from "@/lib/i18n";
 import type { StoreSettings, PublishTarget } from "@/types/settings";
 import { CheckCircle2, MessageSquare, Radio } from "lucide-react";
 
+import { parseTelegramLink } from "@/lib/utils";
+
 export default function SettingsForm() {
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [storeName, setStoreName] = useState("");
@@ -29,6 +31,19 @@ export default function SettingsForm() {
 
   const { showToast } = useToast();
   const { t } = useLanguage();
+
+  function handleGroupInputChange(value: string) {
+    setTelegramGroupTitle("");
+    if (value.includes("t.me/")) {
+      const parsed = parseTelegramLink(value);
+      setTelegramGroup(parsed.chatId);
+      if (parsed.threadId) {
+        setTelegramGroupThread(parsed.threadId);
+      }
+    } else {
+      setTelegramGroup(value);
+    }
+  }
 
   useEffect(() => {
     apiGet<{ settings: StoreSettings | null }>("/api/settings")
@@ -164,10 +179,7 @@ export default function SettingsForm() {
           surface="admin"
           label={t("admin.settingsForm.telegramGroup")}
           value={telegramGroup}
-          onChange={(e) => {
-            setTelegramGroup(e.target.value);
-            setTelegramGroupTitle("");
-          }}
+          onChange={(e) => handleGroupInputChange(e.target.value)}
           placeholder={t("admin.settingsForm.groupPlaceholder")}
         />
 

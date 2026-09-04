@@ -32,3 +32,27 @@ export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength - 1)}…`;
 }
+
+export function parseTelegramLink(input: string): { chatId: string; threadId?: string } {
+  const trimmed = input.trim();
+  if (!trimmed) return { chatId: "" };
+
+  const privateMatch = trimmed.match(/t\.me\/c\/(\d+)(?:\/(\d+))?/);
+  if (privateMatch) {
+    const rawId = privateMatch[1];
+    const chatId = rawId.startsWith("-100") ? rawId : `-100${rawId}`;
+    const threadId = privateMatch[2];
+    return { chatId, threadId };
+  }
+
+  const publicMatch = trimmed.match(/t\.me\/([a-zA-Z0-9_]+)(?:\/(\d+))?/);
+  if (publicMatch && !["c", "share", "addstickers", "s"].includes(publicMatch[1])) {
+    return { chatId: `@${publicMatch[1]}` };
+  }
+
+  if (/^[a-zA-Z0-9_]{5,32}$/.test(trimmed)) {
+    return { chatId: `@${trimmed}` };
+  }
+
+  return { chatId: trimmed };
+}
