@@ -251,6 +251,8 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 0 16px 12px;
+  align-items: start !important;
+  align-content: start !important;
 }
 
 .product-card {
@@ -263,6 +265,10 @@
   box-shadow: 0 6px 20px rgba(26, 27, 28, 0.05);
   position: relative;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  height: auto !important;
+  max-height: max-content !important;
+  align-self: start !important;
+  flex: 0 0 auto !important;
 }
 
 .product-card:active {
@@ -938,6 +944,9 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  height: auto !important;
+  align-self: start !important;
+  flex: 0 0 auto !important;
 }
 
 .order-card__top,

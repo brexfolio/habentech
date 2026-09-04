@@ -145,32 +145,37 @@
   .admin-stat-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
-    align-items: start;
+    align-items: start !important;
+    align-content: start !important;
   }
 
   .admin-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
-    align-items: start;
+    align-items: start !important;
+    align-content: start !important;
   }
 
   .admin-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
-    align-items: start;
-    align-content: start;
+    align-items: start !important;
+    align-content: start !important;
   }
 
   .admin-list-item {
     height: auto !important;
-    max-height: none;
-    align-self: start;
+    max-height: max-content !important;
+    align-self: start !important;
+    flex: 0 0 auto !important;
   }
 
   .admin-card {
     height: auto !important;
-    align-self: start;
+    max-height: max-content !important;
+    align-self: start !important;
+    flex: 0 0 auto !important;
   }
 }
 
@@ -196,6 +201,8 @@
   .product-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
+    align-items: start !important;
+    align-content: start !important;
   }
 
   .product-detail {
@@ -222,19 +229,21 @@
 
   .admin-stat-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-items: start;
+    align-items: start !important;
+    align-content: start !important;
   }
 
   .admin-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-items: start;
+    align-items: start !important;
+    align-content: start !important;
   }
 
   .admin-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
-    align-items: start;
-    align-content: start;
+    align-items: start !important;
+    align-content: start !important;
   }
 }
 

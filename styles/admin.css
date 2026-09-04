@@ -243,6 +243,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
+  align-items: start !important;
+  align-content: start !important;
 }
 
 .admin-dashboard-stat {
@@ -348,6 +350,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
+  align-items: start !important;
+  align-content: start !important;
 }
 
 .admin-action-card {
@@ -550,6 +554,9 @@
   padding: 18px;
   box-shadow: var(--admin-shadow-card);
   margin-bottom: 14px;
+  height: auto !important;
+  flex: 0 0 auto !important;
+  align-self: flex-start !important;
   transition: border-color 0.15s ease;
 }
 
@@ -621,6 +628,7 @@
   border-radius: var(--admin-radius-lg);
   padding: 16px;
   min-height: 100px;
+  height: auto !important;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -781,6 +789,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: auto !important;
+  align-items: stretch;
 }
 
 .admin-list--flat .admin-list-item {
@@ -790,8 +800,10 @@
 .admin-list-item {
   display: block;
   width: 100%;
-  height: auto;
-  align-self: flex-start;
+  height: auto !important;
+  max-height: none !important;
+  flex: 0 0 auto !important;
+  align-self: flex-start !important;
   text-align: left;
   color: var(--admin-text);
   font-family: inherit;
@@ -954,6 +966,12 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  height: auto !important;
+  align-self: start !important;
 }
 
 .admin-form__field {
