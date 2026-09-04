@@ -24,11 +24,13 @@
 .admin-topnav {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px 24px 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-topnav__left {
@@ -112,10 +114,14 @@
 
 /* ---------- Dashboard layout ---------- */
 .admin-dashboard {
-  padding: 20px;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ---------- Welcome Card ---------- */
@@ -561,11 +567,15 @@
 }
 
 .admin-page-header {
-  padding: 18px 18px 6px;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-page-header__title {

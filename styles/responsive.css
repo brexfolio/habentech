@@ -18,11 +18,11 @@
 /* ---------- 640px and up (Small Tablets & Landscape Phones) ---------- */
 @media (min-width: 640px) {
   .store-container {
-    max-width: 720px;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 
   .store-header,
@@ -33,9 +33,38 @@
   .page-header,
   .order-card,
   .request-card {
-    max-width: 720px;
+    max-width: 1200px;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .store-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 28px);
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .page-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 28px);
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .product-detail__topbar {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 28px);
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .admin-topnav {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 28px);
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .admin-dashboard {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 28px);
   }
 
   .bottom-nav {
@@ -58,9 +87,9 @@
 /* ---------- 768px and up (iPads, Portrait Tablets & Foldables) ---------- */
 @media (min-width: 768px) {
   .store-container {
-    max-width: 960px;
-    padding-left: 24px;
-    padding-right: 24px;
+    max-width: 1200px;
+    padding-left: 28px;
+    padding-right: 28px;
   }
 
   .store-header,
@@ -71,7 +100,15 @@
   .page-header,
   .order-card,
   .request-card {
-    max-width: 960px;
+    max-width: 1200px;
+  }
+
+  .store-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 32px);
+  }
+
+  .admin-topnav {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 32px);
   }
 
   .product-grid {
@@ -89,9 +126,9 @@
 
   /* Product Detail Page Split View on Tablets/iPads */
   .product-detail {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 24px 24px 120px;
+    padding: calc(env(safe-area-inset-top, 0px) + 32px) 28px 120px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 28px;
@@ -113,7 +150,7 @@
   .product-detail__topbar {
     position: relative;
     background: transparent;
-    padding: 0 0 16px 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 0 16px 0;
   }
 
   .product-detail__icon-btn {
@@ -131,15 +168,15 @@
 
   /* Admin Dashboard & Admin Cards Layout */
   .admin-container {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 24px;
   }
 
   .admin-dashboard {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 28px;
+    padding: calc(env(safe-area-inset-top, 0px) + 32px) 28px 28px;
   }
 
   .admin-stat-grid {
@@ -182,7 +219,7 @@
 /* ---------- 1024px and up (iPad Pro, Laptops & Desktop Views) ---------- */
 @media (min-width: 1024px) {
   .store-container {
-    max-width: 1140px;
+    max-width: 1200px;
     padding-left: 32px;
     padding-right: 32px;
   }
@@ -195,7 +232,23 @@
   .page-header,
   .order-card,
   .request-card {
-    max-width: 1140px;
+    max-width: 1200px;
+  }
+
+  .store-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 36px);
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .admin-topnav {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 36px);
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .admin-dashboard {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 36px);
   }
 
   .product-grid {
@@ -206,7 +259,7 @@
   }
 
   .product-detail {
-    max-width: 1140px;
+    max-width: 1200px;
     grid-template-columns: 500px 1fr;
     gap: 36px;
   }
@@ -220,11 +273,11 @@
   }
 
   .admin-container {
-    max-width: 1140px;
+    max-width: 1200px;
   }
 
   .admin-dashboard {
-    max-width: 1140px;
+    max-width: 1200px;
   }
 
   .admin-stat-grid {

@@ -31,14 +31,16 @@
   top: 0;
   z-index: 20;
   background: var(--store-bg);
-  padding: 16px 16px 8px;
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   max-width: 1200px;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
+  box-sizing: border-box;
 }
 
 .store-header__brand {
@@ -572,8 +574,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent);
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 12px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent);
 }
 
 .product-detail__topbar--solid {
@@ -925,7 +927,10 @@
 
 /* ---------- Favorites / Orders pages ---------- */
 .page-header {
-  padding: 18px 16px 6px;
+  padding: calc(env(safe-area-inset-top, 0px) + 22px) 20px 10px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .page-header__title {
