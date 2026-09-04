@@ -78,6 +78,12 @@ export default function ProductDetailPage() {
 
   function getShareUrl(): string {
     if (typeof window === "undefined") return "";
+    const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
+    const appName = process.env.NEXT_PUBLIC_TELEGRAM_APP_NAME;
+    if (botUsername && appName && appName.trim()) {
+      const cleanApp = appName.trim().toLowerCase();
+      return `https://t.me/${botUsername}/${cleanApp}?startapp=product_${params.id}`;
+    }
     return `${window.location.origin}/products/${params.id}`;
   }
 

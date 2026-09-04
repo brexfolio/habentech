@@ -70,6 +70,15 @@ export async function resolveChannelId(): Promise<string | null> {
  * Builds the deep link used by the "View Product" button.
  */
 export function createProductLink(product: Pick<Product, "id">): string {
+  const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
+  const appName = process.env.NEXT_PUBLIC_TELEGRAM_APP_NAME;
+  const startParam = `product_${product.id}`;
+
+  if (botUsername && appName && appName.trim()) {
+    const cleanApp = appName.trim().toLowerCase();
+    return `https://t.me/${botUsername}/${cleanApp}?startapp=${startParam}`;
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://habentech.vercel.app";
   const cleanBase = baseUrl.replace(/\/$/, "");
   return `${cleanBase}/products/${product.id}`;
