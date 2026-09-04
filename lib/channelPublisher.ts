@@ -8,7 +8,6 @@ import {
   editTelegramMessageCaption,
   editTelegramMessageText,
   deleteTelegramMessage,
-  type InlineKeyboardButton,
 } from "./telegramBot";
 
 export interface ChannelPublishResult {
@@ -67,7 +66,7 @@ export async function resolveChannelId(): Promise<string | null> {
 }
 
 /**
- * Builds the deep link used by the "View Product" button.
+ * Builds the deep link used for products.
  */
 export function createProductLink(product: Pick<Product, "id">): string {
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
@@ -91,13 +90,19 @@ function escapeHtml(value: string): string {
 
 /**
  * Formats the HTML caption/message body used for posts.
+ * Order:
+ * 1. Name
+ * 2. Category & Condition
+ * 3. Specifications
+ * 4. Description
+ * 5. Price (directly above Availability)
+ * 6. Availability
  */
 export function formatProductMessage(product: Product): string {
   const lines: string[] = [];
 
   lines.push(`📱 <b>${escapeHtml(product.name)}</b>`);
   lines.push("");
-  lines.push(`💰 Price: <b>${Number(product.price).toLocaleString()} ${product.currency}</b>`);
   lines.push(`📂 Category: ${escapeHtml(product.category)}`);
   lines.push(`✨ Condition: ${escapeHtml(product.condition)}`);
 
@@ -110,22 +115,18 @@ export function formatProductMessage(product: Product): string {
     }
   }
 
-  lines.push("");
-  const availabilityEmoji = product.availability === "Available" ? "🟢" : "🔴";
-  lines.push(`${availabilityEmoji} ${escapeHtml(product.availability)}`);
-
   if (product.description) {
     lines.push("");
     lines.push(escapeHtml(product.description));
   }
 
-  return lines.join("\n");
-}
+  lines.push("");
+  lines.push(`💰 Price: <b>${Number(product.price).toLocaleString()} ${product.currency}</b>`);
 
-function buildViewProductKeyboard(product: Product): { inline_keyboard: InlineKeyboardButton[][] } {
-  return {
-    inline_keyboard: [[{ text: "🛍 View Product", url: createProductLink(product) }]],
-  };
+  const availabilityEmoji = product.availability === "Available" ? "🟢" : "🔴";
+  lines.push(`${availabilityEmoji} ${escapeHtml(product.availability)}`);
+
+  return lines.join("\n");
 }
 
 /**
@@ -137,13 +138,11 @@ export async function publishProductToChat(
   threadId?: string | null
 ): Promise<ChannelPublishResult> {
   const caption = formatProductMessage(product);
-  const keyboard = buildViewProductKeyboard(product);
   const images = [...(product.images ?? [])].sort((a, b) => a.display_order - b.display_order);
 
   try {
     if (images.length === 0) {
       const result = await sendTelegramMessage(chatId, caption, {
-        replyMarkup: keyboard,
         messageThreadId: threadId ?? undefined,
       });
       return {
@@ -157,7 +156,6 @@ export async function publishProductToChat(
     if (images.length === 1) {
       const media = images[0].telegram_file_id || images[0].image_url;
       const result = await sendTelegramPhoto(chatId, media, caption, {
-        replyMarkup: keyboard,
         messageThreadId: threadId ?? undefined,
       });
       return {
@@ -179,16 +177,11 @@ export async function publishProductToChat(
     });
     const mediaMessageIds = groupResults.map((r) => String(r.message_id));
 
-    const buttonMessage = await sendTelegramMessage(chatId, `📱 ${product.name}`, {
-      replyMarkup: keyboard,
-      messageThreadId: threadId ?? undefined,
-    });
-
     return {
       success: true,
       channelId: chatId,
-      messageId: String(buttonMessage.message_id),
-      mediaMessageIds: [...mediaMessageIds, String(buttonMessage.message_id)],
+      messageId: mediaMessageIds[0],
+      mediaMessageIds: mediaMessageIds,
     };
   } catch (error) {
     return {
@@ -215,16 +208,11 @@ export async function updateChatProduct(
   try {
     if (wasSinglePost && images.length <= 1) {
       const caption = formatProductMessage(product);
-      const keyboard = buildViewProductKeyboard(product);
 
       if (images.length === 1) {
-        await editTelegramMessageCaption(chatId, existingMessageId, caption, {
-          replyMarkup: keyboard,
-        });
+        await editTelegramMessageCaption(chatId, existingMessageId, caption);
       } else {
-        await editTelegramMessageText(chatId, existingMessageId, caption, {
-          replyMarkup: keyboard,
-        });
+        await editTelegramMessageText(chatId, existingMessageId, caption);
       }
 
       return {
