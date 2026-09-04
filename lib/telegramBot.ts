@@ -40,15 +40,20 @@ export async function sendTelegramMessage(
   options: {
     parseMode?: "HTML" | "MarkdownV2";
     replyMarkup?: { inline_keyboard: InlineKeyboardButton[][] };
+    messageThreadId?: string | number;
   } = {}
 ): Promise<SendMessageResult> {
-  return callTelegramApi<SendMessageResult>("sendMessage", {
+  const payload: Record<string, unknown> = {
     chat_id: chatId,
     text,
     parse_mode: options.parseMode ?? "HTML",
     reply_markup: options.replyMarkup,
     disable_web_page_preview: true,
-  });
+  };
+  if (options.messageThreadId) {
+    payload.message_thread_id = Number(options.messageThreadId);
+  }
+  return callTelegramApi<SendMessageResult>("sendMessage", payload);
 }
 
 export interface SendPhotoResult {
@@ -62,15 +67,20 @@ export async function sendTelegramPhoto(
   options: {
     parseMode?: "HTML" | "MarkdownV2";
     replyMarkup?: { inline_keyboard: InlineKeyboardButton[][] };
+    messageThreadId?: string | number;
   } = {}
 ): Promise<SendPhotoResult> {
-  return callTelegramApi<SendPhotoResult>("sendPhoto", {
+  const payload: Record<string, unknown> = {
     chat_id: chatId,
     photo,
     caption,
     parse_mode: options.parseMode ?? "HTML",
     reply_markup: options.replyMarkup,
-  });
+  };
+  if (options.messageThreadId) {
+    payload.message_thread_id = Number(options.messageThreadId);
+  }
+  return callTelegramApi<SendPhotoResult>("sendPhoto", payload);
 }
 
 export interface MediaGroupItem {
@@ -86,12 +96,19 @@ export interface MediaGroupMessage {
 
 export async function sendTelegramMediaGroup(
   chatId: string | number,
-  media: MediaGroupItem[]
+  media: MediaGroupItem[],
+  options: {
+    messageThreadId?: string | number;
+  } = {}
 ): Promise<MediaGroupMessage[]> {
-  return callTelegramApi<MediaGroupMessage[]>("sendMediaGroup", {
+  const payload: Record<string, unknown> = {
     chat_id: chatId,
     media,
-  });
+  };
+  if (options.messageThreadId) {
+    payload.message_thread_id = Number(options.messageThreadId);
+  }
+  return callTelegramApi<MediaGroupMessage[]>("sendMediaGroup", payload);
 }
 
 export async function editTelegramMessageCaption(
@@ -193,3 +210,17 @@ export async function setTelegramChatMenuButton(
     ...(chatId !== undefined ? { chat_id: chatId } : {}),
   });
 }
+
+export interface TelegramChatInfo {
+  id: number;
+  title?: string;
+  type: "private" | "group" | "supergroup" | "channel";
+  is_forum?: boolean;
+  username?: string;
+  description?: string;
+}
+
+export async function getTelegramChat(chatId: string | number): Promise<TelegramChatInfo> {
+  return callTelegramApi<TelegramChatInfo>("getChat", { chat_id: chatId });
+}
+

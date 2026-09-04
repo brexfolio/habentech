@@ -20,6 +20,7 @@ export const productInputSchema = z.object({
   description: z.string().trim().max(4000).default(""),
   availability: z.enum(PRODUCT_AVAILABILITIES as [string, ...string[]]).default("Available"),
   featured: z.boolean().default(false),
+  publish_target: z.enum(["channel", "group", "both"]).nullable().optional(),
   images: z
     .array(
       z.object({
@@ -59,6 +60,7 @@ export const productUpdateSchema = z.object({
   description: z.string().trim().max(4000).optional(),
   availability: z.enum(PRODUCT_AVAILABILITIES as [string, ...string[]]).optional(),
   featured: z.boolean().optional(),
+  publish_target: z.enum(["channel", "group", "both"]).nullable().optional(),
   images: z
     .array(
       z.object({
@@ -102,6 +104,10 @@ export const settingsUpdateSchema = z.object({
   store_name: z.string().trim().min(1).max(200).optional(),
   store_description: z.string().trim().max(2000).optional(),
   telegram_channel: z.string().trim().max(200).nullable().optional(),
+  telegram_group: z.string().trim().max(200).nullable().optional(),
+  telegram_group_title: z.string().trim().max(200).nullable().optional(),
+  telegram_group_thread_id: z.string().trim().max(100).nullable().optional(),
+  publish_target: z.enum(["channel", "group", "both"]).optional(),
   contact_phone: z.string().trim().max(100).nullable().optional(),
   contact_email: z.string().trim().max(200).nullable().optional(),
   init_data: z.string().min(1, "Telegram authentication data is required."),

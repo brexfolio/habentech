@@ -106,6 +106,7 @@ export async function POST(request: Request) {
         description: input.description,
         availability: input.availability,
         featured: input.featured,
+        publish_target: input.publish_target ?? null,
       })
       .select("*")
       .single();
@@ -142,12 +143,12 @@ export async function POST(request: Request) {
       const result = await publishProductById(created.id);
       finalProduct = result.product;
       if (result.warning) {
-        channelWarning = "Product saved successfully, but failed to publish to the Telegram channel.";
-        console.error("Channel publish failed:", result.warning);
+        channelWarning = result.warning;
+        console.error("Publish warning:", result.warning);
       }
     } catch (publishError) {
-      channelWarning = "Product saved successfully, but failed to publish to the Telegram channel.";
-      console.error("Channel publish threw:", publishError);
+      channelWarning = "Product saved successfully, but failed to publish to Telegram.";
+      console.error("Publish threw:", publishError);
       const { data } = await supabase.from("products").select(PRODUCT_SELECT).eq("id", created.id).single();
       finalProduct = data;
     }

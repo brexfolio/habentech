@@ -163,9 +163,15 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
 
             <div className="admin-list-item__meta-row">
               {product.featured && <span className="admin-badge admin-badge--featured">{t("admin.productList.featuredBadge")}</span>}
-              <span className={`admin-badge ${product.channel_published ? "admin-badge--completed" : "admin-badge--muted"}`}>
-                {product.channel_published ? t("admin.productList.publishedBadge") : t("admin.productList.notPublishedBadge")}
-              </span>
+              {product.channel_published && (
+                <span className="admin-badge admin-badge--completed">Channel 📢</span>
+              )}
+              {product.group_published && (
+                <span className="admin-badge admin-badge--completed">Group 💬</span>
+              )}
+              {!product.channel_published && !product.group_published && (
+                <span className="admin-badge admin-badge--muted">{t("admin.productList.notPublishedBadge")}</span>
+              )}
             </div>
 
             {mode === "stock" ? (
@@ -192,7 +198,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                   <Pencil size={14} />
                   {t("admin.productList.edit")}
                 </Button>
-                {!product.channel_published && (
+                {(!product.channel_published || !product.group_published) && (
                   <Button
                     surface="admin"
                     variant="secondary"
@@ -201,7 +207,7 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
                     onClick={() => handlePublish(product)}
                   >
                     <Send size={14} />
-                    {t("admin.productList.publish")}
+                    Publish
                   </Button>
                 )}
                 <Button
@@ -241,14 +247,14 @@ export default function ProductList({ mode, onEdit }: ProductListProps) {
         <p>
           {t("admin.productList.deleteConfirm", { name: pendingDelete?.name ?? "" })}
         </p>
-        {pendingDelete?.channel_published && (
+        {(pendingDelete?.channel_published || pendingDelete?.group_published) && (
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13.5 }}>
             <input
               type="checkbox"
               checked={removeChannelPost}
               onChange={(e) => setRemoveChannelPost(e.target.checked)}
             />
-            {t("admin.productList.removeChannelPost")}
+            Also remove Telegram posts (channel & group)
           </label>
         )}
       </Modal>

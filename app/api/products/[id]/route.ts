@@ -1,7 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { verifyAdminInitData, extractInitData } from "@/lib/telegramAuth";
 import { productUpdateSchema, formatZodError } from "@/lib/validation";
-import { publishProductById, deleteChannelPost } from "@/lib/channelPublisher";
+import { publishProductById, deleteChannelPost, deleteAllProductPosts } from "@/lib/channelPublisher";
 import { apiError, apiSuccess } from "@/lib/utils";
 import type { Product } from "@/types/product";
 
@@ -82,6 +82,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       "description",
       "availability",
       "featured",
+      "publish_target",
     ] as const) {
       if (input[key] !== undefined) updatePayload[key] = input[key];
     }
@@ -127,17 +128,17 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     let channelWarning: string | null = null;
     let finalProduct = existing;
 
-    if (existing.channel_published) {
+    if (existing.channel_published || existing.group_published) {
       try {
         const result = await publishProductById(id);
         finalProduct = result.product;
         if (result.warning) {
-          channelWarning = "Product updated, but the Telegram channel post could not be refreshed.";
-          console.error("Channel update failed:", result.warning);
+          channelWarning = result.warning;
+          console.error("Publish update warning:", result.warning);
         }
       } catch (publishError) {
-        channelWarning = "Product updated, but the Telegram channel post could not be refreshed.";
-        console.error("Channel update threw:", publishError);
+        channelWarning = "Product updated, but Telegram posts could not be refreshed.";
+        console.error("Publish update threw:", publishError);
       }
     }
 
@@ -174,8 +175,8 @@ export async function DELETE(request: Request, { params }: RouteContext) {
         .eq("id", id)
         .single();
 
-      if (existing?.channel_published) {
-        await deleteChannelPost(existing as Product);
+      if (existing) {
+        await deleteAllProductPosts(existing as Product);
       }
     }
 

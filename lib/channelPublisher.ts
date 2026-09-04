@@ -1,4 +1,5 @@
 import type { Product } from "@/types/product";
+import type { PublishTarget } from "@/types/settings";
 import { getSupabaseAdmin } from "./supabase";
 import {
   sendTelegramMessage,
@@ -18,32 +19,55 @@ export interface ChannelPublishResult {
   error?: string;
 }
 
+export interface StorePublishSettings {
+  channelId: string | null;
+  groupId: string | null;
+  groupThreadId: string | null;
+  publishTarget: PublishTarget;
+}
+
 /**
- * Resolves which Telegram channel to publish to: the value stored
- * in `store_settings.telegram_channel` takes priority (editable by
- * the admin from Settings), falling back to the TELEGRAM_CHANNEL_ID
- * environment variable.
+ * Resolves Telegram settings stored in `store_settings`, including channel, group,
+ * topic thread ID, and default publish target.
  */
-export async function resolveChannelId(): Promise<string | null> {
+export async function resolveStorePublishSettings(): Promise<StorePublishSettings> {
   try {
     const supabase = getSupabaseAdmin();
     const { data } = await supabase
       .from("store_settings")
-      .select("telegram_channel")
+      .select("telegram_channel, telegram_group, telegram_group_thread_id, publish_target")
       .limit(1)
       .maybeSingle();
-    if (data?.telegram_channel) return data.telegram_channel;
+
+    const channelId = data?.telegram_channel || (process.env.TELEGRAM_CHANNEL_ID ?? null);
+    const groupId = data?.telegram_group || null;
+    const groupThreadId = data?.telegram_group_thread_id || null;
+    const publishTarget: PublishTarget =
+      data?.publish_target === "group" || data?.publish_target === "both"
+        ? data.publish_target
+        : "channel";
+
+    return { channelId, groupId, groupThreadId, publishTarget };
   } catch {
-    // Fall through to env var.
+    return {
+      channelId: process.env.TELEGRAM_CHANNEL_ID ?? null,
+      groupId: null,
+      groupThreadId: null,
+      publishTarget: "channel",
+    };
   }
-  return process.env.TELEGRAM_CHANNEL_ID ?? null;
 }
 
 /**
- * Builds the deep link used by the "View Product" button. When the
- * bot username and Mini App short name are configured, this opens
- * the product directly inside the Telegram Mini App. Otherwise it
- * falls back to a plain web link to the hosted product page.
+ * Resolves which Telegram channel to publish to.
+ */
+export async function resolveChannelId(): Promise<string | null> {
+  const settings = await resolveStorePublishSettings();
+  return settings.channelId;
+}
+
+/**
+ * Builds the deep link used by the "View Product" button.
  */
 export function createProductLink(product: Pick<Product, "id">): string {
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
@@ -66,7 +90,7 @@ function escapeHtml(value: string): string {
 }
 
 /**
- * Formats the HTML caption/message body used for the channel post.
+ * Formats the HTML caption/message body used for posts.
  */
 export function formatProductMessage(product: Product): string {
   const lines: string[] = [];
@@ -105,30 +129,26 @@ function buildViewProductKeyboard(product: Product): { inline_keyboard: InlineKe
 }
 
 /**
- * Publishes a product to the configured public Telegram channel.
- * Uses `sendPhoto` for a single image, `sendMediaGroup` for
- * multiple images (Telegram media groups do not support inline
- * keyboards, so a short follow-up message carries the "View
- * Product" button), and a plain text message when there are no
- * images at all. Reuses existing Telegram `file_id`s when present
- * instead of re-uploading images.
+ * Publishes a product to any target chat ID (channel or group).
  */
-export async function publishProductToChannel(product: Product): Promise<ChannelPublishResult> {
-  const channelId = await resolveChannelId();
-  if (!channelId) {
-    return { success: false, error: "No Telegram channel configured." };
-  }
-
+export async function publishProductToChat(
+  product: Product,
+  chatId: string,
+  threadId?: string | null
+): Promise<ChannelPublishResult> {
   const caption = formatProductMessage(product);
   const keyboard = buildViewProductKeyboard(product);
   const images = [...(product.images ?? [])].sort((a, b) => a.display_order - b.display_order);
 
   try {
     if (images.length === 0) {
-      const result = await sendTelegramMessage(channelId, caption, { replyMarkup: keyboard });
+      const result = await sendTelegramMessage(chatId, caption, {
+        replyMarkup: keyboard,
+        messageThreadId: threadId ?? undefined,
+      });
       return {
         success: true,
-        channelId,
+        channelId: chatId,
         messageId: String(result.message_id),
         mediaMessageIds: [String(result.message_id)],
       };
@@ -136,10 +156,13 @@ export async function publishProductToChannel(product: Product): Promise<Channel
 
     if (images.length === 1) {
       const media = images[0].telegram_file_id || images[0].image_url;
-      const result = await sendTelegramPhoto(channelId, media, caption, { replyMarkup: keyboard });
+      const result = await sendTelegramPhoto(chatId, media, caption, {
+        replyMarkup: keyboard,
+        messageThreadId: threadId ?? undefined,
+      });
       return {
         success: true,
-        channelId,
+        channelId: chatId,
         messageId: String(result.message_id),
         mediaMessageIds: [String(result.message_id)],
       };
@@ -151,16 +174,19 @@ export async function publishProductToChannel(product: Product): Promise<Channel
       ...(index === 0 ? { caption, parse_mode: "HTML" as const } : {}),
     }));
 
-    const groupResults = await sendTelegramMediaGroup(channelId, mediaGroup);
+    const groupResults = await sendTelegramMediaGroup(chatId, mediaGroup, {
+      messageThreadId: threadId ?? undefined,
+    });
     const mediaMessageIds = groupResults.map((r) => String(r.message_id));
 
-    const buttonMessage = await sendTelegramMessage(channelId, `📱 ${product.name}`, {
+    const buttonMessage = await sendTelegramMessage(chatId, `📱 ${product.name}`, {
       replyMarkup: keyboard,
+      messageThreadId: threadId ?? undefined,
     });
 
     return {
       success: true,
-      channelId,
+      channelId: chatId,
       messageId: String(buttonMessage.message_id),
       mediaMessageIds: [...mediaMessageIds, String(buttonMessage.message_id)],
     };
@@ -173,21 +199,17 @@ export async function publishProductToChannel(product: Product): Promise<Channel
 }
 
 /**
- * Updates an existing channel post after the product was edited.
- * Simple text/single-photo posts are edited in place. Multi-image
- * posts (media groups) cannot be swapped atomically via the Bot
- * API, so the old messages are deleted and the product is
- * republished as a new post — the new IDs are returned so the
- * caller can persist them and avoid duplicate posts on next edit.
+ * Updates an existing post in a target chat ID.
  */
-export async function updateChannelProduct(product: Product): Promise<ChannelPublishResult> {
-  if (!product.channel_published || !product.telegram_channel_id || !product.telegram_channel_message_id) {
-    return publishProductToChannel(product);
-  }
-
-  const channelId = product.telegram_channel_id;
+export async function updateChatProduct(
+  product: Product,
+  chatId: string,
+  existingMessageId: string,
+  existingMediaMessageIds: string[] | null,
+  threadId?: string | null
+): Promise<ChannelPublishResult> {
   const images = [...(product.images ?? [])].sort((a, b) => a.display_order - b.display_order);
-  const mediaMessageIds = product.telegram_channel_media_message_ids ?? [];
+  const mediaMessageIds = existingMediaMessageIds ?? [];
   const wasSinglePost = mediaMessageIds.length <= 1;
 
   try {
@@ -196,27 +218,26 @@ export async function updateChannelProduct(product: Product): Promise<ChannelPub
       const keyboard = buildViewProductKeyboard(product);
 
       if (images.length === 1) {
-        await editTelegramMessageCaption(channelId, product.telegram_channel_message_id, caption, {
+        await editTelegramMessageCaption(chatId, existingMessageId, caption, {
           replyMarkup: keyboard,
         });
       } else {
-        await editTelegramMessageText(channelId, product.telegram_channel_message_id, caption, {
+        await editTelegramMessageText(chatId, existingMessageId, caption, {
           replyMarkup: keyboard,
         });
       }
 
       return {
         success: true,
-        channelId,
-        messageId: product.telegram_channel_message_id,
-        mediaMessageIds: [product.telegram_channel_message_id],
+        channelId: chatId,
+        messageId: existingMessageId,
+        mediaMessageIds: [existingMessageId],
       };
     }
 
-    // Structure changed (image count crossed a single/multi boundary)
-    // or it was already a media group — safest path is delete + repost.
-    await deleteChannelMessages(channelId, mediaMessageIds);
-    return publishProductToChannel(product);
+    // Structure changed or media group: delete + repost
+    await deleteChatMessages(chatId, mediaMessageIds);
+    return publishProductToChat(product, chatId, threadId);
   } catch (error) {
     return {
       success: false,
@@ -225,58 +246,165 @@ export async function updateChannelProduct(product: Product): Promise<ChannelPub
   }
 }
 
-async function deleteChannelMessages(channelId: string, messageIds: string[]): Promise<void> {
+async function deleteChatMessages(chatId: string, messageIds: string[]): Promise<void> {
   const unique = Array.from(new Set(messageIds));
-  await Promise.all(unique.map((id) => deleteTelegramMessage(channelId, id)));
+  await Promise.all(unique.map((id) => deleteTelegramMessage(chatId, id)));
+}
+
+/**
+ * Publishes a product to the configured public Telegram channel.
+ */
+export async function publishProductToChannel(product: Product): Promise<ChannelPublishResult> {
+  const channelId = await resolveChannelId();
+  if (!channelId) {
+    return { success: false, error: "No Telegram channel configured." };
+  }
+  return publishProductToChat(product, channelId);
+}
+
+/**
+ * Updates an existing channel post after product was edited.
+ */
+export async function updateChannelProduct(product: Product): Promise<ChannelPublishResult> {
+  if (!product.channel_published || !product.telegram_channel_id || !product.telegram_channel_message_id) {
+    return publishProductToChannel(product);
+  }
+  return updateChatProduct(
+    product,
+    product.telegram_channel_id,
+    product.telegram_channel_message_id,
+    product.telegram_channel_media_message_ids ?? null
+  );
+}
+
+/**
+ * Publishes a product to the configured Telegram group.
+ */
+export async function publishProductToGroup(
+  product: Product,
+  groupId?: string | null,
+  threadId?: string | null
+): Promise<ChannelPublishResult> {
+  let targetGroupId = groupId;
+  let targetThreadId = threadId;
+
+  if (!targetGroupId) {
+    const settings = await resolveStorePublishSettings();
+    targetGroupId = settings.groupId;
+    targetThreadId = targetThreadId ?? settings.groupThreadId;
+  }
+
+  if (!targetGroupId) {
+    return { success: false, error: "No Telegram group configured." };
+  }
+
+  return publishProductToChat(product, targetGroupId, targetThreadId);
+}
+
+/**
+ * Updates an existing group post after product was edited.
+ */
+export async function updateGroupProduct(
+  product: Product,
+  groupId?: string | null,
+  threadId?: string | null
+): Promise<ChannelPublishResult> {
+  const targetGroupId = product.telegram_group_id || groupId;
+  const targetThreadId = product.telegram_group_thread_id || threadId;
+
+  if (!product.group_published || !targetGroupId || !product.telegram_group_message_id) {
+    return publishProductToGroup(product, targetGroupId, targetThreadId);
+  }
+
+  return updateChatProduct(
+    product,
+    targetGroupId,
+    product.telegram_group_message_id,
+    product.telegram_group_media_message_ids ?? null,
+    targetThreadId
+  );
 }
 
 const PRODUCT_SELECT = "*, images:product_images(*), specifications:product_specifications(*)";
 
 /**
- * Fetches a product by ID, publishes it (or refreshes its existing
- * post) to the Telegram channel, persists the resulting channel
- * fields on the row, and returns the up-to-date product. Shared by
- * the automatic publish-on-create flow and the manual retry routes.
+ * Publishes/updates product posts for Channel, Group, or Both depending on settings or product override.
  */
 export async function publishProductById(
   productId: string
 ): Promise<{ product: Product; warning: string | null }> {
   const supabase = getSupabaseAdmin();
 
-  const { data: product, error } = await supabase
+  const { data: rawProduct, error } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
     .eq("id", productId)
     .single();
 
-  if (error || !product) {
+  if (error || !rawProduct) {
     throw new Error("Product not found.");
   }
 
-  const result = product.channel_published
-    ? await updateChannelProduct(product as Product)
-    : await publishProductToChannel(product as Product);
+  const product = rawProduct as Product;
+  const settings = await resolveStorePublishSettings();
+  const target: PublishTarget = product.publish_target || settings.publishTarget;
 
-  let warning: string | null = null;
+  const warnings: string[] = [];
+  const updatePayload: Record<string, unknown> = {};
 
-  if (result.success) {
-    try {
-      await supabase
-        .from("products")
-        .update({
-          channel_published: true,
-          telegram_channel_id: result.channelId,
-          telegram_channel_message_id: result.messageId,
-          telegram_channel_media_message_ids: result.mediaMessageIds,
-          channel_published_at: new Date().toISOString(),
-        })
-        .eq("id", productId);
-    } catch (updateError) {
-      console.error("Failed to persist channel publish state:", updateError);
-      warning = "Product could not be saved, but was successfully published to the Telegram channel.";
+  // 1. Handle Channel Publishing
+  if (target === "channel" || target === "both") {
+    if (settings.channelId) {
+      const channelResult = product.channel_published
+        ? await updateChannelProduct(product)
+        : await publishProductToChannel(product);
+
+      if (channelResult.success) {
+        updatePayload.channel_published = true;
+        updatePayload.telegram_channel_id = channelResult.channelId;
+        updatePayload.telegram_channel_message_id = channelResult.messageId;
+        updatePayload.telegram_channel_media_message_ids = channelResult.mediaMessageIds;
+        updatePayload.channel_published_at = new Date().toISOString();
+      } else {
+        warnings.push(`Channel: ${channelResult.error ?? "Failed to publish."}`);
+      }
+    } else {
+      warnings.push("Channel: No Telegram channel configured.");
     }
-  } else {
-    warning = result.error ?? "Failed to publish to the Telegram channel.";
+  }
+
+  // 2. Handle Group Publishing
+  if (target === "group" || target === "both") {
+    const groupId = product.telegram_group_id || settings.groupId;
+    const threadId = product.telegram_group_thread_id || settings.groupThreadId;
+
+    if (groupId) {
+      const groupResult = product.group_published
+        ? await updateGroupProduct(product, groupId, threadId)
+        : await publishProductToGroup(product, groupId, threadId);
+
+      if (groupResult.success) {
+        updatePayload.group_published = true;
+        updatePayload.telegram_group_id = groupResult.channelId;
+        updatePayload.telegram_group_message_id = groupResult.messageId;
+        updatePayload.telegram_group_media_message_ids = groupResult.mediaMessageIds;
+        updatePayload.telegram_group_thread_id = threadId;
+        updatePayload.group_published_at = new Date().toISOString();
+      } else {
+        warnings.push(`Group: ${groupResult.error ?? "Failed to publish."}`);
+      }
+    } else {
+      warnings.push("Group: No Telegram group configured.");
+    }
+  }
+
+  if (Object.keys(updatePayload).length > 0) {
+    try {
+      await supabase.from("products").update(updatePayload).eq("id", productId);
+    } catch (updateError) {
+      console.error("Failed to persist publish state:", updateError);
+      warnings.push("Could not save publish state to database.");
+    }
   }
 
   const { data: finalProduct } = await supabase
@@ -285,13 +413,12 @@ export async function publishProductById(
     .eq("id", productId)
     .single();
 
-  return { product: (finalProduct ?? product) as Product, warning };
+  const warningStr = warnings.length > 0 ? warnings.join(" | ") : null;
+  return { product: (finalProduct ?? product) as Product, warning: warningStr };
 }
 
 /**
- * Deletes all Telegram messages associated with a product's
- * channel post (used when an admin deletes a product and opts to
- * also remove its channel post).
+ * Deletes channel post.
  */
 export async function deleteChannelPost(product: Product): Promise<ChannelPublishResult> {
   if (!product.telegram_channel_id) {
@@ -304,6 +431,36 @@ export async function deleteChannelPost(product: Product): Promise<ChannelPublis
       ? [product.telegram_channel_message_id]
       : [];
 
-  await deleteChannelMessages(product.telegram_channel_id, ids);
+  await deleteChatMessages(product.telegram_channel_id, ids);
   return { success: true, channelId: product.telegram_channel_id };
+}
+
+/**
+ * Deletes group post.
+ */
+export async function deleteGroupPost(product: Product): Promise<ChannelPublishResult> {
+  if (!product.telegram_group_id) {
+    return { success: false, error: "Product was never published to a group." };
+  }
+
+  const ids = product.telegram_group_media_message_ids?.length
+    ? product.telegram_group_media_message_ids
+    : product.telegram_group_message_id
+      ? [product.telegram_group_message_id]
+      : [];
+
+  await deleteChatMessages(product.telegram_group_id, ids);
+  return { success: true, channelId: product.telegram_group_id };
+}
+
+/**
+ * Deletes both channel and group posts if they exist.
+ */
+export async function deleteAllProductPosts(product: Product): Promise<void> {
+  if (product.channel_published && product.telegram_channel_id) {
+    await deleteChannelPost(product);
+  }
+  if (product.group_published && product.telegram_group_id) {
+    await deleteGroupPost(product);
+  }
 }

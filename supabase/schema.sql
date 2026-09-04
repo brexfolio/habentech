@@ -28,6 +28,13 @@ create table if not exists products (
   telegram_channel_message_id text,
   telegram_channel_media_message_ids jsonb,
   channel_published_at timestamptz,
+  group_published boolean not null default false,
+  telegram_group_id text,
+  telegram_group_message_id text,
+  telegram_group_media_message_ids jsonb,
+  telegram_group_thread_id text,
+  group_published_at timestamptz,
+  publish_target text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -112,6 +119,10 @@ create table if not exists store_settings (
   store_name text not null default 'Habentech Electronics',
   store_description text not null default 'Your trusted electronics store on Telegram.',
   telegram_channel text,
+  telegram_group text,
+  telegram_group_title text,
+  telegram_group_thread_id text,
+  publish_target text not null default 'channel',
   contact_phone text,
   contact_email text,
   updated_at timestamptz not null default now()

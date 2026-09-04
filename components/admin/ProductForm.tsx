@@ -49,6 +49,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
     product?.availability ?? "Available"
   );
   const [featured, setFeatured] = useState(product?.featured ?? false);
+  const [publishTarget, setPublishTarget] = useState<string>(product?.publish_target ?? "default");
   const [images, setImages] = useState<ImageDraft[]>(
     (product?.images ?? [])
       .slice()
@@ -169,6 +170,7 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
         description: description.trim(),
         availability,
         featured,
+        publish_target: publishTarget === "default" ? null : publishTarget,
         images: uploadedImages,
         specifications: cleanedSpecs,
       };
@@ -237,6 +239,19 @@ export default function ProductForm({ product, onSaved, onCancel }: ProductFormP
           options={PRODUCT_AVAILABILITIES.map((a) => ({ value: a, label: tv("availability", a) }))}
         />
       </div>
+
+      <Select
+        surface="admin"
+        label="Publishing Destination"
+        value={publishTarget}
+        onChange={(val) => setPublishTarget(val)}
+        options={[
+          { value: "default", label: "Use Store Default Setting" },
+          { value: "channel", label: "Channel Only" },
+          { value: "group", label: "Group Only" },
+          { value: "both", label: "Both Channel & Group" },
+        ]}
+      />
 
       <Textarea
         surface="admin"
