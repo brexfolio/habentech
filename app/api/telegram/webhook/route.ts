@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { editTelegramMessageText, answerCallbackQuery, setTelegramChatMenuButton, sendTelegramMessage } from "@/lib/telegramBot";
 import { reduceInventoryForCompletedOrder, restoreInventoryForReversedOrder } from "@/lib/inventoryService";
+import { notifyCustomerOfOrderStatus } from "@/lib/orderNotification";
 
 function escapeHtml(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -215,6 +216,8 @@ async function handleCallbackQuery(
         await restoreInventoryForReversedOrder(id, existingOrder.product_id, existingOrder.quantity, adminId);
       }
     }
+
+    await notifyCustomerOfOrderStatus(id, nextStatus);
 
     await answerCallbackQuery(callbackQuery.id, `Order marked as ${nextStatus}.`);
     await clearMessageKeyboard(callbackQuery, `✅ Status updated: ${nextStatus}`);

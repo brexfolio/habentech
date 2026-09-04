@@ -328,3 +328,13 @@
     font-size: 20px;
   }
 }
+
+@media (max-width: 480px) {
+  .order-card,
+  .request-card,
+  .sell-request-card {
+    width: calc(100% - 20px) !important;
+    margin: 0 auto 12px !important;
+    padding: 14px !important;
+  }
+}

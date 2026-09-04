@@ -3,6 +3,7 @@ import { verifyAdminInitData, extractInitData } from "@/lib/telegramAuth";
 import { orderStatusSchema, formatZodError } from "@/lib/validation";
 import { apiError, apiSuccess } from "@/lib/utils";
 import { reduceInventoryForCompletedOrder, restoreInventoryForReversedOrder } from "@/lib/inventoryService";
+import { notifyCustomerOfOrderStatus } from "@/lib/orderNotification";
 
 const ORDER_SELECT = "*, product:products(id, name, price, currency)";
 
@@ -70,6 +71,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         existingOrder.quantity,
         String(verifiedAdmin.user.id)
       );
+    }
+
+    if (previousStatus !== nextStatus) {
+      await notifyCustomerOfOrderStatus(id, nextStatus);
     }
 
     return apiSuccess({ order: data });

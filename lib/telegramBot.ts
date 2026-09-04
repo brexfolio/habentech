@@ -225,3 +225,22 @@ export async function getTelegramChat(chatId: string | number): Promise<Telegram
   return callTelegramApi<TelegramChatInfo>("getChat", { chat_id: chatId });
 }
 
+export async function sendTelegramMessageWithWebApp(
+  chatId: string | number,
+  text: string,
+  buttons: Array<Array<{ text: string; web_app: { url: string } }>>
+): Promise<void> {
+  const token = getBotToken();
+  await fetch(`${TELEGRAM_API_BASE}/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard: buttons },
+      disable_web_page_preview: true,
+    }),
+  });
+}
+

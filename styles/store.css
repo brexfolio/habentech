@@ -958,12 +958,15 @@
 .request-card {
   background: var(--store-surface);
   border: 1px solid var(--store-border);
-  border-radius: var(--store-radius-md);
-  padding: 14px;
-  margin: 0 16px 12px;
+  border-radius: var(--store-radius-md, 16px);
+  padding: 16px;
+  width: calc(100% - 32px);
+  max-width: 1200px;
+  margin: 0 auto 12px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   height: auto !important;
   align-self: start !important;
   flex: 0 0 auto !important;
@@ -1333,9 +1336,12 @@
 .sell-request-card {
   background: var(--store-surface);
   border: 1px solid var(--store-border);
-  border-radius: var(--store-radius-md);
-  padding: 12px;
-  margin: 0 16px 12px;
+  border-radius: var(--store-radius-md, 16px);
+  padding: 14px;
+  width: calc(100% - 32px);
+  max-width: 1200px;
+  margin: 0 auto 12px;
+  box-sizing: border-box;
   display: flex;
   gap: 12px;
 }
