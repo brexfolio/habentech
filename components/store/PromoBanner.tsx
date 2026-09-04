@@ -7,7 +7,12 @@ export default function PromoBanner() {
 
   return (
     <section className="promo-banner" aria-label="Promotion">
-      <div className="promo-banner__image" role="img" aria-label="Promotion image" />
+      <img
+        src="/banner.jpg"
+        alt="Habentech Electronics Promotion"
+        className="promo-banner__image"
+      />
+      <div className="promo-banner__overlay" />
       <div className="promo-banner__content">
         <h2 className="promo-banner__title">{t("home.heroTitle")}</h2>
         <p className="promo-banner__subtitle">{t("home.heroSubtitle")}</p>
